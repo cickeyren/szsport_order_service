@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd">
+
+	<defaultCache eternal="false" maxElementsInMemory="1000"
+		overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0"
+		timeToLiveSeconds="600" memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="provider" maxElementsInMemory="500" timeToLiveSeconds="600" />
+
+	<cache name="dataCategory" maxElementsInMemory="500" timeToLiveSeconds="600" />
+		   
+	<cache name="category" maxElementsInMemory="500" timeToLiveSeconds="600" />
+		   
+	<cache name="tag" maxElementsInMemory="500" timeToLiveSeconds="600" />
+
+	<cache name="ServiceObject" maxElementsInMemory="50" timeToLiveSeconds="600" />
+
+	<cache name="chargeTypeCache" maxElementsInMemory="50" timeToLiveSeconds="600" />
+
+	<cache name="allServiceModelCache" maxElementsInMemory="500" timeToLiveSeconds="600" />
+
+	<cache name="apiTypeCategoryCache" maxElementsInMemory="100" timeToLiveSeconds="600" />
+
+	<cache name="cityListCache" maxElementsInMemory="100" timeToLiveSeconds="600" />
+
+	<cache name="navigationApi" maxElementsInMemory="100" timeToLiveSeconds="600" />
+
+	<cache name="selectedNavigation" maxElementsInMemory="100" timeToLiveSeconds="600" />
+
+	<cache name="selectedApi" maxElementsInMemory="100" timeToLiveSeconds="600" />
+
+</ehcache>

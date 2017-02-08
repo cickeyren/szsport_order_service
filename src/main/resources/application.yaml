@@ -1,0 +1,25 @@
+--- # webserver
+server:
+  port: 8080
+  context-path: /
+
+--- # logging
+logging:
+  level:
+#    org.springframework.web.servlet.mvc: debug
+#    org.mybatis: debug
+
+--- # datasource
+spring:
+  datasource:
+    url: @jdbc.url@
+    username: @jdbc.username@
+    password: @jdbc.password@
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    initial-size: 1
+    maximum-pool-size: 10
+    connection-timeout: 5000
+
+mybatis:
+  config-location: classpath:mybatis-config.xml #增加mybatis xml风格的支持
