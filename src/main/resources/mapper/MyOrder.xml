@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.sport.order.api.dao.MyOrderDao" >
+	<!-- 根据用户id，按照状态查询所有订单 -->
+	<select id="getAllOrderByUserId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			id,
+			ticket_name,
+			person_kind,
+			`status`,
+			sell_price,
+			order_time,
+			stadium_name,
+			order_number
+		FROM
+			order_base_info
+		WHERE
+			user_id = #{userId}
+		<if test="status != null and status != ''">
+			AND `status` = #{status}
+		</if>
+		ORDER BY
+			order_time DESC
+		LIMIT
+			#{start},#{pageSize}
+	</select>
+	<!-- 根据用户id，按照状态查询所有订单个数 -->
+	<select id="getCountByUserId" parameterType="java.util.HashMap" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			order_base_info
+		WHERE
+		user_id = #{userId}
+		<if test="status != null and status != ''">
+			AND `status` = #{status}
+		</if>
+	</select>
+	<!-- 订单详情 -->
+	<select id="getOrderDetails" parameterType="String" resultType="java.util.HashMap">
+		SELECT
+			ob.id,
+			ob.stadium_name,
+			ob.sub_stadium_name,
+			ob.ticket_id,
+			ob.ticket_name,
+			ob.sell_price,
+			ob.order_time
+		FROM
+			order_base_info ob
+		WHERE
+			ob.id = #{orderId}
+	</select>
+	<!-- 一个订单下的所有子订单（条形码）详情 -->
+	<select id="getTotalOrderByUserIdAndOrderId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			oc.id,
+			oc.remain_number,
+			oc.order_code,
+			oc.`status`
+		FROM
+			order_content_detail oc
+		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
+		WHERE
+			ob.user_id = #{userId} AND ob.id= #{orderId}
+	</select>
+	<!-- 一个订单下的所有子订单（条形码）个数 -->
+	<select id="getCountByOrderId" parameterType="String" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			order_content_detail oc
+		WHERE
+			oc.order_base_id = #{orderId}
+	</select>
+</mapper>
