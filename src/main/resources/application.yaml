@@ -1,7 +1,7 @@
 --- # webserver
 server:
   port: 8080
-  context-path: /
+  context-path: /order
 
 --- # logging
 logging:

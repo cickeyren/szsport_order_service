@@ -29,6 +29,7 @@ public class OrderBaseInfo {
     private Timestamp payTime;//支付时间
     private String payPrice;//支付金额
     private String merchantId;//商户id
+    private int sonOrders;//字单个数
 
     public String getId() {
         return id;
@@ -204,5 +205,13 @@ public class OrderBaseInfo {
 
     public void setTicketName(String ticketName) {
         this.ticketName = ticketName;
+    }
+
+    public int getSonOrders() {
+        return sonOrders;
+    }
+
+    public void setSonOrders(int sonOrders) {
+        this.sonOrders = sonOrders;
     }
 }

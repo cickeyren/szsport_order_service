@@ -1,5 +1,7 @@
 package com.digitalchina.sport.order.api.dao;
 
+import com.digitalchina.sport.order.api.model.OrderBaseInfo;
+import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -44,4 +46,30 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	Map<String,Object> getOrderDetails(String orderId);
+
+	/**
+	 * 新增订单基本信息
+	 * @param orderBaseInfo
+	 */
+	void inserOrderBaseInfo(OrderBaseInfo orderBaseInfo);
+
+	/**
+	 * 判断订单流水号是否重复
+ 	 * @param orderNumber
+	 * @return
+	 */
+	int isHaveByOrderNumer(String orderNumber);
+
+	/**
+	 * 新增子订单详情信息
+	 * @param orderContentDetail
+	 */
+	void inserOrderContentDetail(OrderContentDetail orderContentDetail);
+
+	/**
+	 * 判断12位确认码是否重复
+	 * @param orderCode
+	 * @return
+	 */
+	int isHaveByOrderCode(String orderCode);
 }

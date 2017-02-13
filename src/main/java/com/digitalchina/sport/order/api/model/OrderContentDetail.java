@@ -13,6 +13,7 @@ public class OrderContentDetail {
     private String orderBaseId;//所属订单编号
     private Timestamp startTime;//有限期开始时间
     private Timestamp endTime;//有效期截止时间
+    private String usedNumber;//已使用次数
     private String remainNumber;//剩余次数
     private String totalNumber;//可用总数
     private String everydayNumber;//每日限次
@@ -26,6 +27,7 @@ public class OrderContentDetail {
     private Timestamp takeTime;//取票时间
     private String checkType;//验票类型
     private Timestamp checkTime;//验票时间
+    private String remarks;//备注
 
     public String getId() {
         return id;
@@ -169,5 +171,21 @@ public class OrderContentDetail {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUsedNumber() {
+        return usedNumber;
+    }
+
+    public void setUsedNumber(String usedNumber) {
+        this.usedNumber = usedNumber;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

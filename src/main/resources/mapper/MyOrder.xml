@@ -73,4 +73,48 @@
 		WHERE
 			oc.order_base_id = #{orderId}
 	</select>
+	<!-- 新增订单基本信息 -->
+	<insert id="inserOrderBaseInfo" parameterType="OrderBaseInfo">
+		INSERT INTO `szsport_order_mgr`.`order_base_info`
+					(`id`, `order_number`, `stadium_name`, `classify`, `sub_stadium_name`, `person_kind`,
+					`ticket_id`, `ticket_name`, `ticket_type`, `order_time`, `order_channel`,`status`, `cost_price`, `sell_price`,
+					`user_id`, `user_name`, `user_tel`, `pay_type`, `pay_acount`, `pay_time`, `pay_price`, `merchant_id`, `son_orders`)
+		VALUES (#{id}, #{orderNumber}, #{stadiumName}, #{classify}, #{subStadiumName}, #{personKind},
+				#{ticketId}, #{ticketName}, #{ticketType}, NOW(), #{orderChannel},#{status}, #{costPrice}, #{sellPrice},
+				#{userId}, #{userName}, #{userTel}, #{payType}, #{payAcount}, #{payTime}, #{payPrice}, #{merchantId}, #{sonOrders});
+	</insert>
+
+	<!-- 判断订单流水号是否重复 -->
+	<select id="isHaveByOrderNumer" parameterType="String" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			order_base_info ob
+		WHERE
+			ob.order_number=#{orderNumber}
+	</select>
+
+	<!-- 新增子订单详情信息 -->
+	<insert id="inserOrderContentDetail" parameterType="OrderBaseInfo">
+	INSERT INTO `szsport_order_mgr`.`order_content_detail`
+				(`id`, `order_code`, `order_base_id`, `start_time`, `end_time`,
+				`used_number`, `remain_number`, `total_number`, `everyday_number`,
+				`field_id`, `cost_price`, `sell_price`, `take_status`, `check_status`,
+				`status`, `take_type`, `take_time`, `check_type`, `check_time`, `remarks`)
+	VALUES (#{id}, #{orderCode}, #{orderBaseId}, #{startTime}, #{endTime},
+			#{usedNumber}, #{remainNumber}, #{totalNumber}, #{everydayNumber},
+			#{fieldId}, #{costPrice}, #{sellPrice}, #{takeStatus}, #{checkStatus},
+			#{status}, #{takeType}, #{takeTime}, #{checkType}, #{checkTime}, #{remarks});
+
+	</insert>
+
+	<!-- 判断12位确认码是否重复 -->
+	<select id="isHaveByOrderCode" parameterType="String" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			order_content_detail oc
+		WHERE
+			oc.order_code=#{orderCode}
+	</select>
 </mapper>

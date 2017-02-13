@@ -1,6 +1,8 @@
 package com.digitalchina.sport.order.api.service;
 
 import com.digitalchina.sport.order.api.dao.MyOrderDao;
+import com.digitalchina.sport.order.api.model.OrderBaseInfo;
+import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,5 +61,39 @@ public class MyOrderService {
      */
     public Map<String,Object> getOrderDetails(String orderId){
         return myOrderDao.getOrderDetails(orderId);
+    }
+
+    /**
+     * 新增订单基本信息
+     * @param orderBaseInfo
+     */
+    public void inserOrderBaseInfo(OrderBaseInfo orderBaseInfo){
+        myOrderDao.inserOrderBaseInfo(orderBaseInfo);
+    }
+
+    /**
+     * 判断订单流水号是否重复
+     * @param orderNumber
+     * @return
+     */
+    public int isHaveByOrderNumer(String orderNumber){
+        return myOrderDao.isHaveByOrderNumer(orderNumber);
+    }
+
+    /**
+     * 新增子订单详情信息
+     * @param orderContentDetail
+     */
+    public void inserOrderContentDetail(OrderContentDetail orderContentDetail){
+        myOrderDao.inserOrderContentDetail(orderContentDetail);
+    }
+
+    /**
+     * 判断12位确认码是否重复
+     * @param orderCode
+     * @return
+     */
+    public int isHaveByOrderCode(String orderCode){
+        return myOrderDao.isHaveByOrderCode(orderCode);
     }
 }
