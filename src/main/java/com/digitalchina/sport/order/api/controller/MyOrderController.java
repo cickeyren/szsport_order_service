@@ -4,19 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
-import com.digitalchina.common.utils.HttpClientUtil;
-import com.digitalchina.common.utils.UUIDUtil;
-import com.digitalchina.common.utils.UtilDate;
-import com.digitalchina.sport.order.api.common.config.PropertyConfig;
-import com.digitalchina.sport.order.api.model.OrderBaseInfo;
-import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import com.digitalchina.sport.order.api.service.MyOrderService;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +63,7 @@ public class MyOrderController {
     @RequestMapping(value="getOrderDetails.json",method = RequestMethod.GET)
     @ResponseBody
     public RtnData<Object> getOrderDetails(@RequestParam(value = "userId", required = false) String userId,
-                                  @RequestParam(value = "orderId", required = false) String orderId){
+                                           @RequestParam(value = "orderId", required = false) String orderId){
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("userId",userId);
         map.put("orderId",orderId);
@@ -134,8 +128,21 @@ public class MyOrderController {
     /**
      * 根据验票码获取条形码图片
      */
-    public Object getBarCodeByOrderCode(String orderCode){
-        //BarcodeUtil.generateFile();
-        return "";
+    @RequestMapping(value="printBarCode.img",method = RequestMethod.GET)
+    @ResponseBody
+    public void printBarCode(@RequestParam(value = "orderCode", required = false)String orderCode, HttpServletResponse response) {
+        try {
+            //5、图形写给浏览器
+            response.setContentType("image/jpeg");
+            //发头控制浏览器不要缓存
+            response.setDateHeader("expries", -1);
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Pragma", "no-cache");
+            BarcodeUtil.generate(orderCode,response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("======生成条形码失败=========",e);
+        }
+
     }
 }
