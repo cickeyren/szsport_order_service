@@ -12,9 +12,13 @@ import com.digitalchina.sport.order.api.model.OrderBaseInfo;
 import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import io.swagger.models.auth.In;
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +32,7 @@ import java.util.Map;
 @RequestMapping("/order/api/myOrder/")
 public class MyOrderController {
 
-    //public static final Logger logger = LoggerFactory.getLogger(FieldController.class);
+    public static final org.slf4j.Logger logger = LoggerFactory.getLogger(MyOrderController.class);
     @Autowired
     private PropertyConfig proConfig;
     @Autowired
@@ -236,5 +240,22 @@ public class MyOrderController {
     public Object getBarCodeByOrderCode(String orderCode){
         //BarcodeUtil.generateFile();
         return "";
+    }
+
+    @RequestMapping(value="printBarCode.img",method = RequestMethod.GET)
+    public void printBarCode(@RequestParam(required = true)String barCode, HttpServletResponse response) {
+        try {
+            //5、图形写给浏览器
+            response.setContentType("image/jpeg");
+            //发头控制浏览器不要缓存
+            response.setDateHeader("expries", -1);
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Pragma", "no-cache");
+            BarcodeUtil.generate(barCode,response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("======生成条形码失败=========",e);
+        }
+
     }
 }
