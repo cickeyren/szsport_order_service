@@ -67,7 +67,7 @@ public class MyOrderService {
      * 新增订单基本信息
      * @param orderBaseInfo
      */
-    public void inserOrderBaseInfo(OrderBaseInfo orderBaseInfo){
+    public void inserOrderBaseInfo(Map<String,Object> orderBaseInfo){
         myOrderDao.inserOrderBaseInfo(orderBaseInfo);
     }
 
@@ -84,7 +84,7 @@ public class MyOrderService {
      * 新增子订单详情信息
      * @param orderContentDetail
      */
-    public void inserOrderContentDetail(OrderContentDetail orderContentDetail){
+    public void inserOrderContentDetail(Map<String,Object> orderContentDetail){
         myOrderDao.inserOrderContentDetail(orderContentDetail);
     }
 
@@ -95,5 +95,14 @@ public class MyOrderService {
      */
     public int isHaveByOrderCode(String orderCode){
         return myOrderDao.isHaveByOrderCode(orderCode);
+    }
+
+    /**
+     * 根据子场馆id查询分类id
+     * @param subStadiumId
+     * @return
+     */
+    public String getClassifyBySubStadiumId(String subStadiumId){
+        return myOrderDao.getClassifyBySubStadiumId(subStadiumId);
     }
 }

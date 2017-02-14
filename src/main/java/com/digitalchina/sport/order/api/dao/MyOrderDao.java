@@ -51,7 +51,7 @@ public interface MyOrderDao {
 	 * 新增订单基本信息
 	 * @param orderBaseInfo
 	 */
-	void inserOrderBaseInfo(OrderBaseInfo orderBaseInfo);
+	void inserOrderBaseInfo(Map<String,Object> orderBaseInfo);
 
 	/**
 	 * 判断订单流水号是否重复
@@ -64,7 +64,7 @@ public interface MyOrderDao {
 	 * 新增子订单详情信息
 	 * @param orderContentDetail
 	 */
-	void inserOrderContentDetail(OrderContentDetail orderContentDetail);
+	void inserOrderContentDetail(Map<String,Object> orderContentDetail);
 
 	/**
 	 * 判断12位确认码是否重复
@@ -72,4 +72,11 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	int isHaveByOrderCode(String orderCode);
+
+	/**
+	 * 根据子场馆id查询分类id
+	 * @param subStadiumId
+	 * @return
+	 */
+	String getClassifyBySubStadiumId(String subStadiumId);
 }

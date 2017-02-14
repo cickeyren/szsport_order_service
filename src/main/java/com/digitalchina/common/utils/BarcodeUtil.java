@@ -78,7 +78,7 @@ public class BarcodeUtil {
 
             // 生成条形码
             bean.generateBarcode(canvas, msg);
-
+            System.out.println("流："+canvas);
             // 结束绘制
             canvas.finish();
         } catch (IOException e) {

@@ -74,7 +74,7 @@
 			oc.order_base_id = #{orderId}
 	</select>
 	<!-- 新增订单基本信息 -->
-	<insert id="inserOrderBaseInfo" parameterType="OrderBaseInfo">
+	<insert id="inserOrderBaseInfo" parameterType="java.util.HashMap">
 		INSERT INTO `szsport_order_mgr`.`order_base_info`
 					(`id`, `order_number`, `stadium_name`, `classify`, `sub_stadium_name`, `person_kind`,
 					`ticket_id`, `ticket_name`, `ticket_type`, `order_time`, `order_channel`,`status`, `cost_price`, `sell_price`,
@@ -95,7 +95,7 @@
 	</select>
 
 	<!-- 新增子订单详情信息 -->
-	<insert id="inserOrderContentDetail" parameterType="OrderBaseInfo">
+	<insert id="inserOrderContentDetail" parameterType="java.util.HashMap">
 	INSERT INTO `szsport_order_mgr`.`order_content_detail`
 				(`id`, `order_code`, `order_base_id`, `start_time`, `end_time`,
 				`used_number`, `remain_number`, `total_number`, `everyday_number`,
@@ -116,5 +116,15 @@
 			order_content_detail oc
 		WHERE
 			oc.order_code=#{orderCode}
+	</select>
+
+	<!-- 根据子场馆id查询分类id -->
+	<select id="getClassifyBySubStadiumId" parameterType="String" resultType="String">
+		SELECT
+			classify
+		FROM
+			sub_stadium s
+		WHERE
+			s.id =#{subStadiumId}
 	</select>
 </mapper>

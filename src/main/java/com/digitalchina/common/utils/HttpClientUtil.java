@@ -1,15 +1,15 @@
 package com.digitalchina.common.utils;
 
+
 import com.digitalchina.common.ServiceRuntimeException;
 import com.digitalchina.sport.order.api.common.Constants;
+import com.google.gson.Gson;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -18,10 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-import java.util.Map;
-
+import java.util.*;
 
 
 /**
@@ -128,7 +125,7 @@ public class HttpClientUtil {
             result = EntityUtils.toString(entity, encoding);
         } catch (IOException e) {
             logger.error("调用接口异常: " + e);
-            throw new ServiceRuntimeException(Constants.RTN_CODE_FAIL, Constants.RTN_MESSAGE_ERROR);
+            throw new ServiceRuntimeException(Constants.RTN_MESSAGE_ERROR);
         } finally {
             if (response != null) {
                 try {
@@ -154,13 +151,11 @@ public class HttpClientUtil {
      * @param encoding
      * @return
      */
-    public static String doGet(String url, int httpConnectionTimeout, Header[] headers, String encoding){
+    public static String doGet(String url, int httpConnectionTimeout, Header[] headers, String encoding) throws  Exception {
         CloseableHttpClient httpClient = HttpClientUtil.getHttpClient();
         HttpGet httpget = null;
         CloseableHttpResponse response = null;
-        try {
-            httpget = new HttpGet(url);
-
+         httpget = new HttpGet(url);
             // 设置请求和传输超时时间
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(httpConnectionTimeout)
@@ -180,41 +175,61 @@ public class HttpClientUtil {
             if(encoding==null || "".equals(encoding.trim())){
             	encoding=DEFAULT_ENCODING;
             }
-            
-            return EntityUtils.toString(response.getEntity(), encoding);
-        } catch (ConnectTimeoutException e) {
-            logger.error("http connection time out", e);
-            throw new RuntimeException("http connection time out", e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("unsupported encoding exception", e);
-            throw new RuntimeException("unsupported encoding exception", e);
-        } catch (ClientProtocolException e) {
-            logger.error("client protocol exception", e);
-            throw new RuntimeException("client protocol exception", e);
-        } catch (IOException e) {
-            logger.error("io exception", e);
-            throw new RuntimeException("io exception", e);
-        }  finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException e) {
-                logger.warn("close response error", e);
-            }
-            try {
-                if (httpget != null) {
-                    httpget.releaseConnection();
-                }
-            } catch (Exception e) {
-                logger.warn("release http connection error", e);
-            }
-        }
+            String result = EntityUtils.toString(response.getEntity(), encoding);
+            response.close();
+            return result;
+
     }
-    
-    //public static void main(String[] args){
-    //	String ut=HttpClientUtil.doGet("http://mscx-dict-api.eastdc.cn:82/catalog/getServiceCatalog.do?areaId=440100&deleteFlag=N", 2000, null, null);
-    //	System.out.println(ut);
-    //}
+    /**
+     * 调用接口获取所有商户的信息
+     * @return
+     */
+    public static List<Map<String,Object>> getListResultByURLAndKey(String url,String interfaceName,String resultKey) {
+        List<Map<String,Object>> resultList = null;
+        String result = null;
+        try {
+            result = HttpClientUtil.doGet(url, 2000, null, null);
+            Gson gson = new Gson();
+            Map<String,Object> gsonMap =  gson.fromJson(result,Map.class);
+            if(null != gsonMap && gsonMap.containsKey("code")) {
+                if(Constants.RTN_CODE_SUCCESS.equals((String)gsonMap.get("code"))) {
+                    Map<String,Object> resultMap = (Map<String,Object>)gsonMap.get("result");
+                    resultList = (List<Map<String, Object>>) resultMap.get(resultKey);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("=========调用远程"+interfaceName+"接口时发生错误===========",e);
+        }
+        return resultList != null? resultList:new ArrayList<Map<String,Object>>();
+    }
+
+    /**
+     * 返回类型map
+     * @return
+     */
+    public static Map<String,Object> getMapResultByURLAndKey(String url, String interfaceName) {
+        Map<String,Object> resultMap = new HashMap<String, Object>();
+        String result = null;
+        try {
+            result = HttpClientUtil.doGet(url, 2000, null, null);
+            Gson gson = new Gson();
+            Map<String,Object> gsonMap =  gson.fromJson(result,Map.class);
+            if(null != gsonMap && gsonMap.containsKey("code")) {
+                if(Constants.RTN_CODE_SUCCESS.equals((String)gsonMap.get("code"))) {
+                    resultMap = (Map<String,Object>)gsonMap.get("result");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("=========调用远程"+interfaceName+"接口时发生错误===========",e);
+        }
+        //System.out.print("resultMap="+resultMap);
+        return resultMap;
+    }
+    public static void main(String[] args){
+        String url = "http://192.168.31.181:8080/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=1";
+        System.out.println(getMapResultByURLAndKey(url,"测试"));
+    }
 
 }
