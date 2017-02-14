@@ -2,6 +2,7 @@ package com.digitalchina.sport.order.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.common.RtnData;
 import com.digitalchina.common.result.Result;
 import com.digitalchina.common.utils.UUIDUtil;
 import com.digitalchina.common.utils.UtilDate;
@@ -21,7 +22,7 @@ import java.util.Map;
  * 我的订单control
  */
 @RestController
-@RequestMapping("/api/myOrder/")
+@RequestMapping("/order/api/myOrder/")
 public class MyOrderController {
 
     //public static final Logger logger = LoggerFactory.getLogger(FieldController.class);
@@ -35,10 +36,10 @@ public class MyOrderController {
      */
     @RequestMapping(value="getMyAllOrder.json",method = RequestMethod.GET)
     @ResponseBody
-    public String getMyAllOrder(@RequestParam(value = "pageIndex",defaultValue = "0" , required = false) int pageIndex,
-                                @RequestParam(value = "pageSize",defaultValue = "10", required = false) int pageSize,
-                                @RequestParam(value = "userId", required = false) String userId,
-                                @RequestParam(value = "status", required = false) String status) {
+    public RtnData<Object> getMyAllOrder(@RequestParam(value = "pageIndex",defaultValue = "0" , required = false) int pageIndex,
+                                         @RequestParam(value = "pageSize",defaultValue = "10", required = false) int pageSize,
+                                         @RequestParam(value = "userId", required = false) String userId,
+                                         @RequestParam(value = "status", required = false) String status) {
         Map<String,Object> map = new HashMap<String, Object>();
         if(pageIndex == 0){
             map.put("start",pageIndex);
@@ -53,7 +54,7 @@ public class MyOrderController {
         Map<String,Object> reqMap=new HashMap<String, Object>();
         reqMap.put("list",list);
         reqMap.put("count",count);
-        return Result.ok(reqMap);
+        return RtnData.ok(reqMap);
     }
 
     /**
@@ -62,7 +63,7 @@ public class MyOrderController {
      */
     @RequestMapping(value="getOrderDetails.json",method = RequestMethod.GET)
     @ResponseBody
-    public String getOrderDetails(@RequestParam(value = "userId", required = false) String userId,
+    public RtnData<Object> getOrderDetails(@RequestParam(value = "userId", required = false) String userId,
                                   @RequestParam(value = "orderId", required = false) String orderId){
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("userId",userId);
@@ -74,7 +75,7 @@ public class MyOrderController {
         reqMap.put("list",list);
         reqMap.put("count",count);
         reqMap.put("orderDetails",orderDetails);
-        return Result.ok(reqMap);
+        return RtnData.ok(reqMap);
     }
 
     //根据门票的id获取门票的订票规则
@@ -89,7 +90,7 @@ public class MyOrderController {
      */
     @RequestMapping(value="createOrder.json",method = RequestMethod.POST)
     @ResponseBody
-    public String createOrder(@RequestBody String orderJson){
+    public RtnData<Object> createOrder(@RequestBody String orderJson){
         JSONObject orderInfoJson = JSON.parseObject(orderJson);
         int count = Integer.parseInt(orderInfoJson.get("count").toString());//订单下面的字单个数
         /**
@@ -113,7 +114,7 @@ public class MyOrderController {
             this.insertOrderContentDetail(orderContentDetail);
         }
         Map<String,Object> reqMap=new HashMap<String, Object>();
-        return Result.ok("下单成功!");
+        return RtnData.ok("下单成功!");
     }
 
     /**
