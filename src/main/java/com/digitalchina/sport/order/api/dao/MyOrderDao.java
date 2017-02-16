@@ -117,4 +117,11 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	OrderBaseInfo getOrderByOrderNumer(String orderNumber);
+
+	/**
+	 * 订单流水号查询商户和订单内容
+	 * @param orderNumber
+	 * @return
+	 */
+	Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber);
 }

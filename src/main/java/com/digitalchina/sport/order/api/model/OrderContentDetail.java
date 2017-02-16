@@ -17,6 +17,7 @@ public class OrderContentDetail {
     private String remainNumber;//剩余次数
     private String totalNumber;//总可用次数（-1表示不限次数）
     private String everydayNumber;//每日限次
+    private String everydayRemainNumber;//当日剩余次数
     private String dateLimit;//日期限制：比如每周周一至周五
     private String timeLimit;//时间限制：每天13:00至17:00
     private String forbiddenDate;//不可用日期
@@ -223,5 +224,13 @@ public class OrderContentDetail {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getEverydayRemainNumber() {
+        return everydayRemainNumber;
+    }
+
+    public void setEverydayRemainNumber(String everydayRemainNumber) {
+        this.everydayRemainNumber = everydayRemainNumber;
     }
 }

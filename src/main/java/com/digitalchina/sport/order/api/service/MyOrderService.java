@@ -6,6 +6,7 @@ import com.digitalchina.sport.order.api.dao.MyOrderDao;
 import com.digitalchina.sport.order.api.model.OrderBaseInfo;
 import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import com.google.common.collect.Maps;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,17 +130,6 @@ public class MyOrderService {
      */
     public boolean updateTake(Map<String,Object> params)throws Exception{
         if (myOrderDao.updateTake(params)>0){
-            return true;
-        }else return false;
-    }
-
-    /**
-     * 验票=====>>更新字单
-     * @param params
-     */
-    public boolean updateCheck(Map<String,Object> params)throws Exception{
-        Map<String,Object> map = this.updateCheckMap(params);
-        if (myOrderDao.updateCheck(map)>0){
             return true;
         }else return false;
     }
@@ -352,26 +342,31 @@ public class MyOrderService {
      * @param map
      * @return
      */
-    public Map<String,Object> updateCheckMap(Map<String,Object> map){
+    public int updateCheckByMap(Map<String,Object> map){
         Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
-        //remain_number =======>>totalNumber
-        String totalNumber = orderDetails.get("totalNumber").toString();
+        String totalNumber = orderDetails.get("total_number").toString();
+        String remainNumber = orderDetails.get("remain_number").toString();
+        String everydayNumber = orderDetails.get("everyday_number").toString();
+        String everydayRemainNumber = orderDetails.get("everyday_remain_number").toString();
         if(StringUtil.isEmpty(totalNumber)){
             int total = Integer.parseInt(totalNumber);
+            int remain = Integer.parseInt(remainNumber);
+            int everyday = Integer.parseInt(everydayNumber);
+            int everydayRemain = Integer.parseInt(everydayRemainNumber);
             if(total>0){
-                String remainNumber = orderDetails.get("remainNumber").toString();
-                if (StringUtil.isEmpty(remainNumber)){
-                    int remain = Integer.parseInt(remainNumber);
-                    if(remain < total && remain > 0){
-                        remain = remain -1;
-                        map.put("remainNumber",remain);
-                    }
-                }else {
-                    map.put("remainNumber",total);
+                if(checkRemainTime(remainNumber,everydayRemainNumber).equals("0")){
+                    remain = remain -1;
+                    map.put("remainNumber",remain);
                 }
-            }
+            }//total=-1不限次数不需要修改
+            if(everyday>0){
+                if(checkRemainTime(remainNumber,everydayRemainNumber).equals("0")) {
+                    everydayRemain = everydayRemain - 1;
+                    map.put("everydayRemainNumber", everydayRemain);
+                }
+            }//everyday=-1不限次数不需要修改
         }
-        return map;
+        return myOrderDao.updateCheck(map);
     }
 
     /**
@@ -406,7 +401,7 @@ public class MyOrderService {
                                     if(!checkDate(dqdate,orderDetailMap.get("forbidden_date").toString())){
                                         //是否超过当日使用次数=====是否超过剩余次数
                                         //1=超过剩余次数0=验证通过2=超过当日使用次数
-                                        String returnNumber = checkRemainTime(orderDetailMap.get("remain_number").toString(),orderDetailMap.get("forbidden_date").toString());
+                                        String returnNumber = checkRemainTime(orderDetailMap.get("remain_number").toString(),orderDetailMap.get("everyday_remain_number").toString());
                                         if(returnNumber.equals("1")){
                                             retMap.put("result","false");
                                             retMap.put("message","超过剩余次数");
@@ -530,13 +525,13 @@ public class MyOrderService {
      */
     public String checkRemainTime(String remain_number,String everyday_remain_number){
         String compareResult = "";
-        if(!StringUtil.isEmpty(remain_number) && !StringUtil.isEmpty(remain_number)){
+        if(!StringUtil.isEmpty(remain_number) && !StringUtil.isEmpty(everyday_remain_number)){
             int remain = Integer.parseInt(remain_number);
             int everydayRemain = Integer.parseInt(everyday_remain_number);
             //是否超过当日使用次数
             if(everydayRemain > 0){
                 //是否超过剩余次数
-                if(remain > 0){
+                if(remain < 0){
                     compareResult = "1";//1=超过剩余次数
                 }else {
                     compareResult = "0";//0=验证通过
@@ -551,4 +546,7 @@ public class MyOrderService {
         return compareResult;
     }
 
+    public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber){
+        return myOrderDao.getOrderAndMpByOrderNumer(orderNumber);
+    }
 }

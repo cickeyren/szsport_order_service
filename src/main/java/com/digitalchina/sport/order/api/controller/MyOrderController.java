@@ -219,13 +219,13 @@ public class MyOrderController {
         }
     }
 
-    /**
+/*    *//**
      * 修改验码状态接口
      * @param orderCode
      * @param checkType
      * @param remark
      * @return
-     */
+     *//*
     @RequestMapping(value="updateCheck.json",method = RequestMethod.GET)
     @ResponseBody
     public RtnData<Object> updateCheck(@RequestParam(value = "orderCode", required = true) String orderCode,
@@ -251,7 +251,7 @@ public class MyOrderController {
             logger.error("验票状态更改失败，",e);
             return RtnData.fail("验票状态更改失败!");
         }
-    }
+    }*/
 
     /**
      * 验票
@@ -261,13 +261,29 @@ public class MyOrderController {
      */
     @RequestMapping(value="checkTicket.json",method = RequestMethod.GET)
     @ResponseBody
-    public RtnData<Object> checkTicket(@RequestParam(value = "orderCode", required = false) String orderCode){
+    public RtnData<Object> checkTicket(@RequestParam(value = "orderCode", required = false) String orderCode,
+                                       @RequestParam(value = "checkType", required = false) String checkType){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
                 //根据验票规则验票
-                retMap.put("return",myOrderService.checkTicket(orderCode));
-                return RtnData.ok(retMap);
+                Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                checkReturnMap = myOrderService.checkTicket(orderCode);
+                retMap.put("result",checkReturnMap);
+                String result = checkReturnMap.get("result").toString();
+                if (result.equals("true")){
+                    Map<String,Object> checkParam = new HashMap<String, Object>();
+                    checkParam.put("orderCode",orderCode);
+                    checkParam.put("checkStatus","1");//验票状态改为1，已验票
+                    checkParam.put("checkType",checkType);
+                    if(myOrderService.updateCheckByMap(checkParam) >0){
+                        return RtnData.ok(retMap,"验票状态修改成功!");
+                    }else {
+                        return RtnData.fail(retMap,"验票状态修改失败!");
+                    }
+                }else {
+                    return RtnData.fail(retMap,"验票失败!");
+                }
             }else {
                 return RtnData.fail("没有查询到符合条件的订单记录!");
             }
