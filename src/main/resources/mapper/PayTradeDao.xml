@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.sport.order.api.dao.PayTradeDao" >
+    <!---->
+    <select id="selectAlipayTradeModelByOutTradeNo" parameterType="String" resultType="AlipayTradeModel">
+        SELECT
+        out_trade_no as outTradeNo,
+        trade_no as tradeNo,
+        buyer_id as buyerId,
+        body,
+        DATE_FORMAT(notify_time,'%Y-%m-%d %H:%i:%S')  as notifyTime,
+        subject,
+        sign_type as signType,
+        discount as discount,
+        buyer_email as buyerEmail,
+		DATE_FORMAT(gmt_create,'%Y-%m-%d %H:%i:%S')  as gmt_create,
+        price as price,
+        total_fee as totalFee,
+        seller_id as sellerId,
+        user_id as userId,
+        alipay_status
+        FROM  `alipay_orderticket_trade_info`
+        WHERE out_trade_no = #{outTradeNo};
+    </select>
+    <!--生成支付宝流水号-->
+    <insert id="insertAlipayTradeModel" parameterType="AlipayTradeModel" >
+        INSERT INTO alipay_orderticket_trade_info
+        (
+        out_trade_no,
+        body,
+        subject,
+        user_id
+        )
+        VALUES(#{outTradeNo},#{body},#{subject},#{userId})
+    </insert>
+
+    <!-- 更新订单的状态 -->
+    <update id="updateAlipayTradeModel" parameterType="AlipayTradeModel">
+        UPDATE `alipay_orderticket_trade_info`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tradeNo != null and tradeNo != '' ">
+                trade_no = #{tradeNo},
+            </if>
+
+            <if test="buyerId != null and buyerId != '' ">
+                buyer_id= #{buyerId},
+            </if>
+
+            <if test="body != null and body != '' ">
+                body= #{body},
+            </if>
+
+            <if test="notifyTime != null and notifyTime != '' ">
+                notify_time = #{notifyTime},
+            </if>
+
+            <if test="subject != null and subject != '' ">
+                subject= #{subject},
+            </if>
+
+            <if test="signType != null and signType != '' ">
+                sign_type= #{signType},
+            </if>
+
+            <if test="discount != null and discount != '' ">
+                discount= #{discount},
+            </if>
+
+            <if test="buyerEmail != null and buyerEmail != '' ">
+                buyer_email = #{buyerEmail},
+            </if>
+
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create= #{gmtCreate},
+            </if>
+
+            <if test="price != null and price != '' ">
+                price= #{price},
+            </if>
+
+            <if test="totalFee != null and totalFee != '' ">
+                total_fee= #{totalFee},
+            </if>
+
+            <if test="sellerId != null and sellerId != '' ">
+                seller_id= #{sellerId},
+            </if>
+
+            <if test="userId != null and userId != '' ">
+                user_id= #{userId},
+            </if>
+
+            <if test="alipayStatus != null and alipayStatus != '' ">
+                alipay_status = #{alipayStatus},
+            </if>
+
+        </trim>
+        WHERE out_trade_no = #{outTradeNo}
+    </update>
+</mapper>
