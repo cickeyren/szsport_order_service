@@ -13,11 +13,14 @@ public class OrderContentDetail {
     private String orderBaseId;//所属订单编号
     private Timestamp startTime;//有限期开始时间
     private Timestamp endTime;//有效期截止时间
-    private String usedNumber;//已使用次数
+    private String canRetreat;//是否可退（0可以1不可以）
     private String remainNumber;//剩余次数
-    private String totalNumber;//可用总数
+    private String totalNumber;//总可用次数（-1表示不限次数）
     private String everydayNumber;//每日限次
-    private String fieldId;//使用场地
+    private String dateLimit;//日期限制：比如每周周一至周五
+    private String timeLimit;//时间限制：每天13:00至17:00
+    private String forbiddenDate;//不可用日期
+    private String hoursLimit;//是否限时：比如限时2小时，-1表示不限时
     private String costPrice;//成本价
     private String sellPrice;//售价
     private String takeStatus;//取票状态
@@ -27,6 +30,7 @@ public class OrderContentDetail {
     private Timestamp takeTime;//取票时间
     private String checkType;//验票类型
     private Timestamp checkTime;//验票时间
+    private String fieldId;//使用场地
     private String remarks;//备注
 
     public String getId() {
@@ -69,6 +73,14 @@ public class OrderContentDetail {
         this.endTime = endTime;
     }
 
+    public String getCanRetreat() {
+        return canRetreat;
+    }
+
+    public void setCanRetreat(String canRetreat) {
+        this.canRetreat = canRetreat;
+    }
+
     public String getRemainNumber() {
         return remainNumber;
     }
@@ -93,12 +105,36 @@ public class OrderContentDetail {
         this.everydayNumber = everydayNumber;
     }
 
-    public String getFieldId() {
-        return fieldId;
+    public String getDateLimit() {
+        return dateLimit;
     }
 
-    public void setFieldId(String fieldId) {
-        this.fieldId = fieldId;
+    public void setDateLimit(String dateLimit) {
+        this.dateLimit = dateLimit;
+    }
+
+    public String getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(String timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
+    public String getForbiddenDate() {
+        return forbiddenDate;
+    }
+
+    public void setForbiddenDate(String forbiddenDate) {
+        this.forbiddenDate = forbiddenDate;
+    }
+
+    public String getHoursLimit() {
+        return hoursLimit;
+    }
+
+    public void setHoursLimit(String hoursLimit) {
+        this.hoursLimit = hoursLimit;
     }
 
     public String getCostPrice() {
@@ -133,6 +169,14 @@ public class OrderContentDetail {
         this.checkStatus = checkStatus;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getTakeType() {
         return takeType;
     }
@@ -165,20 +209,12 @@ public class OrderContentDetail {
         this.checkTime = checkTime;
     }
 
-    public String getStatus() {
-        return status;
+    public String getFieldId() {
+        return fieldId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getUsedNumber() {
-        return usedNumber;
-    }
-
-    public void setUsedNumber(String usedNumber) {
-        this.usedNumber = usedNumber;
+    public void setFieldId(String fieldId) {
+        this.fieldId = fieldId;
     }
 
     public String getRemarks() {

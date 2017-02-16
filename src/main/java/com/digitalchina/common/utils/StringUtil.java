@@ -407,5 +407,8 @@ public final class StringUtil {
 		}
 		return sBuffer.toString();
 	}
-
+	public static void main(String[] args) {
+		String[] str = new String[]{"aaaa","bbbb","cccc"};
+		System.out.println("isContainSpcifyStr() = [" + isContainSpcifyStr("aaaa",str) + "]");
+	}
 }

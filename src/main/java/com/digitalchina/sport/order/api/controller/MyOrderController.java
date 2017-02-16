@@ -47,13 +47,19 @@ public class MyOrderController {
         map.put("pageSize",pageSize);
         map.put("userId",userId);
         map.put("status",status);
-        List<Map<String,Object>> list = myOrderService.getAllOrderByUserId(map);
-        int count = myOrderService.getCountByUserId(map);
-        Map<String,Object> reqMap=new HashMap<String, Object>();
-        reqMap.put("list",list);
-        reqMap.put("count",count);
-        logger.info("根据用户id，按照状态查询所有订单:getMyAllOrder.json");
-        return RtnData.ok(reqMap);
+        try {
+            List<Map<String,Object>> list = myOrderService.getAllOrderByUserId(map);
+            int count = myOrderService.getCountByUserId(map);
+            Map<String,Object> reqMap=new HashMap<String, Object>();
+            reqMap.put("list",list);
+            reqMap.put("count",count);
+            return RtnData.ok(reqMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("查询订单列表失败",e);
+            return RtnData.fail("查询订单列表失败");
+        }
+
     }
 
     /**
@@ -67,20 +73,22 @@ public class MyOrderController {
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("userId",userId);
         map.put("orderId",orderId);
-        List<Map<String,Object>> list = myOrderService.getTotalOrderByUserIdAndOrderId(map);
-        int count = myOrderService.getCountByOrderId(orderId);
-        Map<String,Object> orderDetails = myOrderService.getOrderDetails(orderId);
-        Map<String,Object> reqMap=new HashMap<String, Object>();
-        reqMap.put("list",list);
-        reqMap.put("count",count);
-        reqMap.put("orderDetails",orderDetails);
-        logger.info("获取一个订单中的所有子订单的详情:getOrderDetails.json");
-        return RtnData.ok(reqMap);
-    }
 
-    //根据策略的id获取门票的订票规则
-    //根据策略的id获取门票的验票规则
-    //根据策略的id获取门票的场馆信息
+        try {
+            List<Map<String,Object>> list = myOrderService.getTotalOrderByUserIdAndOrderId(map);
+            int count = myOrderService.getCountByOrderId(orderId);
+            Map<String,Object> orderDetails = myOrderService.getOrderDetails(orderId);
+            Map<String,Object> reqMap=new HashMap<String, Object>();
+            reqMap.put("list",list);
+            reqMap.put("count",count);
+            reqMap.put("orderDetails",orderDetails);
+            return RtnData.ok(reqMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("查询订单包含的字单详情失败",e);
+            return RtnData.fail("查询订单包含的字单详情失败");
+        }
+    }
 
     /**
      * 将以上接口返回信息中的内容存入订单详情表
@@ -95,42 +103,50 @@ public class MyOrderController {
 
         String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
         int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
-        Map<String,Object> orderBaseInfo = myOrderService.getOrderBaseInfoStringFromMap(count,myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));//订单基本信息
-        Map<String,Object> orderContentDetail = myOrderService.getOrderContentDetailFromMap(myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));//子订单详细信息
-        //order基本信息
-        orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
-        orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
-        orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
-        orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
-        orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
-        orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
+        try {
+            //订单基本信息
+            Map<String,Object> orderBaseInfo = myOrderService.getOrderBaseInfoFromMap(count,myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));
+            Map<String,Object> orderContentDetail = myOrderService.getOrderContentDetailFromMap(myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));//子订单详细信息
+            //order基本信息
+            orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
+            orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
+            orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
+            orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
+            orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
+            /**
+             * orderChannel用途：APP表示线上，订单售价为线上价格；其余为线下价格即为门市价
+             * 目前暂时均为线上，线下暂时不做
+             */
+            orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
+            String orderBaseId = myOrderService.insertOrderBaseInfo(orderBaseInfo);
+            //order详细内容
+            orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
+            myOrderService.insertOrderContentDetail(count,orderContentDetail);
 
-        String orderBaseId = myOrderService.insertOrderBaseInfo(orderBaseInfo);
-        //order详细内容
-
-        orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
-        String orderContentId = "";
-        for(int i=0;i<count;i++){
-            String contentId = myOrderService.insertOrderContentDetail(orderContentDetail);
-            orderContentId += contentId+",";
-        }
-        if (orderContentId.length()>0){
-            logger.info("生成订单成功：主订单id="+orderBaseId+"子订单id="+orderContentId);
-            return RtnData.ok("下单成功!");
-        }else {
-            logger.info("订单生成失败");
+            System.out.println("orderBaseInfo="+orderBaseInfo);
+            System.out.println("orderContentDetail="+orderContentDetail);
+            Map<String,Object> retMap = new HashMap<String, Object>();
+            retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+            return RtnData.ok(retMap,"下单成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("下单失败!",e);
             return RtnData.fail("下单失败!");
         }
-
     }
-
 
     /**
      * 根据验票码获取条形码图片
      */
     @RequestMapping(value="printBarCode.img",method = RequestMethod.GET)
     @ResponseBody
-    public void printBarCode(@RequestParam(value = "orderCode", required = false)String orderCode, HttpServletResponse response) {
+    public void printBarCode(@RequestParam(value = "orderCode", required = false) String orderCode, HttpServletResponse response) throws Exception {
+        String barCode = "";
+        if(myOrderService.isHaveByOrderCode(orderCode) >0){
+            barCode = orderCode;
+        }else{
+            barCode = "";
+        }
         try {
             //5、图形写给浏览器
             response.setContentType("image/jpeg");
@@ -138,11 +154,126 @@ public class MyOrderController {
             response.setDateHeader("expries", -1);
             response.setHeader("Cache-Control", "no-cache");
             response.setHeader("Pragma", "no-cache");
-            BarcodeUtil.generate(orderCode,response.getOutputStream());
+            BarcodeUtil.generate(barCode,response.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("======生成条形码失败=========",e);
+            logger.error("生成条形码失败!",e);
         }
+    }
 
+    /**
+     * 根据验票码验证是否存在，存在则返回该票的详情，不存在则返回提示信息
+     * @param orderCode
+     * @return
+     */
+    @RequestMapping(value="checkTicketByOrderCode.json",method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData<Object> checkTicketByOrderCode(@RequestParam(value = "orderCode", required = false) String orderCode){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            if(myOrderService.isHaveByOrderCode(orderCode)>0){
+                retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                return RtnData.ok(retMap);
+            }else {
+                return RtnData.fail("没有查询到符合条件的订单记录!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("查询失败，",e);
+            return RtnData.fail("查询失败!");
+        }
+    }
+
+    /**
+     * 修改取票状态接口
+     * @param orderCode
+     * @param takeType
+     * @param remark
+     * @return
+     */
+    @RequestMapping(value="updateTake.json",method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData<Object> updateTake(@RequestParam(value = "orderCode", required = true) String orderCode,
+                                      @RequestParam(value = "takeType", required = false) String takeType,
+                                      @RequestParam(value = "remark", required = false) String remark){
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("orderCode",orderCode);
+        map.put("takeStatus","1");//取票状态改为1，已取票
+        map.put("takeType",takeType);
+        map.put("remark",remark);
+        try {
+            if(myOrderService.isHaveByOrderCode(orderCode)>0){
+                if (myOrderService.updateTake(map)){
+                    return RtnData.ok("取票状态更新成功!");
+                }else {
+                    return RtnData.fail("取票状态更新状态失败!");
+                }
+            }else {
+                return RtnData.fail("没有查询到符合条件的订单记录!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("取票状态更新状态失败，",e);
+            return RtnData.fail("取票状态更新状态失败!");
+        }
+    }
+
+    /**
+     * 修改验码状态接口
+     * @param orderCode
+     * @param checkType
+     * @param remark
+     * @return
+     */
+    @RequestMapping(value="updateCheck.json",method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData<Object> updateCheck(@RequestParam(value = "orderCode", required = true) String orderCode,
+                                       @RequestParam(value = "checkType", required = false) String checkType,
+                                       @RequestParam(value = "remark", required = false) String remark){
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("orderCode",orderCode);
+        map.put("checkStatus","1");//验票状态改为1，已取票
+        map.put("checkType",checkType);
+        map.put("remark",remark);
+        try {
+            if(myOrderService.isHaveByOrderCode(orderCode)>0){
+                if (myOrderService.updateCheck(map)){
+                    return RtnData.ok("验票状态更新成功!");
+                }else {
+                    return RtnData.fail("验票状态更改失败!");
+                }
+            }else {
+                return RtnData.fail("没有查询到符合条件的订单记录!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("验票状态更改失败，",e);
+            return RtnData.fail("验票状态更改失败!");
+        }
+    }
+
+    /**
+     * 验票
+     * 根据验票规则
+     * @param orderCode
+     * @return
+     */
+    @RequestMapping(value="checkTicket.json",method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData<Object> checkTicket(@RequestParam(value = "orderCode", required = false) String orderCode){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            if(myOrderService.isHaveByOrderCode(orderCode)>0){
+                //根据验票规则验票
+                retMap.put("return",myOrderService.checkTicket(orderCode));
+                return RtnData.ok(retMap);
+            }else {
+                return RtnData.fail("没有查询到符合条件的订单记录!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RtnData.fail("验票失败!");
+        }
     }
 }

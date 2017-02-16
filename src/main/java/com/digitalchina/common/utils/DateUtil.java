@@ -2,7 +2,6 @@ package com.digitalchina.common.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -262,6 +261,77 @@ public class DateUtil {
         return new Date();
     }
 
+    public static String toWeekName(Integer week){
+        String weeksName = "";
+        switch(week){
+            case 1:
+                weeksName="周一";
+                break;
+            case 2:
+                weeksName="周二";
+                break;
+            case 3:
+                weeksName="周三";
+                break;
+            case 4:
+                weeksName="周四";
+                break;
+            case 5:
+                weeksName="周五";
+                break;
+            case 6:
+                weeksName="周六";
+                break;
+            case 7:
+                weeksName="周日";
+                break;
+        }
+        return weeksName;
+    }
+
+    public static int getWeekByDate(Date date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_WEEK)-1;
+    }
+
+    /**
+     * 当前时间，格式 HH:mm:ss
+     * @return 当前时间的标准形式字符串
+     */
+    public static String nowtime() {
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置格式
+        return df.format(new Date());
+    }
+
+    /**
+     * 判断时间是否在一个时间段内
+     * @param startDate
+     * @param endDate
+     * @param compareDate
+     * @return
+     */
+    public static boolean compareDateTo(String startDate,String endDate,String compareDate) {
+        Date start =  parseDate(startDate);
+        Date end = parseDate(endDate);
+        Date compare = parseDate(compareDate);
+        if(compare.compareTo(start) >= 0){//当 >= 0 , 表示 compare 大于或等于 start 继续和 end 比较 , 当 compare 小于 start 时，为 -1
+            if(compare.compareTo(end) <= 0){//当 <= 0 ,表示 compare 小于或等于 end 返回true , 当 compare 大于 end 时，为 1
+                return true;
+            }else return false;
+        }else return false;
+    }
+    public static boolean compareTimeTo(String startTime,String endTime,String compareTime) {
+        Date start =  parseTime(startTime);
+        Date end = parseTime(endTime);
+        Date compare = parseTime(compareTime);
+        if(compare.compareTo(start) >= 0){//当 >= 0 , 表示 compare 大于或等于 start 继续和 end 比较 , 当 compare 小于 start 时，为 -1
+            if(compare.compareTo(end) <= 0){//当 <= 0 ,表示 compare 小于或等于 end 返回true , 当 compare 大于 end 时，为 1
+                return true;
+            }else return false;
+        }else return false;
+    }
+
     public static void main(String[] args) {
         System.out.println("now() = [" + now() + "]");
         System.out.println("today() = [" + today() + "]");
@@ -277,5 +347,9 @@ public class DateUtil {
         System.out.println("yesterday() = [" + yesterday() + "]");
         System.out.println("lastWeek() = [" + lastWeek() + "]");
         System.out.println("lastMonth() = [" + lastMonth() + "]");
+        System.out.println("getWeekByDate() = [" + getWeekByDate(new Date()) + "]");
+        System.out.println("nowtime() = [" + nowtime() + "]");
+        System.out.println("compareDateTo() = [" + compareDateTo("2016-11-30","2017-11-30","2016-11-30") + "]");
+        System.out.println("compareTimeTo() = [" + compareTimeTo("12:00:00","18:00:00","12:00:00") + "]");
     }
 }

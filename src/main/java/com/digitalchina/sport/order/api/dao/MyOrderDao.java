@@ -27,14 +27,14 @@ public interface MyOrderDao {
 	int getCountByUserId(Map<String,Object> map);
 
 	/**
-	 *  一个订单下的所有子订单（条形码）详情
+	 *  一个订单下的所有子订单详情
 	 * @param map
 	 * @return
 	 */
 	List<Map<String,Object>> getTotalOrderByUserIdAndOrderId(Map<String,Object> map);
 
 	/**
-	 *  一个订单下的所有子订单（条形码）个数
+	 *  一个订单下的所有子订单个数
 	 * @param orderId
 	 * @return
 	 */
@@ -51,7 +51,7 @@ public interface MyOrderDao {
 	 * 新增订单基本信息
 	 * @param orderBaseInfo
 	 */
-	void inserOrderBaseInfo(Map<String,Object> orderBaseInfo);
+	int inserOrderBaseInfo(Map<String,Object> orderBaseInfo);
 
 	/**
 	 * 判断订单流水号是否重复
@@ -64,7 +64,7 @@ public interface MyOrderDao {
 	 * 新增子订单详情信息
 	 * @param orderContentDetail
 	 */
-	void inserOrderContentDetail(Map<String,Object> orderContentDetail);
+	int inserOrderContentDetail(Map<String,Object> orderContentDetail);
 
 	/**
 	 * 判断12位确认码是否重复
@@ -79,4 +79,35 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	String getClassifyBySubStadiumId(String subStadiumId);
+
+	/**
+	 * 根据确认码查询订单详情
+	 * @param orderCode
+	 * @return
+	 */
+	Map<String,Object> getOrderDetailByOrderCode(String orderCode);
+
+	/**
+	 * 取票=====>>更新字单
+	 * @param params
+	 */
+	int updateTake(Map<String,Object> params);
+
+	/**
+	 * 验票=====>>更新字单
+	 * @param params
+	 */
+	int updateCheck(Map<String,Object> params);
+
+	/**
+	 * 支付相关等=====>>更新字单内容
+	 * @param params
+	 */
+	int updateOrderContent(Map<String,Object> params);
+
+	/**
+	 * 支付相关等=====>>更新主订单内容
+	 * @param params
+	 */
+	int updateOrderBase(Map<String,Object> params);
 }
