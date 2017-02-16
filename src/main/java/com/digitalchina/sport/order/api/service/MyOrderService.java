@@ -145,19 +145,29 @@ public class MyOrderService {
 
     /**
      * 支付相关等=====>>更新字单
-     * @param params
-     */
-    public boolean updateOrderContent(Map<String,Object> params)throws Exception{
-        if (myOrderDao.updateOrderContent(params)>0){
-            return true;
-        }else return false;
-    }
-
-    /**
      * 支付相关等=====>>更新主订单
      * @param params
      */
-    public int updateOrderBase(Map<String,Object> params)throws Exception{
+    public int updateOrder(Map<String,Object> params)throws Exception{
+        String orderNumber = params.get("orderNumber").toString();
+        OrderBaseInfo ob = myOrderDao.getOrderByOrderNumer(orderNumber);
+        if(ob != null){
+            Map<String,Object> map = new HashMap<String, Object>();
+            map.put("orderId",ob.getId());
+            map.put("userId",ob.getUserId());
+            List<Map<String,Object>> list = myOrderDao.getTotalOrderByUserIdAndOrderId(map);
+            if(list.size()>0){
+                for (int i=0 ;i<list.size();i++){
+                    Map<String,Object> ocmap = new HashMap<String, Object>();
+                    map.put("status",params.get("status").toString());
+                    map.put("orderCode",list.get(i).get("order_code"));
+                    if(!list.get(i).get("status").equals("4")){//订单状态为4退单的时候，不更新该订单状态
+                        myOrderDao.updateOrderContent(ocmap);
+                    }
+                }
+            }
+        }
+        myOrderDao.updateOrderContent(params);
         return myOrderDao.updateOrderBase(params);
     }
 
@@ -539,4 +549,5 @@ public class MyOrderService {
 
         return compareResult;
     }
+
 }

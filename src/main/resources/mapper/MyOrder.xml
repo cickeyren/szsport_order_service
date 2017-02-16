@@ -201,4 +201,14 @@
 		WHERE
 			ob.order_number = #{orderNumber}
 	</update>
+
+	<!-- 订单流水号查询订单 -->
+	<select id="getOrderByOrderNumer" parameterType="String" resultType="OrderBaseInfo">
+		SELECT
+			*
+		FROM
+			order_base_info ob
+		WHERE
+			ob.order_number=#{orderNumber}
+	</select>
 </mapper>

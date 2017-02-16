@@ -110,4 +110,11 @@ public interface MyOrderDao {
 	 * @param params
 	 */
 	int updateOrderBase(Map<String,Object> params);
+
+	/**
+	 *  订单流水号查询订单
+	 * @param orderNumber
+	 * @return
+	 */
+	OrderBaseInfo getOrderByOrderNumer(String orderNumber);
 }
