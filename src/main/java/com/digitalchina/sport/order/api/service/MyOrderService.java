@@ -8,6 +8,7 @@ import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -148,6 +149,7 @@ public class MyOrderService {
      * 支付相关等=====>>更新主订单
      * @param params
      */
+    @Transactional
     public int updateOrder(Map<String,Object> params)throws Exception{
         String orderNumber = params.get("orderNumber").toString();
         OrderBaseInfo ob = myOrderDao.getOrderByOrderNumer(orderNumber);
@@ -167,7 +169,6 @@ public class MyOrderService {
                 }
             }
         }
-        myOrderDao.updateOrderContent(params);
         return myOrderDao.updateOrderBase(params);
     }
 

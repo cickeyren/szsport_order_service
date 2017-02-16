@@ -1,9 +1,6 @@
 package com.digitalchina.sport.order.api.model;
 
 import java.io.Serializable;
-
-import com.digitalchina.base.util.DataUtil;
-
 /**
  * 支付宝订单
  *
@@ -79,10 +76,6 @@ public class AlipayTradeModel implements Serializable {
 	 * 创建时间
 	 */
 	private String createTime;
-
-	public static long getSerialVersionUID() {
-		return serialVersionUID;
-	}
 
 	public String getOutTradeNo() {
 		return outTradeNo;

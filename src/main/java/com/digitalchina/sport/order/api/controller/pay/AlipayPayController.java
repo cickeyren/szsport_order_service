@@ -3,8 +3,10 @@ package com.digitalchina.sport.order.api.controller.pay;
 import com.alipay.util.AlipayNotify;
 import com.digitalchina.sport.order.api.dao.PayTradeDao;
 import com.digitalchina.sport.order.api.model.AlipayTradeModel;
+import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,8 @@ import java.util.Map;
 public class AlipayPayController {
     @Autowired
     private PayTradeDao payTradeDao;
+    @Autowired
+    private MyOrderService orderService;
 //    @Autowired
 //    private UserDao userDao;
     private Log logger = LogFactory.getLog(AlipayPayController.class);
@@ -119,13 +123,11 @@ public class AlipayPayController {
                             logger.error("========================更新支付状态发生错误=================");
                         }
                         //更新用户状态
-                        Map<String, String> orderMap = new HashMap<String,String>();
-                        userMap.put("idcard", tradeVo.getId_no());
-                        userMap.put("jclevel", "04");//置为押金已付款
-                        userMap.put("userID", tradeVo.getUser_id());
-                        userMap.put("outTradeNo", out_trade_no);
-                        userMap.put("payMoney", total_fee);
-                        if(userDao.updUserInfo(userMap) == 0) {
+                        Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
+                        orderUpdateMap.put("payType","1");
+                        orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
+                        orderUpdateMap.put("payPrice", total_fee);
+                        if(orderService.updateOrder(orderUpdateMap) > 0) {
                             logger.error("========================更新用户状态发生错误=================");
                         }
                     } catch (Exception e) {
