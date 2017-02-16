@@ -15,4 +15,6 @@ public class PropertyConfig {
     public  String SPORT_RESOURCE_URL;
     @Value("${sportresourcemgr.url}")
     public  String SPORT_RESOURCEMGR_URL;
+    @Value("${alipaynotifyurl.url}")
+    public  String ALIPAY_NOTIFY_URL;
 }

@@ -1,22 +1,30 @@
 package com.digitalchina.sport.order.api.controller.pay;
 
+import com.alipay.api.*;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.config.AlipayConfig;
 import com.alipay.util.AlipayNotify;
+import com.digitalchina.common.RtnData;
+import com.digitalchina.common.utils.DateUtil;
+import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.PayTradeDao;
 import com.digitalchina.sport.order.api.model.AlipayTradeModel;
 import com.digitalchina.sport.order.api.service.MyOrderService;
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 支付宝回调通知控制器
@@ -32,6 +40,9 @@ public class AlipayPayController {
     private PayTradeDao payTradeDao;
     @Autowired
     private MyOrderService orderService;
+    @Autowired
+    private PropertyConfig config;
+    private Gson gson = new Gson();
 //    @Autowired
 //    private UserDao userDao;
     private Log logger = LogFactory.getLog(AlipayPayController.class);
@@ -125,7 +136,7 @@ public class AlipayPayController {
                         //更新用户状态
                         Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
                         orderUpdateMap.put("payType","1");
-                        orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
+                         orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
                         orderUpdateMap.put("payPrice", total_fee);
                         if(orderService.updateOrder(orderUpdateMap) > 0) {
                             logger.error("========================更新用户状态发生错误=================");
@@ -154,4 +165,48 @@ public class AlipayPayController {
         out.flush();
         out.close();
     }
+
+    /**
+     * 根据订单ID生成支付宝相关支付信息
+     * @param orderNumber
+     * @throws IOException
+     */
+    @RequestMapping(value = "/returnPayInfo.json")
+    @ResponseBody
+    public RtnData<Object>  returnPay(@RequestParam(required = true) String orderNumber) throws IOException {
+        Map<String,Object> orderAndMerchantInfo =  orderService.getOrderAndMpByOrderNumer(orderNumber);
+        if(StringUtils.isEmpty(orderNumber) || null == orderAndMerchantInfo) {
+            return RtnData.fail(orderNumber + "订单不存在!");
+        }
+
+        String privateKey = (String)orderAndMerchantInfo.get("payKey");
+        String reqStr = "app_id=" + orderAndMerchantInfo.get("app_id")+"&";
+        LinkedHashMap<String,Object> bizContentMap = new LinkedHashMap<String,Object>();
+        bizContentMap.put("timeout_express","30m");
+        bizContentMap.put("seller_id",orderAndMerchantInfo.get("partnerId"));
+        bizContentMap.put("product_code","QUICK_MSECURITY_PAY");
+        bizContentMap.put("total_amount",orderAndMerchantInfo.get("sell_price"));
+        bizContentMap.put("subject","subject");
+        bizContentMap.put("body","body");
+        bizContentMap.put("out_trade_no",orderNumber);
+        String bizContent = gson.toJson(bizContentMap);
+        reqStr = reqStr + "biz_content=" + bizContent +"&charset=" + AlipayConfig.input_charset +"&format=json" +
+                "&method=alipay.trade.app.pay" +
+                "&notify_url="+config.ALIPAY_NOTIFY_URL +"&sign_type="+orderAndMerchantInfo.get("signType")+
+                "&timestamp="+ DateUtil.formatDateTime(new Date(System.currentTimeMillis())) +"&version=1.0" ;
+
+        if("RSA".equals(orderAndMerchantInfo.get("signType")))   {
+            try {
+                reqStr = AlipaySignature.rsaSign(reqStr,privateKey,AlipayConfig.input_charset);
+            } catch (AlipayApiException e) {
+                e.printStackTrace();
+            }
+        }
+        //AlipaySignature.rsa256CheckContent()
+
+//        AlipayRequest
+
+       // AlipayClient alipayClient = new DefaultAlipayClient(AlipayConfig.openApi,app_id,private_key,"json",AlipayConfig.input_charset,AlipayConfig.ali_public_key,sign_type);
+        return null;
     }
+}
