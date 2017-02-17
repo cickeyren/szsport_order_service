@@ -140,11 +140,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>alipay.sdk</groupId>
             <artifactId>sdk</artifactId>
             <version>1.4</version>
-        </dependency>
+        </dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.digitalchina</groupId>-->
             <!--<artifactId>alipay-sdk</artifactId>-->

@@ -271,7 +271,9 @@ public class MyOrderService {
         orderContentDetail.put("costPrice",yearStrategyDetail.get("costPrice"));//成本价
         orderContentDetail.put("sellPrice",yearStrategyDetail.get("sellPrice"));//售价
         orderContentDetail.put("totalNumber",yearStrategyDetail.get("checkTicketAvailableTimes"));//总可用次数（-1表示不限次数)
+        orderContentDetail.put("remainNumber",yearStrategyDetail.get("checkTicketAvailableTimes"));//
         orderContentDetail.put("everydayNumber",yearStrategyDetail.get("checkDailyLimitedTimes"));//每日限次
+        orderContentDetail.put("everydayRemainNumber",yearStrategyDetail.get("checkDailyLimitedTimes"));//
         //可用日期限制0：每日 1：每周
         String dateLimit = getTimeLimit(map).get("dateLimit").toString();
         orderContentDetail.put("dateLimit",dateLimit);
@@ -344,29 +346,39 @@ public class MyOrderService {
      * @param map
      * @return
      */
-    public int updateCheckByMap(Map<String,Object> map){
+    public int updateCheckByMap(Map<String,Object> map) throws Exception{
         Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
-        String totalNumber = orderDetails.get("total_number").toString();
-        String remainNumber = orderDetails.get("remain_number").toString();
-        String everydayNumber = orderDetails.get("everyday_number").toString();
-        String everydayRemainNumber = orderDetails.get("everyday_remain_number").toString();
-        if(StringUtil.isEmpty(totalNumber)){
-            int total = Integer.parseInt(totalNumber);
-            int remain = Integer.parseInt(remainNumber);
-            int everyday = Integer.parseInt(everydayNumber);
-            int everydayRemain = Integer.parseInt(everydayRemainNumber);
-            if(total>0){
-                if(checkRemainTime(remainNumber,everydayRemainNumber).equals("0")){
-                    remain = remain -1;
-                    map.put("remainNumber",remain);
+        if(!StringUtil.isEmpty(orderDetails.get("total_number"))){
+            String totalNumber = orderDetails.get("total_number").toString();
+            if(!StringUtil.isEmpty(totalNumber)){
+                int total = Integer.parseInt(totalNumber);
+                if(!StringUtil.isEmpty(orderDetails.get("remain_number"))){
+                    String remainNumber = orderDetails.get("remain_number").toString();
+                    int remain = Integer.parseInt(remainNumber);
+                    if(total>0){
+                        if(checkRemainTime(remainNumber)){
+                            remain = remain -1;
+                            map.put("remainNumber",remain);
+                        }
+                    }//total=-1不限次数不需要修改
                 }
-            }//total=-1不限次数不需要修改
-            if(everyday>0){
-                if(checkRemainTime(remainNumber,everydayRemainNumber).equals("0")) {
-                    everydayRemain = everydayRemain - 1;
-                    map.put("everydayRemainNumber", everydayRemain);
+            }
+        }
+        if(!StringUtil.isEmpty(orderDetails.get("everyday_number"))){
+            String everydayNumber = orderDetails.get("everyday_number").toString();
+            if(!StringUtil.isEmpty(everydayNumber)){
+                int everyday = Integer.parseInt(everydayNumber);
+                if(!StringUtil.isEmpty(orderDetails.get("everyday_remain_number"))){
+                    String everydayRemainNumber = orderDetails.get("everyday_remain_number").toString();
+                    int everydayRemain = Integer.parseInt(everydayRemainNumber);
+                    if(everyday>0){
+                        if(checkRemainTime(everydayRemainNumber)) {
+                            everydayRemain = everydayRemain - 1;
+                            map.put("everydayRemainNumber", everydayRemain);
+                        }
+                    }//everyday=-1不限次数不需要修改
                 }
-            }//everyday=-1不限次数不需要修改
+            }
         }
         return myOrderDao.updateCheck(map);
     }
@@ -376,96 +388,195 @@ public class MyOrderService {
      * @param
      * @return
      */
-    public Map<String,Object> checkTicket(String orderCode){
+    public Map<String,Object> checkTicket(String orderCode) throws Exception{
         Map<String,Object> retMap = new HashMap<String, Object>();
         Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
         String dqtime = DateUtil.nowtime();//当前时间
         String dqdate = DateUtil.today();//当前日期
         //验票时间是否在有效期内:start_time<dqdate<end_time
-        String startDate = orderDetailMap.get("start_time").toString();
-        String endDate = orderDetailMap.get("end_time").toString();
-        if(!StringUtil.isEmpty(startDate)&&!StringUtil.isEmpty(endDate)){
-            if(DateUtil.compareDateTo(startDate,endDate,dqdate)){//公用的日期对比方法
-                //验证验票时间是否在可用日期内
-                String date_limit = orderDetailMap.get("date_limit").toString();
-                if(!StringUtil.isEmpty(date_limit)){
-                    String[] limitTypes = date_limit.split(":");
-                    if(limitTypes.length>0){
-                        String limitType = limitTypes[0];
-                        if (limitType.equals("1")){//type=1表示每周
-                            String[] limitDays = limitTypes[1].split(",");
-                            int todayWeek = DateUtil.getWeekByDate(DateUtil.parseDate(dqdate));//获取当前日期的周数
-                            //比较周数是否在可用时间的周数内
-                            if(StringUtil.isContainSpcifyStr(todayWeek+"",limitDays)){
-                                //验证验票时间是否在可用日期内
-                                if (checkTime(dqtime,orderDetailMap.get("time_limit").toString())){
-                                    //验证验票是否在不可用日期内
-                                    if(!checkDate(dqdate,orderDetailMap.get("forbidden_date").toString())){
-                                        //是否超过当日使用次数=====是否超过剩余次数
-                                        //1=超过剩余次数0=验证通过2=超过当日使用次数
-                                        String returnNumber = checkRemainTime(orderDetailMap.get("remain_number").toString(),orderDetailMap.get("everyday_remain_number").toString());
-                                        if(returnNumber.equals("1")){
-                                            retMap.put("returnKey","false");
-                                            retMap.put("message","超过剩余次数");
-                                        }else if(returnNumber.equals("2")){
-                                            retMap.put("returnKey","false");
-                                            retMap.put("message","超过当日使用次数");
-                                        }else if(returnNumber.equals("0")){
-                                            retMap.put("returnKey","true");
-                                            retMap.put("message","验证通过");
-                                        }
-                                    }else{
-                                        retMap.put("returnKey","false");
-                                        retMap.put("message","验票时间在不可用日期内");
-                                    }
-                                }else {
-                                    //验票时间不在可用时间内
-                                    retMap.put("returnKey","false");
-                                    retMap.put("message","验票时间不在可用时间内");
-                                }
-                            }else {
-                                //验票时间不在可用时间内
-                                retMap.put("returnKey","false");
-                                retMap.put("message","验票时间不在可用时间内");
-                            }
-                        }else {
-                            //type=0表示每日,不用判断周数
-                            //验证验票时间是否在可用日期内
-                            if (checkTime(dqtime,orderDetailMap.get("time_limit").toString())){
-                                //验证验票是否在不可用日期内
-                                if(!checkDate(dqdate,orderDetailMap.get("forbidden_date").toString())){
-                                    //是否超过当日使用次数=====是否超过剩余次数
-                                    String remain_number = orderDetailMap.get("remain_number").toString();
-                                    String everyday_remain_number = orderDetailMap.get("forbidden_date").toString();
-                                    //1=超过剩余次数0=验证通过2=超过当日使用次数
-                                    String returnNumber = checkRemainTime(remain_number,everyday_remain_number);
-                                    if(returnNumber.equals("1")){
-                                        retMap.put("returnKey","false");
-                                        retMap.put("message","超过剩余次数");
-                                    }else if(returnNumber.equals("2")){
-                                        retMap.put("returnKey","false");
-                                        retMap.put("message","超过当日使用次数");
-                                    }else if(returnNumber.equals("0")){
-                                        retMap.put("returnKey","true");
-                                        retMap.put("message","验证通过");
-                                    }
-                                }else{
-                                    retMap.put("returnKey","false");
-                                    retMap.put("message","验票时间在不可用日期内");
-                                }
-                            }else {
-                                //验票时间不在可用时间内
-                                retMap.put("returnKey","false");
-                                retMap.put("message","验票时间不在可用时间内");
-                            }
-                        }
-                    }
+        String startDate = "";
+        String endDate = "";
+        //验票时间是否在有效期内:start_time<dqdate<end_time
+        if(!StringUtil.isEmpty(orderDetailMap.get("start_time")) && !StringUtil.isEmpty(orderDetailMap.get("end_time"))){
+            startDate = orderDetailMap.get("start_time").toString();
+            endDate = orderDetailMap.get("end_time").toString();
+            if(!StringUtil.isEmpty(startDate)&&!StringUtil.isEmpty(endDate)){
+                if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+                    //验证有效期结束=========>>进入下一步验证
+                    retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                    retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
+                }else {
+                    //验票时间不在有效期内
+                    retMap.put("returnKey","false");
+                    retMap.put("message","验票时间不在有效期内");
                 }
             }else {
-                //验票时间不在有效期内
-                retMap.put("returnKey","false");
-                retMap.put("message","验票时间不在有效期内");
+                //没有有效期限制。========>>进入下一步验证
+                retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
             }
+        }else {
+            //没有有效期限制。========>>进入下一步验证
+            retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
+            retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+
+    /**
+     * //验证验票是否在不可用日期内
+     * @param dqtime
+     * @param dqdate
+     * @param orderDetailMap
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> CheckForbidden(String dqtime,String dqdate,Map<String,Object> orderDetailMap) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //验票时间在屏蔽内:forbiddenDate ====  dqdate
+        if(!StringUtil.isEmpty(orderDetailMap.get("forbidden_date"))){
+            if(!checkDate(dqdate,orderDetailMap.get("forbidden_date").toString())){
+                //不在屏蔽日期内 ==========>>下一步
+                retMap.put("returnKey",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                retMap.put("message",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("message"));
+            }else {
+                //返回true表示在不可用日期段内
+                retMap.put("returnKey","false");
+                retMap.put("message","验票时间不在可用时间内");
+            }
+        }else {
+            //没有屏蔽日期 ==========>>下一步
+            retMap.put("returnKey",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("returnKey"));
+            retMap.put("message",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("message"));
+        }
+
+        System.out.println(retMap);
+        return retMap;
+    }
+
+    /**
+     * 验票时间是否在可用日期内
+     * @param dqtime
+     * @param dqdate
+     * @param orderDetailMap
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> CheckCanUseDate(String dqtime,String dqdate,Map<String,Object> orderDetailMap) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //验票时间是否在可用日期内
+        if(!StringUtil.isEmpty(orderDetailMap.get("date_limit"))){
+            String date_limit = orderDetailMap.get("date_limit").toString();
+            if(!StringUtil.isEmpty(date_limit)){
+                String[] limitTypes = date_limit.split(":");
+                if(limitTypes.length>0){
+                    String limitType = limitTypes[0];
+                    if (limitType.equals("1")) {
+                        //type=1表示每周
+                        String[] limitDays = limitTypes[1].split(",");
+                        if(limitDays.length>0){
+                            int todayWeek = DateUtil.getWeekByDate(DateUtil.parseDate(dqdate));//获取当前日期的周数
+                            //比较周数是否在可用时间的周数内
+                            if (StringUtil.isContainSpcifyStr(todayWeek + "", limitDays)) {
+                                //验证可用日期通过==============>>下一步
+                                retMap.put("returnKey",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                                retMap.put("message",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("message"));
+                            }
+                        }else {
+                            retMap.put("returnKey","false");
+                            retMap.put("message","没有可用日期,请核实!");
+                        }
+                    }else {
+                        //type=0表示每日，不用判断周数==============>>下一步
+                        retMap.put("returnKey",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                        retMap.put("message",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("message"));
+                    }
+                }else {
+                    retMap.put("returnKey","false");
+                    retMap.put("message","没有可用日期,请核实!");
+                }
+            }else {
+                retMap.put("returnKey","false");
+                retMap.put("message","没有可用日期,请核实!");
+            }
+        }else {
+            retMap.put("returnKey","false");
+            retMap.put("message","没有可用日期,请核实!");
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+
+    /**
+     * 验证验票时间是否在可用时间段内
+     * @param dqtime
+     * @param dqdate
+     * @param orderDetailMap
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> CheckCanUseTime(String dqtime,String dqdate,Map<String,Object> orderDetailMap) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //验证验票时间是否在可用时间段内
+        if(!StringUtil.isEmpty(orderDetailMap.get("time_limit"))) {
+            if (checkTime(dqtime, orderDetailMap.get("time_limit").toString())) {
+                //验证验票在可用时间段内=============>>下一步
+                retMap.put("returnKey",checkNumber(dqtime,dqdate,orderDetailMap).get("returnKey"));
+                retMap.put("message",checkNumber(dqtime,dqdate,orderDetailMap).get("message"));
+            }else {
+                //验证验票不在可用时间段内
+                retMap.put("returnKey","false");
+                retMap.put("message","验票时间不在可用时间段内");
+            }
+
+        }else {
+            //没有可用时间段限制 ======>>下一步
+            retMap.put("returnKey",checkNumber(dqtime,dqdate,orderDetailMap).get("returnKey"));
+            retMap.put("message",checkNumber(dqtime,dqdate,orderDetailMap).get("message"));
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+
+    public Map<String,Object> checkNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //是否超过剩余次数
+        if(!StringUtil.isEmpty(orderDetailMap.get("remain_number"))){
+            String remain_number = orderDetailMap.get("remain_number").toString();
+            if(remain_number.equals("-1")){//-1表示不限次数
+                if(!StringUtil.isEmpty(orderDetailMap.get("everyday_remain_number"))){
+                    String everyday_remain_number = orderDetailMap.get("everyday_remain_number").toString();
+                    if(!everyday_remain_number.equals("-1")){//-1表示不限次数
+                        if (checkRemainTime(everyday_remain_number)){
+                            //是否超过当日使用次数
+                            retMap.put("returnKey","true");
+                            retMap.put("message","验证通过!");
+                        }else {
+                            retMap.put("returnKey","false");
+                            retMap.put("message","超过每日限次!");
+                        }
+                    }else {
+                        //-1表示不限次数，通过
+                        retMap.put("returnKey","true");
+                        retMap.put("message","验证通过!");
+                    }
+                }else{
+                    retMap.put("returnKey","false");
+                    retMap.put("message","每日限次有误,请联系管理员!");
+                }
+            }else {
+                if (checkRemainTime(remain_number)){//是否超过剩余次数
+                    retMap.put("returnKey","true");
+                    retMap.put("message","验证通过!");
+                }else {
+                    retMap.put("returnKey","false");
+                    retMap.put("message","超过剩余次数!");
+                }
+            }
+        }else{
+            retMap.put("returnKey","false");
+            retMap.put("message","剩余次数有误,请联系管理员!");
         }
         System.out.println(retMap);
         return retMap;
@@ -522,29 +633,17 @@ public class MyOrderService {
     /**
      * 次数限制判断
      * @param remain_number
-     * @param everyday_remain_number
-     * @return 1=超过剩余次数0=验证通过2=超过当日使用次数3=其他错误
+     * @return
      */
-    public String checkRemainTime(String remain_number,String everyday_remain_number){
-        String compareResult = "";
-        if(!StringUtil.isEmpty(remain_number) && !StringUtil.isEmpty(everyday_remain_number)){
+    public boolean checkRemainTime(String remain_number){
+        boolean compareResult = false;
+        if(!StringUtil.isEmpty(remain_number)){
             int remain = Integer.parseInt(remain_number);
-            int everydayRemain = Integer.parseInt(everyday_remain_number);
-            //是否超过当日使用次数
-            if(everydayRemain > 0){
+            if(remain > 0){
                 //是否超过剩余次数
-                if(remain < 0){
-                    compareResult = "1";//1=超过剩余次数
-                }else {
-                    compareResult = "0";//0=验证通过
-                }
-            }else {
-                compareResult = "2";//2=超过当日使用次数
+                compareResult = true;//未超过
             }
-        }else {
-            compareResult = "3";//3=其他错误
         }
-
         return compareResult;
     }
 
