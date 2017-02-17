@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
+import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,8 +206,17 @@ public class MyOrderController {
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
                 Map<String,Object> orderDetailsMap = myOrderService.getOrderDetailByOrderCode(orderCode);
-                if(orderDetailsMap.get("take_status").equals("1")){
-                    return RtnData.fail("该票已取过票,请核实!");
+                if(!StringUtil.isEmpty(orderDetailsMap.get("take_status"))){
+                    if(orderDetailsMap.get("take_status").equals("1")){
+                        return RtnData.fail("该票已取过票,请核实!");
+                    }else {
+                        if (myOrderService.updateTake(map)){
+                            retMap.put("orderCode",orderCode);
+                            return RtnData.ok(retMap,"取票成功，取票状态更新成功!");
+                        }else {
+                            return RtnData.fail("取票状态更新状态失败!");
+                        }
+                    }
                 }else {
                     if (myOrderService.updateTake(map)){
                         retMap.put("orderCode",orderCode);
@@ -215,7 +225,6 @@ public class MyOrderController {
                         return RtnData.fail("取票状态更新状态失败!");
                     }
                 }
-
             }else {
                 return RtnData.fail("没有查询到符合条件的订单记录!");
             }
@@ -240,8 +249,27 @@ public class MyOrderController {
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
                 Map<String,Object> orderDetailsMap = myOrderService.getOrderDetailByOrderCode(orderCode);
-                if(orderDetailsMap.get("check_status").equals("1")){
-                    return RtnData.fail("该票已验过票,请核实!");
+                if(!StringUtil.isEmpty(orderDetailsMap.get("check_status"))){
+                    if(!orderDetailsMap.get("check_status").equals("1")){
+                        //根据验票规则验票
+                        Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                        checkReturnMap = myOrderService.checkTicket(orderCode);
+                        retMap.put("checkReturnMap",checkReturnMap);
+                        String returnKey = checkReturnMap.get("returnKey").toString();
+                        if (returnKey.equals("true")){
+                            Map<String,Object> checkParam = new HashMap<String, Object>();
+                            checkParam.put("orderCode",orderCode);
+                            checkParam.put("checkStatus","1");//验票状态改为1，已验票
+                            checkParam.put("checkType",checkType);
+                            if(myOrderService.updateCheckByMap(checkParam) >0){
+                                return RtnData.ok(retMap,"验票状态修改成功!");
+                            }else {
+                                return RtnData.fail(retMap,"验票状态修改失败!");
+                            }
+                        }else {
+                            return RtnData.fail(retMap,"验票失败!");
+                        }
+                    }else  return RtnData.fail("该票已验过票,请核实!");
                 }else {
                     //根据验票规则验票
                     Map<String,Object> checkReturnMap = new HashMap<String, Object>();
@@ -262,7 +290,6 @@ public class MyOrderController {
                         return RtnData.fail(retMap,"验票失败!");
                     }
                 }
-
             }else {
                 return RtnData.fail("没有查询到符合条件的订单记录!");
             }

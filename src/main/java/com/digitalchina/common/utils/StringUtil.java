@@ -387,8 +387,20 @@ public final class StringUtil {
 	public static boolean isNotIn(String str,String[] scaleStr){
 		return !isIn(str,scaleStr);
 	}
-	
-	
+	/**
+	 * 校验对象是否为空
+	 * @param obj
+	 * @return
+	 */
+	public static boolean isEmpty(Object obj){
+		if(obj==null || "".equals(obj)){
+			return true;
+		}
+
+		return false;
+	}
+
+
 	/**
 	 * 以pStrBas为模板，随机生成长度为pILen的随机字符串
 	 * 
