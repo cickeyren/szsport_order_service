@@ -152,15 +152,37 @@
 	<!-- 根据确认码查询订单详情 -->
 	<select id="getOrderDetailByOrderCode" parameterType="String" resultType="java.util.HashMap">
 		SELECT
-			ob.id as order_base_id,
-			ob.stadium_name,ob.sub_stadium_name,ob.classify,
-			ob.ticket_id,ob.ticket_name,ob.ticket_type,
-			ob.user_id,ob.user_name,ob.user_tel,
-			ob.pay_acount,ob.pay_time,ob.pay_type,ob.pay_price,
-			oc.start_time,oc.end_time,
-			oc.remain_number,oc.total_number,oc.everyday_number,oc.everyday_remain_number,
-			oc.date_limit,oc.time_limit,oc.forbidden_date,oc.hours_limit,
-			oc.`status`,oc.check_time,oc.sell_price,oc.cost_price
+			ob.id AS order_base_id,
+			ob.stadium_name,
+			ob.sub_stadium_name,
+			ob.classify,
+			ob.ticket_id,
+			ob.ticket_name,
+			ob.ticket_type,
+			ob.user_id,
+			ob.user_name,
+			ob.user_tel,
+			ob.pay_acount,
+			ob.pay_time,
+			ob.pay_type,
+			ob.pay_price,
+			oc.start_time,
+			oc.end_time,
+			oc.remain_number,
+			oc.total_number,
+			oc.everyday_number,
+			oc.everyday_remain_number,
+			oc.date_limit,
+			oc.time_limit,
+			oc.forbidden_date,
+			oc.hours_limit,
+			oc.`status`,
+			oc.take_status,
+			oc.take_time,
+			oc.check_status,
+			oc.check_time,
+			oc.sell_price,
+			oc.cost_price
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON oc.order_base_id = ob.id
@@ -216,14 +238,30 @@
 	<!-- 订单流水号查询商户和订单内容 -->
 	<select id="getOrderAndMpByOrderNumer" parameterType="String" resultType="java.util.HashMap">
 		SELECT
-			ob.id AS order_base_id,ob.order_number,
-			ob.stadium_name,ob.sub_stadium_name,
-			ob.classify,ob.person_kind,
-			ob.ticket_id,ob.ticket_name,ob.ticket_type,
-			ob.order_time,ob.order_channel,
-			ob.`status`,ob.cost_price,ob.sell_price,
-			ob.user_id,ob.user_name,ob.user_tel,ob.son_orders,
-			mp.merchant_id,mp.pay_way,mp.app_id,mp.pay_key,mp.sign_type
+			ob.id AS orderBaseId,
+			ob.order_number AS orderNumber,
+			ob.stadium_name AS stadiumName,
+			ob.sub_stadium_name AS subStadiumName,
+			ob.classify,
+			ob.person_kind AS personKind,
+			ob.ticket_id AS ticketId,
+			ob.ticket_name AS ticketName,
+			ob.ticket_type AS ticketType,
+			ob.order_time AS orderTime,
+			ob.order_channel AS orderChannel,
+			ob.`status`,
+			ob.cost_price AS costPrice,
+			ob.sell_price AS sellPrice,
+			ob.user_id AS userId,
+			ob.user_name AS userName,
+			ob.user_tel AS userTel,
+			ob.son_orders AS sonOrders,
+			mp.merchant_id AS merchantId,
+			mp.pay_way AS payWay,
+			mp.app_id AS appId,
+			mp.pay_key AS payKey,
+			mp.partner_id AS partnerId,
+			mp.sign_type AS signType
 		FROM
 			order_base_info ob
 		LEFT JOIN merchant_pay_account mp ON mp.merchant_id = ob.merchant_id

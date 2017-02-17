@@ -304,12 +304,14 @@ public class MyOrderService {
                 dateLimit = type+":"+yearStrategyDetail.get("checkLimitedWeekDetails");
             }
         }
-        for (int i=0;i<checkUseableTimeList.size();i++){
-            Map<String,Object> useableTime = checkUseableTimeList.get(i);
-            //返回格式09:00:00$11:00:00,12:11:00$18:00:00
-            timeLimit += useableTime.get("useableStartTime")+"$"+useableTime.get("useableEndTime")+",";
+        if(checkUseableTimeList.size()>0){
+            for (int i=0;i<checkUseableTimeList.size();i++){
+                Map<String,Object> useableTime = checkUseableTimeList.get(i);
+                //返回格式09:00:00$11:00:00,12:11:00$18:00:00
+                timeLimit += useableTime.get("useableStartTime")+"$"+useableTime.get("useableEndTime")+",";
+            }
+            timeLimit = timeLimit.substring(0, timeLimit.length() - 1);
         }
-        timeLimit = timeLimit.substring(0, timeLimit.length() - 1);
         Map<String,Object> retMap = new HashMap<String, Object>();
         retMap.put("dateLimit",dateLimit);
         retMap.put("timeLimit",timeLimit);
@@ -403,27 +405,27 @@ public class MyOrderService {
                                         //1=超过剩余次数0=验证通过2=超过当日使用次数
                                         String returnNumber = checkRemainTime(orderDetailMap.get("remain_number").toString(),orderDetailMap.get("everyday_remain_number").toString());
                                         if(returnNumber.equals("1")){
-                                            retMap.put("result","false");
+                                            retMap.put("returnKey","false");
                                             retMap.put("message","超过剩余次数");
                                         }else if(returnNumber.equals("2")){
-                                            retMap.put("result","false");
+                                            retMap.put("returnKey","false");
                                             retMap.put("message","超过当日使用次数");
                                         }else if(returnNumber.equals("0")){
-                                            retMap.put("result","true");
+                                            retMap.put("returnKey","true");
                                             retMap.put("message","验证通过");
                                         }
                                     }else{
-                                        retMap.put("result","false");
+                                        retMap.put("returnKey","false");
                                         retMap.put("message","验票时间在不可用日期内");
                                     }
                                 }else {
                                     //验票时间不在可用时间内
-                                    retMap.put("result","false");
+                                    retMap.put("returnKey","false");
                                     retMap.put("message","验票时间不在可用时间内");
                                 }
                             }else {
                                 //验票时间不在可用时间内
-                                retMap.put("result","false");
+                                retMap.put("returnKey","false");
                                 retMap.put("message","验票时间不在可用时间内");
                             }
                         }else {
@@ -438,22 +440,22 @@ public class MyOrderService {
                                     //1=超过剩余次数0=验证通过2=超过当日使用次数
                                     String returnNumber = checkRemainTime(remain_number,everyday_remain_number);
                                     if(returnNumber.equals("1")){
-                                        retMap.put("result","false");
+                                        retMap.put("returnKey","false");
                                         retMap.put("message","超过剩余次数");
                                     }else if(returnNumber.equals("2")){
-                                        retMap.put("result","false");
+                                        retMap.put("returnKey","false");
                                         retMap.put("message","超过当日使用次数");
                                     }else if(returnNumber.equals("0")){
-                                        retMap.put("result","true");
+                                        retMap.put("returnKey","true");
                                         retMap.put("message","验证通过");
                                     }
                                 }else{
-                                    retMap.put("result","false");
+                                    retMap.put("returnKey","false");
                                     retMap.put("message","验票时间在不可用日期内");
                                 }
                             }else {
                                 //验票时间不在可用时间内
-                                retMap.put("result","false");
+                                retMap.put("returnKey","false");
                                 retMap.put("message","验票时间不在可用时间内");
                             }
                         }
@@ -461,7 +463,7 @@ public class MyOrderService {
                 }
             }else {
                 //验票时间不在有效期内
-                retMap.put("result","false");
+                retMap.put("returnKey","false");
                 retMap.put("message","验票时间不在有效期内");
             }
         }
@@ -546,6 +548,11 @@ public class MyOrderService {
         return compareResult;
     }
 
+    /**
+     * 订单流水号查询商户和订单内容
+     * @param orderNumber
+     * @return
+     */
     public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber){
         return myOrderDao.getOrderAndMpByOrderNumer(orderNumber);
     }
