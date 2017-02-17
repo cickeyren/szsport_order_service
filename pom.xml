@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com</groupId>
+    <groupId>com.digitalchina</groupId>
     <artifactId>szsport_order_service</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
@@ -140,7 +140,18 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>alipay.sdk</groupId>
+            <artifactId>sdk</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.digitalchina</groupId>-->
+            <!--<artifactId>alipay-sdk</artifactId>-->
+            <!--<version>1.0</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/lib/alipay-sdk-java20170209153318.jar</systemPath>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
@@ -203,6 +214,13 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <!--<resource>-->
+                <!--<targetPath>lib/</targetPath>-->
+                <!--<directory>lib/</directory>-->
+                <!--<includes>-->
+                    <!--<include>*</include>-->
+                <!--</includes>-->
+            <!--</resource>-->
         </resources>
         <plugins>
             <plugin>
