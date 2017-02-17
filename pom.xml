@@ -141,17 +141,10 @@
             <version>2.5</version>
         </dependency>
         <dependency>
-            <groupId>alipay.sdk</groupId>
-            <artifactId>sdk</artifactId>
-            <version>1.4</version>
+            <groupId>com.alipay</groupId>
+            <artifactId>alipay-sdk</artifactId>
+            <version>java20170209153318</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.digitalchina</groupId>-->
-            <!--<artifactId>alipay-sdk</artifactId>-->
-            <!--<version>1.0</version>-->
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/lib/alipay-sdk-java20170209153318.jar</systemPath>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
