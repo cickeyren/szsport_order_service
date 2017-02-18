@@ -14,6 +14,10 @@ public class AlipayTradeModel implements Serializable {
 	 * 商户网站唯一订单号
 	 */
 	private String outTradeNo;
+	/*
+	* 订单表中订单号
+	* */
+	private String orderNumber;
 	/**
 	 * 
 	 *支付宝系统中的交易号 
@@ -64,6 +68,10 @@ public class AlipayTradeModel implements Serializable {
 	 */
 	private String sellerId;
 	/**
+	 * 合作身份者ID，以2088开头由16位纯数字组成的字符串
+	 */
+	private String partnerId;
+	/**
 	 * '用户ID
 	 */
 	private String userId;
@@ -73,9 +81,25 @@ public class AlipayTradeModel implements Serializable {
 	 */
 	private String alipayStatus;
 	/**
+	 * 0:订单未支付 1：订单已支付
+	 */
+	private String localSatus;
+	/**
 	 * 创建时间
 	 */
 	private String createTime;
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
 
 	public String getOutTradeNo() {
 		return outTradeNo;
@@ -203,5 +227,21 @@ public class AlipayTradeModel implements Serializable {
 
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
+	}
+
+	public String getPartnerId() {
+		return partnerId;
+	}
+
+	public void setPartnerId(String partnerId) {
+		this.partnerId = partnerId;
+	}
+
+	public String getLocalSatus() {
+		return localSatus;
+	}
+
+	public void setLocalSatus(String localSatus) {
+		this.localSatus = localSatus;
 	}
 }

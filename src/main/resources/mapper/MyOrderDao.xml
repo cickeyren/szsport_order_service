@@ -259,6 +259,7 @@
 			mp.merchant_id AS merchantId,
 			mp.pay_way AS payWay,
 			mp.app_id AS appId,
+			mp.seller_id AS sellerId,
 			mp.pay_key AS payKey,
 			mp.partner_id AS partnerId,
 			mp.sign_type AS signType
