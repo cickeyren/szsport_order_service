@@ -4,7 +4,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.UtilDate;
-import com.digitalchina.pay.alipay.config.AlipayConfig;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.PayTradeDao;
 import com.digitalchina.sport.order.api.model.AlipayTradeModel;
@@ -222,6 +221,7 @@ public class AlipayPayController {
       //  reqStr = reqStr + sign;
         //String result = java.net.URLEncoder.encode(reqStr,AlipayConfig.input_charset);
         //生成系统中唯一的订单流水号out_trade_no
+
 
         String outTradeNo = UtilDate.getOrderNum()+UtilDate.getThree();
         AlipayTradeModel alipayTradeModel = payTradeDao.selectAlipayTradeModelByOutTradeNo(outTradeNo);
