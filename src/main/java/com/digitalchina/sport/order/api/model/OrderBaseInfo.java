@@ -18,7 +18,7 @@ public class OrderBaseInfo {
     private String ticketType;//产品类型 0：散票 1：场地票 2：通票
     private Timestamp orderTime;
     private String orderChannel;//下单方式app
-    private String status;//状态（待支付，待使用，已使用，支付失败，退款）
+    private String status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
     private String costPrice;//订单成本
     private String sellPrice;//订单售价
     private String userId;//用户id
@@ -30,6 +30,7 @@ public class OrderBaseInfo {
     private String payPrice;//支付金额
     private String merchantId;//商户id
     private int sonOrders;//字单个数
+    private String remarks;//备注
 
     public String getId() {
         return id;
@@ -213,5 +214,13 @@ public class OrderBaseInfo {
 
     public void setSonOrders(int sonOrders) {
         this.sonOrders = sonOrders;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

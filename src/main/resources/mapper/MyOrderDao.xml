@@ -19,6 +19,9 @@
 		<if test="status != null and status != ''">
 			AND `status` = #{status}
 		</if>
+		<if test="orderNumber != null and orderNumber != ''">
+			AND order_number = #{orderNumber}
+		</if>
 		ORDER BY
 			order_time DESC
 		LIMIT
@@ -73,15 +76,24 @@
 		WHERE
 			oc.order_base_id = #{orderId}
 	</select>
+	<!-- 一个订单下的所有子订单的编号 -->
+	<select id="getAllOrderContentIdByOrderId" parameterType="String" resultType="java.util.HashMap">
+		SELECT
+			oc.id
+		FROM
+			order_content_detail oc
+		WHERE
+			oc.order_base_id = #{orderId}
+	</select>
 	<!-- 新增订单基本信息 -->
 	<insert id="inserOrderBaseInfo" parameterType="java.util.Map">
 		INSERT INTO `szsport_order_mgr`.`order_base_info`
 					(`id`, `order_number`, `stadium_name`, `classify`, `sub_stadium_name`, `person_kind`,
 					`ticket_id`, `ticket_name`, `ticket_type`, `order_time`, `order_channel`,`status`, `cost_price`, `sell_price`,
-					`user_id`, `user_name`, `user_tel`, `pay_type`, `pay_acount`, `pay_time`, `pay_price`, `merchant_id`, `son_orders`)
+					`user_id`, `user_name`, `user_tel`, `pay_type`, `pay_acount`, `pay_time`, `pay_price`, `merchant_id`, `son_orders`,`remarks`)
 		VALUES (#{id}, #{orderNumber}, #{stadiumName}, #{classify}, #{subStadiumName}, #{personKind},
 				#{ticketId}, #{ticketName}, #{ticketType}, NOW(), #{orderChannel},#{status}, #{costPrice}, #{sellPrice},
-				#{userId}, #{userName}, #{userTel}, #{payType}, #{payAcount}, #{payTime}, #{payPrice}, #{merchantId}, #{sonOrders});
+				#{userId}, #{userName}, #{userTel}, #{payType}, #{payAcount}, #{payTime}, #{payPrice}, #{merchantId}, #{sonOrders},#{remarks});
 	</insert>
 
 	<!-- 判断订单流水号是否重复 -->
@@ -218,7 +230,7 @@
     <update id="updateOrderContent" parameterType="java.util.Map" >
         UPDATE order_content_detail oc
         SET oc.`status` = #{status},
-            oc.remarks=#{remarks}''
+            oc.remarks=#{remarks}
         WHERE
             oc.order_code = #{orderCode}
     </update>
@@ -269,4 +281,22 @@
 		WHERE
 			ob.order_number=#{orderNumber}
 	</select>
+
+	<!-- 取消订单的字单，根据主订单的编号-->
+	<update id="cancelOrderContent" parameterType="java.util.Map" >
+		UPDATE order_content_detail oc
+		SET oc.`status` = #{status},
+		oc.remarks=#{remarks}
+		WHERE
+		oc.id = #{id}
+	</update>
+
+	<!-- 取消订单的主订单,根据订单的编号 -->
+	<update id="cancelOrderBase" parameterType="java.util.Map" >
+		UPDATE order_base_info ob
+		SET  ob.`status` = #{status},
+			ob.remarks=#{remarks}
+		WHERE
+		ob.id = #{orderId}
+	</update>
 </mapper>

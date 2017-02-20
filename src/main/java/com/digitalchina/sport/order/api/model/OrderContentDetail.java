@@ -26,7 +26,7 @@ public class OrderContentDetail {
     private String sellPrice;//售价
     private String takeStatus;//取票状态
     private String checkStatus;//验票状态
-    private String status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款）
+    private String status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
     private String takeType;//取票类型
     private Timestamp takeTime;//取票时间
     private String checkType;//验票类型

@@ -655,4 +655,51 @@ public class MyOrderService {
     public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber){
         return myOrderDao.getOrderAndMpByOrderNumer(orderNumber);
     }
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> cancelOrderByOrderId(String orderId) throws Exception{
+        //客户主动取消订单
+        //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+        String status = "5";
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        Map<String,Object> baseParams = new HashMap<String, Object>();
+        if(StringUtil.isEmpty(orderId)){
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","订单编号为空");
+        }else {
+            //更新主单状态
+            baseParams.put("orderId",orderId);
+            baseParams.put("status",status);
+            baseParams.put("remarks","取消订单");
+            myOrderDao.cancelOrderBase(baseParams);
+            //查询字单，并修改字单状态
+            List<Map<String,Object>> list = myOrderDao.getAllOrderContentIdByOrderId(orderId);
+            int count = myOrderDao.getCountByOrderId(orderId);
+            if(list.size()>0){
+                for(int i = 0;i<list.size();i++){
+                    Map<String,Object> contentParams = new HashMap<String, Object>();
+                    String orderContentId = (String) list.get(i).get("id");
+                    contentParams.put("id",orderContentId);
+                    contentParams.put("status",status);
+                    contentParams.put("remarks","取消订单");
+                    myOrderDao.cancelOrderContent(contentParams);
+                }
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","取消订单成功,包含子订单"+count+"个");
+            }else {
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","取消订单成功,不包含子订单");
+            }
+        }
+
+
+
+
+        return retMap;
+    }
 }

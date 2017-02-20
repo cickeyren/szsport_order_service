@@ -124,4 +124,22 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber);
+	/**
+	 * 取消订单的字单，根据主订单的编号
+	 * @param params
+	 */
+	int cancelOrderContent(Map<String,Object> params);
+
+	/**
+	 * 取消订单的主订单,根据订单的编号
+	 * @param params
+	 */
+	int cancelOrderBase(Map<String,Object> params);
+	/**
+	 *  一个订单下的所有子订单id
+	 * @param orderId
+	 * @return
+	 */
+	List<Map<String,Object>> getAllOrderContentIdByOrderId(String orderId);
+
 }

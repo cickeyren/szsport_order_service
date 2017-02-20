@@ -8,6 +8,6 @@ import java.util.Map;
 @Mapper
 public interface ApiOrderDao {
 
-	ApiOrder getOrderInfoByPK(Map<String,Object> params);
-
+	/*ApiOrder getOrderInfoByPK(Map<String,Object> params);
+*/
 }

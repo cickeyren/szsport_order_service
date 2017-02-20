@@ -17,11 +17,14 @@ public class ApiOrderService {
     private ApiOrderDao apiOrderDao;
 
 
+
     public ApiOrder getOrderInfoByPK (Integer id)
     {
-        Map<String,Object> params = Maps.newHashMap();
+/*        Map<String,Object> params = Maps.newHashMap();
         params.put("id",id);
-        return apiOrderDao.getOrderInfoByPK(params);
+        return apiOrderDao.getOrderInfoByPK(params);*/
+        return null;
     }
+
 
 }

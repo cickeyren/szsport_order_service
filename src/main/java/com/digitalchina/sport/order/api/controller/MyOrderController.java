@@ -6,6 +6,7 @@ import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
 import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.sport.order.api.service.MyOrderService;
+import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,8 @@ public class MyOrderController {
     public RtnData<Object> getMyAllOrder(@RequestParam(value = "pageIndex",defaultValue = "0" , required = false) int pageIndex,
                                          @RequestParam(value = "pageSize",defaultValue = "10", required = false) int pageSize,
                                          @RequestParam(value = "userId", required = false) String userId,
-                                         @RequestParam(value = "status", required = false) String status) {
+                                         @RequestParam(value = "status", required = false) String status,
+                                         @RequestParam(value = "orderNumber", required = false) String orderNumber) {
         Map<String,Object> map = new HashMap<String, Object>();
         if(pageIndex == 0){
             map.put("start",pageIndex);
@@ -48,6 +50,7 @@ public class MyOrderController {
         map.put("pageSize",pageSize);
         map.put("userId",userId);
         map.put("status",status);
+        map.put("orderNumber",orderNumber);
         try {
             List<Map<String,Object>> list = myOrderService.getAllOrderByUserId(map);
             int count = myOrderService.getCountByUserId(map);
@@ -74,7 +77,6 @@ public class MyOrderController {
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("userId",userId);
         map.put("orderId",orderId);
-
         try {
             List<Map<String,Object>> list = myOrderService.getTotalOrderByUserIdAndOrderId(map);
             int count = myOrderService.getCountByOrderId(orderId);
@@ -230,7 +232,7 @@ public class MyOrderController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("取票状态更新状态失败，",e);
+            logger.error("取票状态更新状态失败",e);
             return RtnData.fail("取票状态更新状态失败!");
         }
     }
@@ -295,7 +297,28 @@ public class MyOrderController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("验票失败",e);
             return RtnData.fail("验票失败!");
         }
+    }
+
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value="cancelOrderByOrderId.json",method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData<Object> cancelOrderByOrderId(@RequestParam(value = "orderId", required = true) String orderId){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            retMap = myOrderService.cancelOrderByOrderId(orderId);
+            return RtnData.ok(retMap,"取消订单成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("取票订单失败",e);
+            return RtnData.fail("取消订单失败!");
+        }
+
     }
 }

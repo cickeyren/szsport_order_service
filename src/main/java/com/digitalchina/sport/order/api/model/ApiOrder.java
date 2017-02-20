@@ -3,7 +3,7 @@ package com.digitalchina.sport.order.api.model;
 import java.util.Date;
 
 public class ApiOrder {
-    private Integer id;
+/*    private Integer id;
 
     private String desc;
     private Date createdTime;
@@ -30,5 +30,5 @@ public class ApiOrder {
 
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
-    }
+    }*/
 }
