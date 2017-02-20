@@ -445,6 +445,16 @@ public class MyOrderService {
     /**
      * 验票
      * 验证是否付款，是否失效等
+     * 验票逻辑：
+     step1：是否已经验过票
+     step2：状态为1才可以验票（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+     step3：验证验票日期是否在有效期内，start_date<dqdate<end_date
+     step4：验证验票日期是否在不可用日期内dqdate is not in forbiddenDate
+     step5：验证验票时间是否在可用日期内，type=0表示每日，不做判断
+                                       type=1表示每周，判断周数
+     step6：验证验票时间是否在可用时间段内：start_time<dqtime<end_time
+     step7：验证是否超过剩余次数：remain_number（-1表示不限次数）
+     step8：验证是否超过当日剩余次数：everyday_remain_number（-1表示不限次数）
      * @return
      */
     public Map<String,Object> checkTicket(String orderCode) throws Exception{
