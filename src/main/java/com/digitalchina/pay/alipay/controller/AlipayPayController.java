@@ -223,6 +223,7 @@ public class AlipayPayController {
         //String result = java.net.URLEncoder.encode(reqStr,AlipayConfig.input_charset);
         //生成系统中唯一的订单流水号out_trade_no
 
+
         String outTradeNo = UtilDate.getOrderNum()+UtilDate.getThree();
         AlipayTradeModel alipayTradeModel = payTradeDao.selectAlipayTradeModelByOutTradeNo(outTradeNo);
         if (null != alipayTradeModel) {
