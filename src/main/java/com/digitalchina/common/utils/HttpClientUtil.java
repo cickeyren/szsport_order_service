@@ -228,7 +228,7 @@ public class HttpClientUtil {
         return resultMap;
     }
     public static void main(String[] args){
-        String url = "http://192.168.31.181:8080/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=1";
+        String url = "http://szsportmgr.eastdc.cn:82/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=d02457dbb2bae51fe1cc5b3";
         System.out.println(getMapResultByURLAndKey(url,"测试"));
     }
 
