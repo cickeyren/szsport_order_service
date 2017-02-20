@@ -102,35 +102,11 @@ public class MyOrderController {
     @RequestMapping(value="createOrder.json",method = RequestMethod.POST)
     @ResponseBody
     public RtnData<Object> createOrder(@RequestBody String orderJson){
+        Map<String,Object> retMap = new HashMap<String, Object>();
         JSONObject orderJsonObject = JSON.parseObject(orderJson);
-
-        String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
-        int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
         try {
-            //订单基本信息
-            Map<String,Object> orderBaseInfo = myOrderService.getOrderBaseInfoFromMap(count,myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));
-            Map<String,Object> orderContentDetail = myOrderService.getOrderContentDetailFromMap(myOrderService.getYearStrategyTicketModelInfo(yearStrategyId));//子订单详细信息
-            //order基本信息
-            orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
-            orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
-            orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
-            orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
-            orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
-            /**
-             * orderChannel用途：APP表示线上，订单售价为线上价格；其余为线下价格即为门市价
-             * 目前暂时均为线上，线下暂时不做
-             */
-            orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
-            String orderBaseId = myOrderService.insertOrderBaseInfo(orderBaseInfo);
-            //order详细内容
-            orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
-            myOrderService.insertOrderContentDetail(count,orderContentDetail);
-
-            System.out.println("orderBaseInfo="+orderBaseInfo);
-            System.out.println("orderContentDetail="+orderContentDetail);
-            Map<String,Object> retMap = new HashMap<String, Object>();
-            retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
-            return RtnData.ok(retMap,"下单成功!");
+            retMap = myOrderService.createOrder(orderJsonObject);
+            return RtnData.ok(retMap);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("下单失败!",e);

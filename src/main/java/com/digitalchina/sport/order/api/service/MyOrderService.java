@@ -1,5 +1,6 @@
 package com.digitalchina.sport.order.api.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.common.utils.*;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.MyOrderDao;
@@ -229,6 +230,50 @@ public class MyOrderService {
     }
 
     /**
+     * 下单接口
+     */
+    public Map<String,Object> createOrder(JSONObject orderJsonObject) throws Exception {
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        if(StringUtil.isEmpty(orderJsonObject.get("yearStrategyId"))){
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","年卡策略为空!");
+        }else if(StringUtil.isEmpty(orderJsonObject.get("count"))){
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","购买个数为空!");
+        }else{
+            String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
+            int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
+            //订单基本信息
+            Map<String,Object> orderBaseInfo = this.getOrderBaseInfoFromMap(count,this.getYearStrategyTicketModelInfo(yearStrategyId));
+            //子订单详细信息
+            Map<String,Object> orderContentDetail = this.getOrderContentDetailFromMap(this.getYearStrategyTicketModelInfo(yearStrategyId));
+            //order基本信息
+            orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
+            orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
+            orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
+            orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
+            orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
+            /**
+             * orderChannel用途：APP表示线上，订单售价为线上价格；其余为线下价格即为门市价
+             * 目前暂时均为线上，线下暂时不做
+             */
+            orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
+            //添加主订单内容到数据库返回orderBase表id
+            String orderBaseId = this.insertOrderBaseInfo(orderBaseInfo);
+            //order详细内容
+            orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
+            //添加子订单内容到数据库返回orderBase表id
+            this.insertOrderContentDetail(count,orderContentDetail);
+            System.out.println("orderBaseInfo="+orderBaseInfo);
+            System.out.println("orderContentDetail="+orderContentDetail);
+            retMap.put("returnKey","true");
+            retMap.put("returnMessage","下单成功!");
+            retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+        }
+        return retMap;
+    }
+
+    /**
      * 从map中提取需要的订单基本数据
      * @return
      */
@@ -403,22 +448,19 @@ public class MyOrderService {
             if(!StringUtil.isEmpty(startDate)&&!StringUtil.isEmpty(endDate)){
                 if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
                     //验证有效期结束=========>>进入下一步验证
-                    retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                    retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
+                    retMap = CheckForbidden(dqtime,dqdate,orderDetailMap);
                 }else {
                     //验票时间不在有效期内
                     retMap.put("returnKey","false");
-                    retMap.put("message","验票时间不在有效期内");
+                    retMap.put("returnMessage","验票时间不在有效期内");
                 }
             }else {
                 //没有有效期限制。========>>进入下一步验证
-                retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
+                retMap = CheckForbidden(dqtime,dqdate,orderDetailMap);
             }
         }else {
             //没有有效期限制。========>>进入下一步验证
-            retMap.put("returnKey",CheckForbidden(dqtime,dqdate,orderDetailMap).get("returnKey"));
-            retMap.put("message",CheckForbidden(dqtime,dqdate,orderDetailMap).get("message"));
+            retMap = CheckForbidden(dqtime,dqdate,orderDetailMap);
         }
         System.out.println(retMap);
         return retMap;
@@ -438,17 +480,15 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetailMap.get("forbidden_date"))){
             if(!checkDate(dqdate,orderDetailMap.get("forbidden_date").toString())){
                 //不在屏蔽日期内 ==========>>下一步
-                retMap.put("returnKey",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                retMap.put("message",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("message"));
+                retMap =CheckCanUseDate(dqtime,dqdate,orderDetailMap);
             }else {
                 //返回true表示在不可用日期段内
                 retMap.put("returnKey","false");
-                retMap.put("message","验票时间不在可用时间内");
+                retMap.put("returnMessage","验票时间不在可用时间内");
             }
         }else {
             //没有屏蔽日期 ==========>>下一步
-            retMap.put("returnKey",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("returnKey"));
-            retMap.put("message",CheckCanUseDate(dqtime,dqdate,orderDetailMap).get("message"));
+            retMap = CheckCanUseDate(dqtime,dqdate,orderDetailMap);
         }
 
         System.out.println(retMap);
@@ -480,29 +520,27 @@ public class MyOrderService {
                             //比较周数是否在可用时间的周数内
                             if (StringUtil.isContainSpcifyStr(todayWeek + "", limitDays)) {
                                 //验证可用日期通过==============>>下一步
-                                retMap.put("returnKey",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                                retMap.put("message",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("message"));
+                                retMap = CheckCanUseTime(dqtime,dqdate,orderDetailMap);
                             }
                         }else {
                             retMap.put("returnKey","false");
-                            retMap.put("message","没有可用日期,请核实!");
+                            retMap.put("returnMessage","没有可用日期,请核实!");
                         }
                     }else {
                         //type=0表示每日，不用判断周数==============>>下一步
-                        retMap.put("returnKey",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                        retMap.put("message",CheckCanUseTime(dqtime,dqdate,orderDetailMap).get("message"));
+                        retMap = CheckCanUseTime(dqtime,dqdate,orderDetailMap);
                     }
                 }else {
                     retMap.put("returnKey","false");
-                    retMap.put("message","没有可用日期,请核实!");
+                    retMap.put("returnMessage","没有可用日期,请核实!");
                 }
             }else {
                 retMap.put("returnKey","false");
-                retMap.put("message","没有可用日期,请核实!");
+                retMap.put("returnMessage","没有可用日期,请核实!");
             }
         }else {
             retMap.put("returnKey","false");
-            retMap.put("message","没有可用日期,请核实!");
+            retMap.put("returnMessage","没有可用日期,请核实!");
         }
         System.out.println(retMap);
         return retMap;
@@ -522,18 +560,16 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetailMap.get("time_limit"))) {
             if (checkTime(dqtime, orderDetailMap.get("time_limit").toString())) {
                 //验证验票在可用时间段内=============>>下一步
-                retMap.put("returnKey",checkNumber(dqtime,dqdate,orderDetailMap).get("returnKey"));
-                retMap.put("message",checkNumber(dqtime,dqdate,orderDetailMap).get("message"));
+                retMap = checkNumber(dqtime,dqdate,orderDetailMap);
             }else {
                 //验证验票不在可用时间段内
                 retMap.put("returnKey","false");
-                retMap.put("message","验票时间不在可用时间段内");
+                retMap.put("returnMessage","验票时间不在可用时间段内");
             }
 
         }else {
             //没有可用时间段限制 ======>>下一步
-            retMap.put("returnKey",checkNumber(dqtime,dqdate,orderDetailMap).get("returnKey"));
-            retMap.put("message",checkNumber(dqtime,dqdate,orderDetailMap).get("message"));
+            retMap = checkNumber(dqtime,dqdate,orderDetailMap);
         }
         System.out.println(retMap);
         return retMap;
@@ -551,32 +587,32 @@ public class MyOrderService {
                         if (checkRemainTime(everyday_remain_number)){
                             //是否超过当日使用次数
                             retMap.put("returnKey","true");
-                            retMap.put("message","验证通过!");
+                            retMap.put("returnMessage","验证通过!");
                         }else {
                             retMap.put("returnKey","false");
-                            retMap.put("message","超过每日限次!");
+                            retMap.put("returnMessage","超过每日限次!");
                         }
                     }else {
                         //-1表示不限次数，通过
                         retMap.put("returnKey","true");
-                        retMap.put("message","验证通过!");
+                        retMap.put("returnMessage","验证通过!");
                     }
                 }else{
                     retMap.put("returnKey","false");
-                    retMap.put("message","每日限次有误,请联系管理员!");
+                    retMap.put("returnMessage","每日限次有误,请联系管理员!");
                 }
             }else {
                 if (checkRemainTime(remain_number)){//是否超过剩余次数
                     retMap.put("returnKey","true");
-                    retMap.put("message","验证通过!");
+                    retMap.put("returnMessage","验证通过!");
                 }else {
                     retMap.put("returnKey","false");
-                    retMap.put("message","超过剩余次数!");
+                    retMap.put("returnMessage","超过剩余次数!");
                 }
             }
         }else{
             retMap.put("returnKey","false");
-            retMap.put("message","剩余次数有误,请联系管理员!");
+            retMap.put("returnMessage","剩余次数有误,请联系管理员!");
         }
         System.out.println(retMap);
         return retMap;
