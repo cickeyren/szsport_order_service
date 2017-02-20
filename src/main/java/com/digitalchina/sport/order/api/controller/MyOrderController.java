@@ -307,18 +307,17 @@ public class MyOrderController {
      * @param orderId
      * @return
      */
-    @RequestMapping(value="cancelOrderByOrderId.json",method = RequestMethod.GET)
+    @RequestMapping(value="cancelOrderByOrderId.json")
     @ResponseBody
     public RtnData<Object> cancelOrderByOrderId(@RequestParam(value = "orderId", required = true) String orderId){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             retMap = myOrderService.cancelOrderByOrderId(orderId);
-            return RtnData.ok(retMap,"取消订单成功");
+            return RtnData.ok(retMap);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("取票订单失败",e);
             return RtnData.fail("取消订单失败!");
         }
-
     }
 }

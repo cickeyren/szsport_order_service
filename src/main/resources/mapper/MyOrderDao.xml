@@ -299,4 +299,14 @@
 		WHERE
 		ob.id = #{orderId}
 	</update>
+
+	<!-- 判断订单号是否重复 -->
+	<select id="isHaveByOrderId" parameterType="String" resultType="int">
+		SELECT
+		COUNT(0)
+		FROM
+		order_base_info ob
+		WHERE
+		ob.id=#{orderId}
+	</select>
 </mapper>

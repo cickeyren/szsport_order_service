@@ -652,7 +652,7 @@ public class MyOrderService {
      * @param orderNumber
      * @return
      */
-    public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber){
+    public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber) throws Exception{
         return myOrderDao.getOrderAndMpByOrderNumer(orderNumber);
     }
 
@@ -662,6 +662,7 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
+    @Transactional
     public Map<String,Object> cancelOrderByOrderId(String orderId) throws Exception{
         //客户主动取消订单
         //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
@@ -671,6 +672,9 @@ public class MyOrderService {
         if(StringUtil.isEmpty(orderId)){
             retMap.put("returnKey","false");
             retMap.put("returnMessage","订单编号为空");
+        }else if(myOrderDao.isHaveByOrderId(orderId) <= 0){
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","订单编号不存在");
         }else {
             //更新主单状态
             baseParams.put("orderId",orderId);
@@ -696,10 +700,6 @@ public class MyOrderService {
                 retMap.put("returnMessage","取消订单成功,不包含子订单");
             }
         }
-
-
-
-
         return retMap;
     }
 }
