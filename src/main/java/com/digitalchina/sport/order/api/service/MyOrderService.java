@@ -443,11 +443,48 @@ public class MyOrderService {
     }
 
     /**
-     * 根据验票规则验票
-     * @param
+     * 验票
+     * 验证是否付款，是否失效等
      * @return
      */
     public Map<String,Object> checkTicket(String orderCode) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
+            String status = (String) orderDetailMap.get("status");
+            //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+            if(status.equals("1")){
+                retMap = CheckUseableTime(orderCode);
+            }else if(status.equals("0")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单未支付");
+            }else if(status.equals("2")){
+                    retMap.put("returnKey","false");
+                    retMap.put("returnMessage","该订单已使用");
+            }else if(status.equals("3")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单支付失败");
+            }else if(status.equals("4")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已退款");//退款目前不做，之后可拓展为待退款和已退款
+            }else if(status.equals("5")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已失效");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+
+
+    /**
+     * 根据验票规则验证票是否在有效期内
+     * @param
+     * @return
+     */
+    public Map<String,Object> CheckUseableTime(String orderCode) throws Exception{
         Map<String,Object> retMap = new HashMap<String, Object>();
         Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
         String dqtime = DateUtil.nowtime();//当前时间
@@ -574,7 +611,7 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetailMap.get("time_limit"))) {
             if (checkTime(dqtime, orderDetailMap.get("time_limit").toString())) {
                 //验证验票在可用时间段内=============>>下一步
-                retMap = checkNumber(dqtime,dqdate,orderDetailMap);
+                retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
             }else {
                 //验证验票不在可用时间段内
                 retMap.put("returnKey","false");
@@ -583,13 +620,13 @@ public class MyOrderService {
 
         }else {
             //没有可用时间段限制 ======>>下一步
-            retMap = checkNumber(dqtime,dqdate,orderDetailMap);
+            retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
         }
         System.out.println(retMap);
         return retMap;
     }
 
-    public Map<String,Object> checkNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
+    public Map<String,Object> CheckNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
         Map<String,Object> retMap = new HashMap<String, Object>();
         //是否超过剩余次数
         if(!StringUtil.isEmpty(orderDetailMap.get("remain_number"))){

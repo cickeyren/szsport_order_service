@@ -189,8 +189,10 @@ public class MyOrderController {
                         return RtnData.fail("该票已取过票,请核实!");
                     }else {
                         if (myOrderService.updateTake(map)){
-                            retMap.put("orderCode",orderCode);
-                            return RtnData.ok(retMap,"取票成功，取票状态更新成功!");
+                            //retMap.put("orderCode",orderCode);
+                            //取票成功返回门票信息
+                            retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                            return RtnData.ok(retMap,"取票成功!");
                         }else {
                             return RtnData.fail("取票状态更新状态失败!");
                         }
@@ -240,7 +242,9 @@ public class MyOrderController {
                             checkParam.put("checkStatus","1");//验票状态改为1，已验票
                             checkParam.put("checkType",checkType);
                             if(myOrderService.updateCheckByMap(checkParam) >0){
-                                return RtnData.ok(retMap,"验票状态修改成功!");
+                                //验票成功返回门票信息
+                                retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                                return RtnData.ok(retMap);
                             }else {
                                 return RtnData.fail(retMap,"验票状态修改失败!");
                             }
@@ -260,7 +264,9 @@ public class MyOrderController {
                         checkParam.put("checkStatus","1");//验票状态改为1，已验票
                         checkParam.put("checkType",checkType);
                         if(myOrderService.updateCheckByMap(checkParam) >0){
-                            return RtnData.ok(retMap,"验票状态修改成功!");
+                            //验票成功返回门票信息
+                            retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                            return RtnData.ok(retMap,"验票成功!");
                         }else {
                             return RtnData.fail(retMap,"验票状态修改失败!");
                         }
