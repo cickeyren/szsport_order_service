@@ -243,32 +243,40 @@ public class MyOrderService {
         }else{
             String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
             int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
-            //订单基本信息
-            Map<String,Object> orderBaseInfo = this.getOrderBaseInfoFromMap(count,this.getYearStrategyTicketModelInfo(yearStrategyId));
-            //子订单详细信息
-            Map<String,Object> orderContentDetail = this.getOrderContentDetailFromMap(this.getYearStrategyTicketModelInfo(yearStrategyId));
-            //order基本信息
-            orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
-            orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
-            orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
-            orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
-            orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
-            /**
-             * orderChannel用途：APP表示线上，订单售价为线上价格；其余为线下价格即为门市价
-             * 目前暂时均为线上，线下暂时不做
-             */
-            orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
-            //添加主订单内容到数据库返回orderBase表id
-            String orderBaseId = this.insertOrderBaseInfo(orderBaseInfo);
-            //order详细内容
-            orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
-            //添加子订单内容到数据库返回orderBase表id
-            this.insertOrderContentDetail(count,orderContentDetail);
-            System.out.println("orderBaseInfo="+orderBaseInfo);
-            System.out.println("orderContentDetail="+orderContentDetail);
-            retMap.put("returnKey","true");
-            retMap.put("returnMessage","下单成功!");
-            retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+            if(StringUtil.isEmpty(this.getYearStrategyTicketModelInfo(yearStrategyId).get("yearStrategyDetail"))){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该年卡策略不存在!");
+            }else if (StringUtil.isEmpty(this.getYearStrategyTicketModelInfo(yearStrategyId).get("studStadiumList"))){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该年卡策略有误!");
+            }else{
+                //订单基本信息
+                Map<String,Object> orderBaseInfo = this.getOrderBaseInfoFromMap(count,this.getYearStrategyTicketModelInfo(yearStrategyId));
+                //子订单详细信息
+                Map<String,Object> orderContentDetail = this.getOrderContentDetailFromMap(this.getYearStrategyTicketModelInfo(yearStrategyId));
+                //order基本信息
+                orderBaseInfo.put("costPrice",orderBaseInfo.get("totalCostPrice").toString());
+                orderBaseInfo.put("sellPrice",orderBaseInfo.get("totalSellPrice").toString());
+                orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
+                orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
+                orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
+                /**
+                 * orderChannel用途：APP表示线上，订单售价为线上价格；其余为线下价格即为门市价
+                 * 目前暂时均为线上，线下暂时不做
+                 */
+                orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
+                //添加主订单内容到数据库返回orderBase表id
+                String orderBaseId = this.insertOrderBaseInfo(orderBaseInfo);
+                //order详细内容
+                orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
+                //添加子订单内容到数据库返回orderBase表id
+                this.insertOrderContentDetail(count,orderContentDetail);
+                System.out.println("orderBaseInfo="+orderBaseInfo);
+                System.out.println("orderContentDetail="+orderContentDetail);
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","下单成功!");
+                retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+            }
         }
         return retMap;
     }
