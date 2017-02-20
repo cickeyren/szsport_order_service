@@ -240,15 +240,23 @@ public class MyOrderService {
         }else if(StringUtil.isEmpty(orderJsonObject.get("count"))){
             retMap.put("returnKey","false");
             retMap.put("returnMessage","购买个数为空!");
+        }else if(StringUtil.isEmpty(orderJsonObject.get("count"))){
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","购买个数为空!");
         }else{
             String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
             int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
-            if(StringUtil.isEmpty(this.getYearStrategyTicketModelInfo(yearStrategyId).get("yearStrategyDetail"))){
+            List<Map<String,Object>> studStadiumList = (List<Map<String, Object>>) this.getYearStrategyTicketModelInfo(yearStrategyId).get("studStadiumList");
+            Map<String,Object> yearStrategyDetail = (Map<String, Object>) this.getYearStrategyTicketModelInfo(yearStrategyId).get("yearStrategyDetail");
+            if(StringUtil.isEmpty(yearStrategyDetail)){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该年卡策略不存在!");
-            }else if (StringUtil.isEmpty(this.getYearStrategyTicketModelInfo(yearStrategyId).get("studStadiumList"))){
+            }else if (studStadiumList.size()<=0){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该年卡策略有误!");
+            }else if(count <= 0){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","购买个数必须大于0!");
             }else{
                 //订单基本信息
                 Map<String,Object> orderBaseInfo = this.getOrderBaseInfoFromMap(count,this.getYearStrategyTicketModelInfo(yearStrategyId));
@@ -290,9 +298,7 @@ public class MyOrderService {
         List<Map<String,Object>> studStadiumList = (List<Map<String,Object>>) map.get("studStadiumList");
         Map<String,Object> yearStrategyDetail = (Map<String, Object>) map.get("yearStrategyDetail");
         Map<String,Object> stadiumInfo = new HashMap<String,Object>();
-        if(studStadiumList.size()>0){
-            stadiumInfo = studStadiumList.get(0);
-        }
+        stadiumInfo = studStadiumList.get(0);
         String classify = getClassifyById(stadiumInfo.get("subStadiumId").toString());
         int totalCostPrice = Integer.parseInt(yearStrategyDetail.get("sellPrice").toString())*count;
         int totalSellPrice = Integer.parseInt(yearStrategyDetail.get("sellPrice").toString())*count;

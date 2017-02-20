@@ -4,6 +4,7 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.UtilDate;
+import com.digitalchina.pay.alipay.config.AlipayConfig;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.PayTradeDao;
 import com.digitalchina.sport.order.api.model.AlipayTradeModel;
