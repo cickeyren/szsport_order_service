@@ -72,8 +72,8 @@ public class MyOrderController {
      */
     @RequestMapping(value="getOrderDetails.json",method = RequestMethod.GET)
     @ResponseBody
-    public RtnData<Object> getOrderDetails(@RequestParam(value = "userId", required = false) String userId,
-                                           @RequestParam(value = "orderId", required = false) String orderId){
+    public RtnData<Object> getOrderDetails(@RequestParam(value = "userId", required = true) String userId,
+                                           @RequestParam(value = "orderId", required = true) String orderId){
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("userId",userId);
         map.put("orderId",orderId);
@@ -119,7 +119,7 @@ public class MyOrderController {
      */
     @RequestMapping(value="printBarCode.img",method = RequestMethod.GET)
     @ResponseBody
-    public void printBarCode(@RequestParam(value = "orderCode", required = false) String orderCode, HttpServletResponse response) throws Exception {
+    public void printBarCode(@RequestParam(value = "orderCode", required = true) String orderCode, HttpServletResponse response) throws Exception {
         String barCode = "";
         if(myOrderService.isHaveByOrderCode(orderCode) >0){
             barCode = orderCode;
@@ -148,7 +148,7 @@ public class MyOrderController {
      */
     @RequestMapping(value="checkTicketByOrderCode.json",method = RequestMethod.GET)
     @ResponseBody
-    public RtnData<Object> checkTicketByOrderCode(@RequestParam(value = "orderCode", required = false) String orderCode){
+    public RtnData<Object> checkTicketByOrderCode(@RequestParam(value = "orderCode", required = true) String orderCode){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
@@ -215,7 +215,10 @@ public class MyOrderController {
         }
     }
 
+
     /**
+     *
+     * checkType改为闸机的编号
      * 验票
      * 根据验票规则
      * @param orderCode
@@ -223,8 +226,8 @@ public class MyOrderController {
      */
     @RequestMapping(value="checkTicket.json",method = RequestMethod.GET)
     @ResponseBody
-    public RtnData<Object> checkTicket(@RequestParam(value = "orderCode", required = false) String orderCode,
-                                       @RequestParam(value = "checkType", required = false) String checkType){
+    public RtnData<Object> checkTicket(@RequestParam(value = "orderCode", required = true) String orderCode,
+                                       @RequestParam(value = "checkType", required = true) String checkType){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
