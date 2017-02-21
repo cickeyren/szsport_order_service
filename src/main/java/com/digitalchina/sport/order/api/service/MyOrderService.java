@@ -300,8 +300,8 @@ public class MyOrderService {
         Map<String,Object> stadiumInfo = new HashMap<String,Object>();
         stadiumInfo = studStadiumList.get(0);
         String classify = getClassifyById(stadiumInfo.get("subStadiumId").toString());
-        int totalCostPrice = Integer.parseInt(yearStrategyDetail.get("sellPrice").toString())*count;
-        int totalSellPrice = Integer.parseInt(yearStrategyDetail.get("sellPrice").toString())*count;
+        double totalCostPrice = Double.parseDouble((String) yearStrategyDetail.get("costPrice"))*count;
+        double totalSellPrice = Double.parseDouble((String) yearStrategyDetail.get("sellPrice"))*count;
         orderBaseInfo.put("stadiumName",stadiumInfo.get("mainStdiumName"));
         orderBaseInfo.put("classify",classify);
         orderBaseInfo.put("subStadiumName",stadiumInfo.get("subStdiumName"));
@@ -410,10 +410,10 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetails.get("total_number"))){
             String totalNumber = orderDetails.get("total_number").toString();
             if(!StringUtil.isEmpty(totalNumber)){
-                int total = Integer.parseInt(totalNumber);
+                double total = Double.parseDouble(totalNumber);
                 if(!StringUtil.isEmpty(orderDetails.get("remain_number"))){
                     String remainNumber = orderDetails.get("remain_number").toString();
-                    int remain = Integer.parseInt(remainNumber);
+                    double remain = Double.parseDouble(remainNumber);
                     if(total>0){
                         if(checkRemainTime(remainNumber)){
                             remain = remain -1;
@@ -426,10 +426,10 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetails.get("everyday_number"))){
             String everydayNumber = orderDetails.get("everyday_number").toString();
             if(!StringUtil.isEmpty(everydayNumber)){
-                int everyday = Integer.parseInt(everydayNumber);
+                double everyday = Double.parseDouble(everydayNumber);
                 if(!StringUtil.isEmpty(orderDetails.get("everyday_remain_number"))){
                     String everydayRemainNumber = orderDetails.get("everyday_remain_number").toString();
-                    int everydayRemain = Integer.parseInt(everydayRemainNumber);
+                    double everydayRemain = Double.parseDouble(everydayRemainNumber);
                     if(everyday>0){
                         if(checkRemainTime(everydayRemainNumber)) {
                             everydayRemain = everydayRemain - 1;
@@ -735,7 +735,7 @@ public class MyOrderService {
     public boolean checkRemainTime(String remain_number){
         boolean compareResult = false;
         if(!StringUtil.isEmpty(remain_number)){
-            int remain = Integer.parseInt(remain_number);
+            double remain = Double.parseDouble(remain_number);
             if(remain > 0){
                 //是否超过剩余次数
                 compareResult = true;//未超过
@@ -791,10 +791,10 @@ public class MyOrderService {
                     myOrderDao.cancelOrderContent(contentParams);
                 }
                 retMap.put("returnKey","true");
-                retMap.put("returnMessage","取消订单成功,包含子订单"+count+"个");
+                retMap.put("returnMessage","取消订单成功");
             }else {
                 retMap.put("returnKey","true");
-                retMap.put("returnMessage","取消订单成功,不包含子订单");
+                retMap.put("returnMessage","取消订单成功");
             }
         }
         return retMap;
