@@ -181,45 +181,16 @@ public class AlipayPayController {
      */
     @RequestMapping(value = "/returnPayInfo.json")
     @ResponseBody
-    public RtnData<Object>  returnPay(@RequestParam(required = true) String orderNumber) throws Exception {
+    public Object  returnPay(@RequestParam(required = true) String orderNumber) throws Exception {
         Map<String,Object> orderAndMerchantInfo =  orderService.getOrderAndMpByOrderNumer(orderNumber);
         if(StringUtils.isEmpty(orderNumber) || null == orderAndMerchantInfo) {
             return RtnData.fail(orderNumber + "订单不存在!");
         }
+        if("1".equals((String)orderAndMerchantInfo.get("status"))) {
+         return RtnData.fail(orderNumber + "该订单已经支付无法再次支付!");
+         }
 
         String privateKey = (String)orderAndMerchantInfo.get("payKey");
-//        String reqStr = "app_id=" + orderAndMerchantInfo.get("appId")+"&";
-//        LinkedHashMap<String,Object> bizContentMap = new LinkedHashMap<String,Object>();
-//        bizContentMap.put("timeout_express","90m");
-//        bizContentMap.put("seller_id",orderAndMerchantInfo.get("partnerId"));
-//        bizContentMap.put("product_code","QUICK_MSECURITY_PAY");
-//        bizContentMap.put("total_amount",orderAndMerchantInfo.get("sellPrice"));
-//        bizContentMap.put("subject","subject");
-//        bizContentMap.put("body","body");
-//        bizContentMap.put("out_trade_no",orderNumber);
-//        String bizContent = gson.toJson(bizContentMap);
-//        reqStr = reqStr + "biz_content=" + bizContent +"&charset=" + AlipayConfig.input_charset +"&format=json" +
-//                "&method=alipay.trade.app.pay" +
-//                "&notify_url="+config.ALIPAY_NOTIFY_URL +"&sign_type="+orderAndMerchantInfo.get("signType")+
-//                "&timestamp="+ DateUtil.formatDateTime(new Date(System.currentTimeMillis())) +"&version=1.0&sign=" ;
-//        String sign = "";
-//        try {
-//        if("RSA".equals(orderAndMerchantInfo.get("signType")))   {
-//            sign = AlipaySignature.rsaSign(reqStr,privateKey,AlipayConfig.input_charset);
-//        } else if("RSA2".equals(orderAndMerchantInfo.get("signType"))){
-//            sign = AlipaySignature.rsaSign(reqStr,privateKey,AlipayConfig.input_charset);
-//        }
-//        } catch (AlipayApiException e) {
-//            e.printStackTrace();
-//            logger.error("==============支付宝生成订单签名时发生异常=================",e);
-//            return RtnData.fail("支付宝生成订单签名时发生异常!");
-//        }
-
-        //System.out.println(reqStr);
-        //  reqStr = reqStr + sign;
-        //String result = java.net.URLEncoder.encode(reqStr,AlipayConfig.input_charset);
-        //生成系统中唯一的订单流水号out_trade_no
-
         String outTradeNo = UtilDate.getOrderNum()+UtilDate.getThree();
         AlipayTradeModel alipayTradeModel = payTradeDao.selectAlipayTradeModelByOutTradeNo(outTradeNo);
         if (null != alipayTradeModel) {
