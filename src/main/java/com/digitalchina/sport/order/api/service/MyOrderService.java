@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 我的订单service
@@ -323,8 +320,9 @@ public class MyOrderService {
     public Map<String,Object> getOrderContentDetailFromMap(Map<String,Object> map) throws Exception{
         Map<String,Object> orderContentDetail = new HashMap<String, Object>();
         Map<String,Object> yearStrategyDetail = (Map<String, Object>) map.get("yearStrategyDetail");
-        orderContentDetail.put("startTime",yearStrategyDetail.get("orderEffectiveStartTime"));//有限期开始时间
-        orderContentDetail.put("endTime",yearStrategyDetail.get("orderEffectiveEndTime"));//有效期截止时间
+        //开始时间，结束时间，从当日开始
+        orderContentDetail.put("startTime",getStartDateAndEndDate(yearStrategyDetail).get("startDate"));//有限期开始时间
+        orderContentDetail.put("endTime",getStartDateAndEndDate(yearStrategyDetail).get("endDate"));//有效期截止时间
         orderContentDetail.put("canRetreat",yearStrategyDetail.get("orderRefundRule"));//是否可退（0可以1不可以）
         orderContentDetail.put("hoursLimit",yearStrategyDetail.get("checkLimitedHours"));////是否限时：比如限时2小时，-1表示不限时
         orderContentDetail.put("costPrice",yearStrategyDetail.get("costPrice"));//成本价
@@ -347,6 +345,37 @@ public class MyOrderService {
     }
 
     /**
+     * order_effective_type=0时预订之后固定日期有效
+     * @param
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> getStartDateAndEndDate(Map<String,Object> yearStrategyDetail) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        String orderEffectiveType = (String) yearStrategyDetail.get("orderEffectiveType");
+        String startDate ="";
+        String endDate ="";
+        if(!StringUtil.isEmpty(orderEffectiveType)){
+            if(orderEffectiveType.equals("1")){
+                startDate = (String) yearStrategyDetail.get("orderEffectiveStartTime");
+                endDate= (String) yearStrategyDetail.get("orderEffectiveEndTime");
+            }else if(orderEffectiveType.equals("0")){
+                String orderFixDay = (String) yearStrategyDetail.get("orderFixDay");
+                if(!StringUtil.isEmpty(orderFixDay)){
+                    int fixDay = Integer.parseInt(orderFixDay);
+                    if(fixDay > 0){
+                        startDate = DateUtil.formatDate(new Date());
+                        endDate = DateUtil.formatDate(DateUtil.offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7));//当前日期+fixDay=endDate
+                    }
+                }
+            }
+        }
+        retMap.put("startDate",startDate);
+        retMap.put("endDate",endDate);
+        return retMap;
+    }
+
+    /**
      * 可用时间
      * @param map
      * @return
@@ -364,6 +393,9 @@ public class MyOrderService {
                 //1:1,2,3,4,5,6(1表示每周，冒号后的数字为周数)
                 dateLimit = type+":"+yearStrategyDetail.get("checkLimitedWeekDetails");
             }
+        }else {
+            String type = yearStrategyDetail.get("checkLimitedDateType").toString();
+            dateLimit = type;
         }
         if(checkUseableTimeList.size()>0){
             for (int i=0;i<checkUseableTimeList.size();i++){
@@ -372,6 +404,8 @@ public class MyOrderService {
                 timeLimit += useableTime.get("useableStartTime")+"$"+useableTime.get("useableEndTime")+",";
             }
             timeLimit = timeLimit.substring(0, timeLimit.length() - 1);
+        }else{
+            timeLimit ="";
         }
         Map<String,Object> retMap = new HashMap<String, Object>();
         retMap.put("dateLimit",dateLimit);
@@ -419,7 +453,7 @@ public class MyOrderService {
                             remain = remain -1;
                             map.put("remainNumber",remain);
                         }
-                    }//total=-1不限次数不需要修改
+                    }
                 }
             }
         }
@@ -439,8 +473,23 @@ public class MyOrderService {
                 }
             }
         }
+        inserUsedRecords(map,orderDetails);
         return myOrderDao.updateCheck(map);
     }
+
+    public int inserUsedRecords(Map<String,Object> map,Map<String,Object> orderDetails) throws Exception{
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("id",UUIDUtil.generateUUID());//uuid生成32位随机数
+        params.put("usedNumber","1");
+        params.put("remianNumber",map.get("remianNumber"));
+        params.put("everydayRemianNumber",map.get("everydayRemainNumber"));
+        params.put("orderCode",map.get("orderCode"));
+        params.put("orderContentId",orderDetails.get("orderContentId"));
+        params.put("remarks",orderDetails.get("remarks"));
+        return myOrderDao.inserUsedRecords(params);
+    }
+
+
 
     /**
      * 验票
@@ -457,14 +506,20 @@ public class MyOrderService {
      step8：验证是否超过当日剩余次数：everyday_remain_number（-1表示不限次数）
      * @return
      */
-    public Map<String,Object> checkTicket(String orderCode) throws Exception{
+    public Map<String,Object> checkTicket(String orderCode,String type) throws Exception{
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
             String status = (String) orderDetailMap.get("status");
             //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
             if(status.equals("1")){
-                retMap = CheckUseableTime(orderCode);
+                if(type.equals("check")){
+                    retMap = CheckUseableTime(orderCode);
+                }else {
+                    retMap.put("returnKey","true");
+                    retMap.put("returnMessage","该订单已支付");
+                }
+
             }else if(status.equals("0")){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该订单未支付");
@@ -584,8 +639,8 @@ public class MyOrderService {
                                 retMap = CheckCanUseTime(dqtime,dqdate,orderDetailMap);
                             }
                         }else {
-                            retMap.put("returnKey","false");
-                            retMap.put("returnMessage","没有可用日期,请核实!");
+                            //无需判断可用时间段=======>>下一步
+                            retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
                         }
                     }else {
                         //type=0表示每日，不用判断周数==============>>下一步
@@ -659,8 +714,9 @@ public class MyOrderService {
                         retMap.put("returnMessage","验证通过!");
                     }
                 }else{
-                    retMap.put("returnKey","false");
-                    retMap.put("returnMessage","每日限次有误,请联系管理员!");
+                    //表示不限次数，通过
+                    retMap.put("returnKey","true");
+                    retMap.put("returnMessage","验证通过!");
                 }
             }else {
                 if (checkRemainTime(remain_number)){//是否超过剩余次数
@@ -672,8 +728,9 @@ public class MyOrderService {
                 }
             }
         }else{
-            retMap.put("returnKey","false");
-            retMap.put("returnMessage","剩余次数有误,请联系管理员!");
+            //表示不限次数，通过
+            retMap.put("returnKey","true");
+            retMap.put("returnMessage","验证通过!");
         }
         System.out.println(retMap);
         return retMap;

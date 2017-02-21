@@ -188,7 +188,7 @@ public class HttpClientUtil {
         List<Map<String,Object>> resultList = null;
         String result = null;
         try {
-            result = HttpClientUtil.doGet(url, 2000, null, null);
+            result = HttpClientUtil.doGet(url, 30000, null, null);
             Gson gson = new Gson();
             Map<String,Object> gsonMap =  gson.fromJson(result,Map.class);
             if(null != gsonMap && gsonMap.containsKey("code")) {
@@ -212,7 +212,7 @@ public class HttpClientUtil {
         Map<String,Object> resultMap = new HashMap<String, Object>();
         String result = null;
         try {
-            result = HttpClientUtil.doGet(url, 2000, null, null);
+            result = HttpClientUtil.doGet(url, 30000, null, null);
             Gson gson = new Gson();
             Map<String,Object> gsonMap =  gson.fromJson(result,Map.class);
             if(null != gsonMap && gsonMap.containsKey("code")) {
@@ -228,7 +228,7 @@ public class HttpClientUtil {
         return resultMap;
     }
     public static void main(String[] args){
-        String url = "http://szsportmgr.eastdc.cn:82/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=d02457dbb2bae51fe1cc5b3";
+        String url = "http://szsportmgr.eastdc.cn:82/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=10267e412d02457dbb2bae51fe1cc5b3";
         System.out.println(getMapResultByURLAndKey(url,"测试"));
     }
 

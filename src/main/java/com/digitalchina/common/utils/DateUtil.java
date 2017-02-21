@@ -351,5 +351,7 @@ public class DateUtil {
         System.out.println("nowtime() = [" + nowtime() + "]");
         System.out.println("compareDateTo() = [" + compareDateTo("2016-11-30","2017-11-30","2016-11-30") + "]");
         System.out.println("compareTimeTo() = [" + compareTimeTo("12:00:00","18:00:00","12:00:00") + "]");
+        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");
+
     }
 }

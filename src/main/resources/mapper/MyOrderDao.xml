@@ -178,6 +178,7 @@
 			ob.pay_time,
 			ob.pay_type,
 			ob.pay_price,
+			oc.id as orderContentId,
 			oc.start_time,
 			oc.end_time,
 			oc.remain_number,
@@ -309,4 +310,29 @@
 		WHERE
 		ob.id=#{orderId}
 	</select>
+
+	<!-- 新增子订单验票记录，只有年卡散票有 -->
+	<insert id="inserUsedRecords" parameterType="java.util.Map">
+		INSERT INTO `szsport_order_mgr`.`used_records` (
+			`id`,
+			`used_time`,
+			`used_number`,
+			`remian_number`,
+			`everyday_remian_number`,
+			`remarks`,
+			`order_code`,
+			`order_content_id`
+		)
+		VALUES
+			(
+				#{id},
+				NOW(),
+				#{usedNumber},
+				#{remianNumber},
+				#{everydayRemianNumber},
+				#{remarks},
+				#{orderCode},
+				#{orderContentId}
+			);
+	</insert>
 </mapper>

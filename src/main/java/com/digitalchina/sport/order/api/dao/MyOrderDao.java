@@ -147,4 +147,12 @@ public interface MyOrderDao {
 	 * @return
 	 */
 	int isHaveByOrderId(String orderId) throws Exception;
+
+	/**
+	 * 新增子订单验票记录，只有年卡散票有
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	int inserUsedRecords(Map<String,Object> params)throws Exception;
 }
