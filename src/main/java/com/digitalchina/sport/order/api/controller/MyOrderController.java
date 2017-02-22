@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
 import com.digitalchina.common.utils.StringUtil;
+import com.digitalchina.sport.order.api.service.EquipmentService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
@@ -29,7 +30,8 @@ public class MyOrderController {
     public static final Logger logger = LoggerFactory.getLogger(MyOrderController.class);
     @Autowired
     private MyOrderService myOrderService;
-
+    @Autowired
+    private EquipmentService equipmentService;
     /**
      * 根据用户id，按照状态查询所有订单
      * @return
@@ -184,34 +186,28 @@ public class MyOrderController {
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
                 Map<String,Object> orderDetailsMap = myOrderService.getOrderDetailByOrderCode(orderCode);
-                if(!StringUtil.isEmpty(orderDetailsMap.get("take_status"))){
-                    if(orderDetailsMap.get("take_status").equals("1")){
-                        return RtnData.fail("该票已取过票,请核实!");
-                    }else {
-                        //判断是否支付
-                        Map<String,Object> checkReturnMap = new HashMap<String, Object>();
-                        checkReturnMap = myOrderService.checkTicket(orderCode,"take");
-                        String returnKey = checkReturnMap.get("returnKey").toString();
-                        if(returnKey.equals("true")){
-                            if (myOrderService.updateTake(map)){
-                                //retMap.put("orderCode",orderCode);
-                                //取票成功返回门票信息
-                                retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
-                                return RtnData.ok(retMap,"取票成功!");
-                            }else {
-                                return RtnData.fail("取票状态更新状态失败!");
-                            }
-                        }else{
-                            return RtnData.fail(checkReturnMap);
-                        }
-
-                    }
+                String takeStatus = "";
+                if (!StringUtil.isEmpty(orderDetailsMap.get("take_status"))){
+                    takeStatus = orderDetailsMap.get("take_status").toString();
+                }
+                if(takeStatus.equals("1")){
+                    return RtnData.fail("该票已取过票,请核实!");
                 }else {
-                    if (myOrderService.updateTake(map)){
-                        retMap.put("orderCode",orderCode);
-                        return RtnData.ok(retMap,"取票成功，取票状态更新成功!");
-                    }else {
-                        return RtnData.fail("取票状态更新状态失败!");
+                    //判断是否支付
+                    Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                    checkReturnMap = myOrderService.checkTicket(orderCode,"take");
+                    String returnKey = checkReturnMap.get("returnKey").toString();
+                    if(returnKey.equals("true")){
+                        if (myOrderService.updateTake(map)){
+                            //retMap.put("orderCode",orderCode);
+                            //取票成功返回门票信息
+                            retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                            return RtnData.ok(retMap,"取票成功!");
+                        }else {
+                            return RtnData.fail("取票状态更新状态失败!");
+                        }
+                    }else{
+                        return RtnData.fail(checkReturnMap);
                     }
                 }
             }else {
@@ -239,31 +235,15 @@ public class MyOrderController {
                                        @RequestParam(value = "checkType", required = true) String checkType){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
+            //orderCode是否存在
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
                 Map<String,Object> orderDetailsMap = myOrderService.getOrderDetailByOrderCode(orderCode);
-                if(!StringUtil.isEmpty(orderDetailsMap.get("check_status"))){
-                    //if(!orderDetailsMap.get("check_status").equals("1")){
-                        //根据验票规则验票
-                        Map<String,Object> checkReturnMap = new HashMap<String, Object>();
-                        checkReturnMap = myOrderService.checkTicket(orderCode,"check");
-                        retMap.put("checkReturnMap",checkReturnMap);
-                        String returnKey = checkReturnMap.get("returnKey").toString();
-                        if (returnKey.equals("true")){
-                            Map<String,Object> checkParam = new HashMap<String, Object>();
-                            checkParam.put("orderCode",orderCode);
-                            checkParam.put("checkStatus","1");//验票状态改为1，已验票
-                            checkParam.put("checkType",checkType);
-                            if(myOrderService.updateCheckByMap(checkParam) >0){
-                                //验票成功返回门票信息
-                                retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
-                                return RtnData.ok(retMap);
-                            }else {
-                                return RtnData.fail(retMap,"验票状态修改失败!");
-                            }
-                        }else {
-                            return RtnData.fail(retMap,"验票失败!");
-                        }
-                    //}else  return RtnData.fail("该票已验过票,请核实!");
+                //判断设备和场馆是否匹配
+                Map<String,Object> checkEquMap = new HashMap<String, Object>();
+                checkEquMap = equipmentService.checkEquipIsInStadium(checkType,orderDetailsMap);
+                String equKey = checkEquMap.get("returnKey").toString();
+                if(equKey.equals("false")){
+                    return RtnData.fail(checkEquMap);//不匹配
                 }else {
                     //根据验票规则验票
                     Map<String,Object> checkReturnMap = new HashMap<String, Object>();
@@ -278,7 +258,7 @@ public class MyOrderController {
                         if(myOrderService.updateCheckByMap(checkParam) >0){
                             //验票成功返回门票信息
                             retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
-                            return RtnData.ok(retMap,"验票成功!");
+                            return RtnData.ok(retMap);
                         }else {
                             return RtnData.fail(retMap,"验票状态修改失败!");
                         }

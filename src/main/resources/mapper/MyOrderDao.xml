@@ -65,7 +65,10 @@
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
 		WHERE
-			ob.user_id = #{userId} AND ob.id= #{orderId}
+			ob.id= #{orderId}
+		<if test="userId != null and userId != ''">
+			AND ob.user_id = #{userId}
+		</if>
 	</select>
 	<!-- 一个订单下的所有子订单个数 -->
 	<select id="getCountByOrderId" parameterType="String" resultType="int">
@@ -88,10 +91,10 @@
 	<!-- 新增订单基本信息 -->
 	<insert id="inserOrderBaseInfo" parameterType="java.util.Map">
 		INSERT INTO `szsport_order_mgr`.`order_base_info`
-					(`id`, `order_number`, `stadium_name`, `classify`, `sub_stadium_name`, `person_kind`,
+					(`id`, `order_number`, `stadium_name`, `classify`, `sub_stadium_id`,`sub_stadium_name`, `person_kind`,
 					`ticket_id`, `ticket_name`, `ticket_type`, `order_time`, `order_channel`,`status`, `cost_price`, `sell_price`,
 					`user_id`, `user_name`, `user_tel`, `pay_type`, `pay_acount`, `pay_time`, `pay_price`, `merchant_id`, `son_orders`,`remarks`)
-		VALUES (#{id}, #{orderNumber}, #{stadiumName}, #{classify}, #{subStadiumName}, #{personKind},
+		VALUES (#{id}, #{orderNumber}, #{stadiumName}, #{classify}, #{subStadiumId},#{subStadiumName}, #{personKind},
 				#{ticketId}, #{ticketName}, #{ticketType}, NOW(), #{orderChannel},#{status}, #{costPrice}, #{sellPrice},
 				#{userId}, #{userName}, #{userTel}, #{payType}, #{payAcount}, #{payTime}, #{payPrice}, #{merchantId}, #{sonOrders},#{remarks});
 	</insert>
@@ -165,6 +168,7 @@
 	<select id="getOrderDetailByOrderCode" parameterType="String" resultType="java.util.HashMap">
 		SELECT
 			ob.id AS order_base_id,
+			ob.sub_stadium_id AS subStadiumId,
 			ob.stadium_name,
 			ob.sub_stadium_name,
 			ob.classify,

@@ -299,6 +299,7 @@ public class MyOrderService {
         String classify = getClassifyById(stadiumInfo.get("subStadiumId").toString());
         double totalCostPrice = Double.parseDouble((String) yearStrategyDetail.get("costPrice"))*count;
         double totalSellPrice = Double.parseDouble((String) yearStrategyDetail.get("sellPrice"))*count;
+        orderBaseInfo.put("subStadiumId",stadiumInfo.get("subStadiumId"));
         orderBaseInfo.put("stadiumName",stadiumInfo.get("mainStdiumName"));
         orderBaseInfo.put("classify",classify);
         orderBaseInfo.put("subStadiumName",stadiumInfo.get("subStdiumName"));

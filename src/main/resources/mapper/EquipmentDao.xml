@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.digitalchina.sport.order.api.dao.EquipmentDao" >
+    <!-- 根据子场馆id查询该场馆使用的所有设备 -->
+    <select id="findAllEquipBySubStadiumId" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT
+            e.equipment_id,e.equipment_name,e.`status`,
+            s.`name` AS subName,
+            m.`name` AS mainName
+        FROM
+            equipment e
+        LEFT JOIN sub_stadium s ON e.stadium_id = s.id
+        LEFT JOIN main_stadium m ON m.id = e.parent_id
+        WHERE e.stadium_id = #{subStadiumId}
+            <if test="equipmentType != null and equipmentType != ''">
+                AND e.`status` = #{status}
+            </if>
+    </select>
+
+    <!-- 根据子场馆id查询所有启用的设备id -->
+    <select id="findAllEquipIdBySubStadiumId" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT
+          e.equipment_id
+        FROM
+          equipment e
+        LEFT JOIN sub_stadium s ON e.stadium_id = s.id
+        WHERE e.stadium_id = #{subStadiumId}
+        AND e.`status` = '1'
+    </select>
+
+    <!-- 根据设备id查询设备是否存在 -->
+    <select id="getCountByEquipmentId" parameterType="java.util.Map" resultType="int">
+        SELECT
+          count(0)
+        FROM
+          equipment e
+        WHERE e.equipment_id = #{id}
+    </select>
+</mapper>
