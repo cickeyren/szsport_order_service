@@ -149,8 +149,8 @@ public class MyOrderService {
             if(list.size()>0){
                 for (int i=0 ;i<list.size();i++){
                     Map<String,Object> ocmap = new HashMap<String, Object>();
-                    map.put("status",params.get("status").toString());
-                    map.put("orderCode",list.get(i).get("order_code"));
+                    ocmap.put("status",params.get("status").toString());
+                    ocmap.put("orderCode",list.get(i).get("order_code"));
                     if(!list.get(i).get("status").equals("4")){//订单状态为4退单的时候，不更新该订单状态
                         myOrderDao.updateOrderContent(ocmap);
                     }
