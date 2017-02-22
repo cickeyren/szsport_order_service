@@ -138,6 +138,7 @@ public class AlipayPayController {
                         }
                         //更新用户状态
                         Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
+                        String orderNumber = tradeVo.getOrderNumber();
                         orderUpdateMap.put("orderNumber",tradeVo.getOrderNumber());
                         orderUpdateMap.put("status","1");
                         orderUpdateMap.put("payType","1");
@@ -145,9 +146,9 @@ public class AlipayPayController {
                         orderUpdateMap.put("payPrice", total_fee);
                         orderUpdateMap.put("payTime", gmt_create);
                         if(orderService.updateOrder(orderUpdateMap) == 0) {
-                            logger.error("========================更新订单状态发生错误=================");
+                            logger.error("========================更新订单【"+orderNumber+"】状态发生错误=================");
                         } else {
-                            logger.error("========================更新订单状态成功=================");
+                            logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
