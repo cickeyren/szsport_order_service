@@ -7,7 +7,7 @@
 			id,
 			ticket_name,
 			person_kind,
-			`status`,
+			CAST(status AS CHAR) AS status,
 			sell_price,
 			order_time,
 			stadium_name,
@@ -60,7 +60,7 @@
 			oc.id,
 			oc.remain_number,
 			oc.order_code,
-			oc.`status`
+			CAST(oc.status AS CHAR) AS status,
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
@@ -117,7 +117,8 @@
 				`remain_number`,`total_number`,
 				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,
 				`forbidden_date`,`hours_limit`,
-				`take_status`,`check_status`,`status`,
+				`take_status`,`check_status`,
+				CAST(status AS CHAR) AS status,
 				`take_type`,`take_time`,
 				`check_type`,`check_time`,
 				`cost_price`,`sell_price`,
@@ -193,7 +194,7 @@
 			oc.time_limit,
 			oc.forbidden_date,
 			oc.hours_limit,
-			oc.`status`,
+			CAST(oc.status AS CHAR) AS status,
 			oc.take_status,
 			oc.take_time,
 			oc.check_status,
@@ -268,7 +269,7 @@
 			ob.ticket_type AS ticketType,
 			ob.order_time AS orderTime,
 			ob.order_channel AS orderChannel,
-			ob.`status`,
+			CAST(ob.status AS CHAR) AS status,
 			ob.cost_price AS costPrice,
 			ob.sell_price AS sellPrice,
 			ob.user_id AS userId,
