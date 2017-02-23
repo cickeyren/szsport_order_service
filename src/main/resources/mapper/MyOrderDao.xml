@@ -60,7 +60,7 @@
 			oc.id,
 			oc.remain_number,
 			oc.order_code,
-			CAST(oc.status AS CHAR) AS status,
+			CAST(oc.status AS CHAR) AS status
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
@@ -118,7 +118,7 @@
 				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,
 				`forbidden_date`,`hours_limit`,
 				`take_status`,`check_status`,
-				CAST(status AS CHAR) AS status,
+				 status,
 				`take_type`,`take_time`,
 				`check_type`,`check_time`,
 				`cost_price`,`sell_price`,
