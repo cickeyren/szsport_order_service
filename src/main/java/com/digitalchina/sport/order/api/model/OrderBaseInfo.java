@@ -18,7 +18,7 @@ public class OrderBaseInfo {
     private String ticketType;//产品类型 0：散票 1：场地票 2：通票
     private Timestamp orderTime;
     private String orderChannel;//下单方式app
-    private String status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+    private int status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
     private String costPrice;//订单成本
     private String sellPrice;//订单售价
     private String userId;//用户id
@@ -112,11 +112,11 @@ public class OrderBaseInfo {
         this.orderChannel = orderChannel;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
