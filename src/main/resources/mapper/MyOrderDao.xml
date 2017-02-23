@@ -213,7 +213,8 @@
           SET oc.take_status = #{takeStatus},
               oc.take_time = NOW(),
               oc.take_type = #{takeType},
-              oc.remarks=#{remarks}
+              oc.remarks=#{remarks},
+              oc.status=#{status}
           WHERE
 			oc.order_code = #{orderCode}
     </update>
@@ -226,7 +227,8 @@
             oc.check_status = #{checkStatus},
             oc.check_time = NOW(),
             oc.check_type=#{checkType},
-            oc.remarks=#{remarks}
+            oc.remarks=#{remarks},
+            oc.status=#{status}
         WHERE
           oc.order_code = #{orderCode}
     </update>

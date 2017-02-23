@@ -20,7 +20,7 @@
     <!-- 根据子场馆id查询所有启用的设备id -->
     <select id="findAllEquipIdBySubStadiumId" parameterType="java.util.Map" resultType="java.util.HashMap">
         SELECT
-          e.equipment_id
+          e.equipment_id AS equipmentId
         FROM
           equipment e
         LEFT JOIN sub_stadium s ON e.stadium_id = s.id

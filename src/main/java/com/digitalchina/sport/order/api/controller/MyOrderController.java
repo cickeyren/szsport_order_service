@@ -182,6 +182,7 @@ public class MyOrderController {
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("orderCode",orderCode);
         map.put("takeStatus","1");//取票状态改为1，已取票
+        map.put("status","1");//使用状态改为1，待使用
         map.put("takeType",takeType);
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
@@ -195,7 +196,7 @@ public class MyOrderController {
                 }else {
                     //判断是否支付
                     Map<String,Object> checkReturnMap = new HashMap<String, Object>();
-                    checkReturnMap = myOrderService.checkTicket(orderCode,"take");
+                    checkReturnMap = myOrderService.takeTicket(orderCode);
                     String returnKey = checkReturnMap.get("returnKey").toString();
                     if(returnKey.equals("true")){
                         if (myOrderService.updateTake(map)){
@@ -247,13 +248,14 @@ public class MyOrderController {
                 }else {
                     //根据验票规则验票
                     Map<String,Object> checkReturnMap = new HashMap<String, Object>();
-                    checkReturnMap = myOrderService.checkTicket(orderCode,"check");
+                    checkReturnMap = myOrderService.checkTicket(orderCode);
                     retMap.put("checkReturnMap",checkReturnMap);
                     String returnKey = checkReturnMap.get("returnKey").toString();
                     if (returnKey.equals("true")){
                         Map<String,Object> checkParam = new HashMap<String, Object>();
                         checkParam.put("orderCode",orderCode);
                         checkParam.put("checkStatus","1");//验票状态改为1，已验票
+                        checkParam.put("status","2");//使用状态改为2，已使用
                         checkParam.put("checkType",checkType);
                         if(myOrderService.updateCheckByMap(checkParam) >0){
                             //验票成功返回门票信息

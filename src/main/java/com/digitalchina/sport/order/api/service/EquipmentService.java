@@ -45,24 +45,24 @@ public class EquipmentService {
                 if (mapList.size()>0){
                     for (int i =0;i<mapList.size();i++){
                         Map<String,Object> map1 = mapList.get(i);
-                        equipmentIds += map1.get("id")+",";
+                        equipmentIds += map1.get("equipmentId")+",";
                     }
                     equipmentIds = equipmentIds.substring(0, equipmentIds.length() - 1);
                     String[] ids = equipmentIds.split(",");
                     if(StringUtil.isIn(equipmentId,ids)){
-                        reqMap.put("checkResult","true");
-                        reqMap.put("checkMessage","该设备属于该场馆");
+                        reqMap.put("returnKey","true");
+                        reqMap.put("returnMessage","该设备属于该场馆");
                     }else {
-                        reqMap.put("checkResult","false");
-                        reqMap.put("checkMessage","该设备不属于该场馆");
+                        reqMap.put("returnKey","false");
+                        reqMap.put("returnMessage","该设备不属于该场馆");
                     }
                 }else {
-                    reqMap.put("checkResult","false");
-                    reqMap.put("checkMessage","该场馆还未添加设备!");
+                    reqMap.put("returnKey","false");
+                    reqMap.put("returnMessage","该场馆还未添加设备!");
                 }
             }else {
-                reqMap.put("checkResult","false");
-                reqMap.put("checkMessage","设备号为空!");
+                reqMap.put("returnKey","false");
+                reqMap.put("returnMessage","设备号为空!");
             }
         }
 

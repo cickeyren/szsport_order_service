@@ -490,7 +490,42 @@ public class MyOrderService {
         return myOrderDao.inserUsedRecords(params);
     }
 
-
+    /**
+     * 取票验证
+     * 验证是否付款，是否失效，是否已使用等
+     * @return
+     */
+    public Map<String,Object> takeTicket(String orderCode) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
+            String status = (String) orderDetailMap.get("status");
+            //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+            if(status.equals("1")){
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","该订单可取票");
+            }else if(status.equals("0")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单未支付");
+            }else if(status.equals("2")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已使用");
+            }else if(status.equals("3")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单支付失败");
+            }else if(status.equals("4")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已退款");//退款目前不做，之后可拓展为待退款和已退款
+            }else if(status.equals("5")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已失效");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
 
     /**
      * 验票
@@ -507,26 +542,19 @@ public class MyOrderService {
      step8：验证是否超过当日剩余次数：everyday_remain_number（-1表示不限次数）
      * @return
      */
-    public Map<String,Object> checkTicket(String orderCode,String type) throws Exception{
+    public Map<String,Object> checkTicket(String orderCode) throws Exception{
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
             String status = (String) orderDetailMap.get("status");
             //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
             if(status.equals("1")){
-                if(type.equals("check")){
-                    retMap = CheckUseableTime(orderCode);
-                }else {
-                    retMap.put("returnKey","true");
-                    retMap.put("returnMessage","该订单已支付");
-                }
-
+                retMap = CheckUseableTime(orderCode);
             }else if(status.equals("0")){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该订单未支付");
             }else if(status.equals("2")){
-                    retMap.put("returnKey","false");
-                    retMap.put("returnMessage","该订单已使用");
+                retMap = CheckUseableTime(orderCode);
             }else if(status.equals("3")){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该订单支付失败");
