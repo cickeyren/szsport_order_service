@@ -161,17 +161,14 @@
             <artifactId>javase</artifactId>
             <version>3.0.0</version>
         </dependency>
-<!--        <dependency>
-            <groupId>com.github.sogyf</groupId>
-            <artifactId>goja-qrcode</artifactId>
-            <version>0.1.2</version>
-        </dependency>-->
+        <!-- 二维码QRCode依赖-->
         <dependency>
             <groupId>QRCode</groupId>
             <artifactId>QRCode</artifactId>
             <version>1.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}\src\main\resources\lib\QRCode.jar</systemPath>
+            <!--<systemPath>${project.basedir}\src\main\resources\lib\QRCode.jar</systemPath>-->
+            <systemPath>${project.basedir}\src\main\webapp\WEB-INF\lib\QRCode.jar</systemPath>
         </dependency>
     </dependencies>
     <repositories>
