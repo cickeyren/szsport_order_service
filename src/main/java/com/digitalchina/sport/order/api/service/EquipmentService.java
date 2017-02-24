@@ -20,11 +20,6 @@ public class EquipmentService {
     @Autowired
     private EquipmentDao equipmentDao;
 
-    public List<Map<String,Object>> findAllEquipBySubStadiumId(Map<String,Object> param) throws Exception{
-
-        return equipmentDao.findAllEquipBySubStadiumId(param);
-    }
-
     /**
      * 验票（判断设备和场馆是否匹配）
      * @param map
@@ -34,27 +29,26 @@ public class EquipmentService {
     public Map<String,Object> checkEquipIsInStadium(String checkType,Map<String,Object> map) throws Exception{
         Map<String,Object> reqMap=new HashMap<String, Object>();
         Map<String,Object> param=new HashMap<String, Object>();
-        if(!StringUtil.isEmpty(map.get("subStadiumId"))){
+        if(!StringUtil.isEmpty(map.get("subStadiumId")) && !StringUtil.isEmpty(checkType)){
             param.put("subStadiumId",map.get("subStadiumId").toString());
-            String equipmentId = "";
-            String equipmentIds = "";
-            if(!StringUtil.isEmpty(checkType)){
-                equipmentId = checkType;//checkType就是设备编号
-                param.put("equipmentId",equipmentId);
-                List<Map<String,Object>> mapList = equipmentDao.findAllEquipIdBySubStadiumId(param);
-                if (mapList.size()>0){
-                    for (int i =0;i<mapList.size();i++){
-                        Map<String,Object> map1 = mapList.get(i);
-                        equipmentIds += map1.get("equipmentId")+",";
-                    }
-                    equipmentIds = equipmentIds.substring(0, equipmentIds.length() - 1);
-                    String[] ids = equipmentIds.split(",");
-                    if(StringUtil.isIn(equipmentId,ids)){
-                        reqMap.put("returnKey","true");
-                        reqMap.put("returnMessage","该设备属于该场馆,可继续验票");
+            param.put("equipmentId",checkType);//checkType就是设备编号
+            int count = equipmentDao.getCountByMap(param);//count>0表示属于
+            if(count > 0){//判断是否开馆和是否启用
+                Map<String,Object> opentypeMap =  equipmentDao.getOpenTypeByMap(param);
+                String eqstatus = (String) opentypeMap.get("eqstatus");//1正常
+                String substatus = (String) opentypeMap.get("substatus");//1正常，0闭馆，2作废
+                if(!StringUtil.isEmpty(eqstatus) && !StringUtil.isEmpty(substatus)){
+                    if (eqstatus.equals("1")){
+                        if (substatus.equals("1")){
+                            reqMap.put("returnKey","true");
+                            reqMap.put("returnMessage","该设备属于该场馆,可继续验票");
+                        }else {
+                            reqMap.put("returnKey","false");
+                            reqMap.put("returnMessage","该场馆闭馆!");
+                        }
                     }else {
                         reqMap.put("returnKey","false");
-                        reqMap.put("returnMessage","该门票不属于该场馆!");
+                        reqMap.put("returnMessage","设备未启用!");
                     }
                 }else {
                     reqMap.put("returnKey","false");
@@ -64,12 +58,10 @@ public class EquipmentService {
                 reqMap.put("returnKey","false");
                 reqMap.put("returnMessage","该门票不属于该场馆!");
             }
+        }else {
+            reqMap.put("returnKey","false");
+            reqMap.put("returnMessage","该门票不属于该场馆!");
         }
-
         return reqMap;
-    }
-
-    public int getCountByEquipmentId(Map<String,Object> map) throws Exception {
-        return equipmentDao.getCountByEquipmentId(map);
     }
 }

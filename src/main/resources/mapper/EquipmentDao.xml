@@ -34,6 +34,44 @@
           count(0)
         FROM
           equipment e
-        WHERE e.equipment_id = #{id}
+        WHERE e.equipment_id = #{equipmentId}
+    </select>
+
+    <!-- 根据设备id查询设备详细 -->
+    <select id="getDetailsByEquipmentId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            e.equipment_id,
+            e.equipment_name,
+            e.id,
+            e.parent_id,
+            e.stadium_id,
+            e.`status`,
+            e.is_bind
+        FROM
+            equipment e
+        WHERE
+            e.equipment_id = #{equipmentId}
+    </select>
+
+    <!-- 根据设备id查询设备是否启用，并且场馆是否开馆 -->
+    <select id="getOpenTypeByMap" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            e.`status` eqstatus,
+            s.`status` substatus
+        FROM
+            equipment e
+        LEFT JOIN sub_stadium s ON s.id = e.stadium_id
+        WHERE
+            e.equipment_id = #{equipmentId}
+    </select>
+    <!-- 根据设备id和场馆id查询设备是否属于场馆 -->
+    <select id="getCountByMap" parameterType="java.util.Map" resultType="int">
+        SELECT
+            count(0)
+        FROM
+            equipment e
+        LEFT JOIN sub_stadium s ON e.stadium_id = s.id
+        WHERE
+            e.stadium_id = #{subStadiumId} AND e.equipment_id=#{equipmentId}
     </select>
 </mapper>

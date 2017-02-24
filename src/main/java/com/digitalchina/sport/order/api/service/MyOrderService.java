@@ -383,21 +383,9 @@ public class MyOrderService {
      */
     public Map<String,Object> getTimeLimit(Map<String,Object> map){
         String dateLimit = "";
-        Map<String,Object> yearStrategyDetail = (Map<String, Object>) map.get("yearStrategyDetail");
         String timeLimit = "";
+        Map<String,Object> yearStrategyDetail = (Map<String, Object>) map.get("yearStrategyDetail");
         List<Map<String,Object>> checkUseableTimeList = (List<Map<String, Object>>) map.get("checkUseableTimeList");
-        if(checkUseableTimeList.size()>0){
-            String type = checkUseableTimeList.get(0).get("checkLimitedDateType").toString();
-            if(type.equals("0")){
-                dateLimit = type;
-            }else if(type.equals("1")){
-                //1:1,2,3,4,5,6(1表示每周，冒号后的数字为周数)
-                dateLimit = type+":"+yearStrategyDetail.get("checkLimitedWeekDetails");
-            }
-        }else {
-            String type = yearStrategyDetail.get("checkLimitedDateType").toString();
-            dateLimit = type;
-        }
         if(checkUseableTimeList.size()>0){
             for (int i=0;i<checkUseableTimeList.size();i++){
                 Map<String,Object> useableTime = checkUseableTimeList.get(i);
@@ -408,7 +396,17 @@ public class MyOrderService {
         }else{
             timeLimit ="";
         }
+        //时间段end
+        String type = (String) yearStrategyDetail.get("checkLimitedDateType");
+        if(type.equals("0")){
+            dateLimit = type;
+        }else if(type.equals("1")){
+            //1:1,2,3,4,5,6(1表示每周，冒号后的数字为周数)
+            dateLimit = type+":"+ yearStrategyDetail.get("checkLimitedWeekDetails");
+        }
+
         Map<String,Object> retMap = new HashMap<String, Object>();
+
         retMap.put("dateLimit",dateLimit);
         retMap.put("timeLimit",timeLimit);
         return retMap;

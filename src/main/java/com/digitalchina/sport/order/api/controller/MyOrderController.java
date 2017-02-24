@@ -243,9 +243,10 @@ public class MyOrderController {
                 //判断设备和场馆是否匹配
                 Map<String,Object> checkEquMap = new HashMap<String, Object>();
                 checkEquMap = equipmentService.checkEquipIsInStadium(checkType,orderDetailsMap);
+                retMap.put("checkReturnMap",checkEquMap);
                 String equKey = checkEquMap.get("returnKey").toString();
                 if(equKey.equals("false")){
-                    return RtnData.fail(checkEquMap);//不匹配
+                    return RtnData.fail(retMap,"验票失败!");//不匹配
                 }else {
                     //根据验票规则验票
                     Map<String,Object> checkReturnMap = new HashMap<String, Object>();
