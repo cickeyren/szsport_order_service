@@ -664,6 +664,9 @@ public class MyOrderService {
                             if (StringUtil.isContainSpcifyStr(todayWeek + "", limitDays)) {
                                 //验证可用日期通过==============>>下一步
                                 retMap = CheckCanUseTime(dqtime,dqdate,orderDetailMap);
+                            }else {
+                                retMap.put("returnKey","false");
+                                retMap.put("returnMessage","不在可用日期内!");
                             }
                         }else {
                             //无需判断可用时间段=======>>下一步
