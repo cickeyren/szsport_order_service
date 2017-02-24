@@ -51,18 +51,18 @@ public class EquipmentService {
                     String[] ids = equipmentIds.split(",");
                     if(StringUtil.isIn(equipmentId,ids)){
                         reqMap.put("returnKey","true");
-                        reqMap.put("returnMessage","该设备属于该场馆");
+                        reqMap.put("returnMessage","该设备属于该场馆,可继续验票");
                     }else {
                         reqMap.put("returnKey","false");
-                        reqMap.put("returnMessage","该设备不属于该场馆");
+                        reqMap.put("returnMessage","该门票不属于该场馆!");
                     }
                 }else {
                     reqMap.put("returnKey","false");
-                    reqMap.put("returnMessage","该场馆还未添加设备!");
+                    reqMap.put("returnMessage","该门票不属于该场馆!");
                 }
             }else {
                 reqMap.put("returnKey","false");
-                reqMap.put("returnMessage","设备号为空!");
+                reqMap.put("returnMessage","该门票不属于该场馆!");
             }
         }
 

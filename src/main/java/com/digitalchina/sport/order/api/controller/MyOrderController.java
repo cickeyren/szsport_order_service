@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
+import com.digitalchina.common.utils.MyOrcode;
 import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.sport.order.api.service.EquipmentService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
@@ -294,6 +295,34 @@ public class MyOrderController {
             e.printStackTrace();
             logger.error("取票订单失败",e);
             return RtnData.fail("取消订单失败!");
+        }
+    }
+
+
+    /**
+     * 根据验票码获取二维码图片
+     */
+    @RequestMapping(value="printQrCode.img",method = RequestMethod.GET)
+    @ResponseBody
+    public void printQrCode(@RequestParam(value = "orderCode", required = true) String orderCode, HttpServletResponse response) throws Exception {
+        String qrCode = "";
+        if(myOrderService.isHaveByOrderCode(orderCode) >0){
+            qrCode = orderCode;
+        }else{
+            qrCode = "";
+        }
+        try {
+            //5、图形写给浏览器
+            response.setContentType("image/jpeg");
+            //发头控制浏览器不要缓存
+            response.setDateHeader("expries", -1);
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Pragma", "no-cache");
+            MyOrcode handler = new MyOrcode();
+            handler.encoderQRCode(qrCode,response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("生成二维码失败!",e);
         }
     }
 }
