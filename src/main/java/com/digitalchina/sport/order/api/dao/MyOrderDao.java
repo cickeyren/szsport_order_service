@@ -120,10 +120,10 @@ public interface MyOrderDao {
 
 	/**
 	 * 订单流水号查询商户和订单内容
-	 * @param orderNumber
+	 * @param
 	 * @return
 	 */
-	Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber) throws Exception;
+	Map<String,Object> getOrderAndMpByOrderNumer(Map<String,Object> params) throws Exception;
 	/**
 	 * 取消订单的字单，根据主订单的编号
 	 * @param params

@@ -833,11 +833,11 @@ public class MyOrderService {
 
     /**
      * 订单流水号查询商户和订单内容
-     * @param orderNumber
+     * @param map
      * @return
      */
-    public Map<String,Object> getOrderAndMpByOrderNumer(String orderNumber) throws Exception{
-        return myOrderDao.getOrderAndMpByOrderNumer(orderNumber);
+    public Map<String,Object> getOrderAndMpByOrderNumer(Map<String,Object> map) throws Exception{
+        return myOrderDao.getOrderAndMpByOrderNumer(map);
     }
 
     /**

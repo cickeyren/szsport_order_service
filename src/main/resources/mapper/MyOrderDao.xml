@@ -256,7 +256,7 @@
 	</update>
 
 	<!-- 订单流水号查询商户和订单内容 -->
-	<select id="getOrderAndMpByOrderNumer" parameterType="String" resultType="java.util.HashMap">
+	<select id="getOrderAndMpByOrderNumer" parameterType="java.util.Map" resultType="java.util.HashMap">
 		SELECT
 			ob.id AS orderBaseId,
 			ob.order_number AS orderNumber,
@@ -288,6 +288,9 @@
 		LEFT JOIN merchant_pay_account mp ON mp.merchant_id = ob.merchant_id
 		WHERE
 			ob.order_number=#{orderNumber}
+		<if test="payWay != null and payWay != ''">
+			AND mp.pay_way=#{payWay}
+		</if>
 	</select>
 
 	<!-- 取消订单的字单，根据主订单的编号-->

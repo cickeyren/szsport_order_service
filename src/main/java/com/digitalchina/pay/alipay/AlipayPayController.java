@@ -183,7 +183,10 @@ public class AlipayPayController {
     @RequestMapping(value = "/returnPayInfo.json")
     @ResponseBody
     public Object  returnPay(@RequestParam(required = true) String orderNumber) throws Exception {
-        Map<String,Object> orderAndMerchantInfo =  orderService.getOrderAndMpByOrderNumer(orderNumber);
+        Map<String,Object> ordermap = new HashMap<String, Object>();
+        ordermap.put("orderNumber",orderNumber);
+        ordermap.put("payWay","0");//支付宝方式，1微信，以后扩展
+        Map<String,Object> orderAndMerchantInfo =  orderService.getOrderAndMpByOrderNumer(ordermap);
         if(StringUtils.isEmpty(orderNumber) || null == orderAndMerchantInfo) {
             return RtnData.fail(orderNumber + "订单不存在!");
         }

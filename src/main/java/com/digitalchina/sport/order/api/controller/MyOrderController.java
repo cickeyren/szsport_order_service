@@ -206,14 +206,18 @@ public class MyOrderController {
                             retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
                             return RtnData.ok(retMap,"取票成功!");
                         }else {
-                            return RtnData.fail("取票状态更新状态失败!");
+                            return RtnData.fail(retMap,"取票状态更新状态失败!");
                         }
                     }else{
                         return RtnData.fail(checkReturnMap);
                     }
                 }
             }else {
-                return RtnData.fail("没有查询到符合条件的订单记录!");
+                Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                checkReturnMap.put("returnKey","false");
+                checkReturnMap.put("returnMessage","订单编号不存在");
+                retMap.put("checkReturnMap",checkReturnMap);
+                return RtnData.fail(retMap,"没有查询到符合条件的订单记录!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,7 +275,11 @@ public class MyOrderController {
                     }
                 }
             }else {
-                return RtnData.fail("没有查询到符合条件的订单记录!");
+                Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                checkReturnMap.put("returnKey","false");
+                checkReturnMap.put("returnMessage","订单编号不存在");
+                retMap.put("checkReturnMap",checkReturnMap);
+                return RtnData.fail(retMap,"没有查询到符合条件的订单记录!");
             }
         } catch (Exception e) {
             e.printStackTrace();
