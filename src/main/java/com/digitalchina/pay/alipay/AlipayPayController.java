@@ -185,7 +185,7 @@ public class AlipayPayController {
     public Object  returnPay(@RequestParam(required = true) String orderNumber) throws Exception {
         Map<String,Object> ordermap = new HashMap<String, Object>();
         ordermap.put("orderNumber",orderNumber);
-        ordermap.put("payWay","0");//支付宝方式，1微信，以后扩展
+        ordermap.put("payWay","1");//支付宝方式，2微信，以后扩展
         Map<String,Object> orderAndMerchantInfo =  orderService.getOrderAndMpByOrderNumer(ordermap);
         if(StringUtils.isEmpty(orderNumber) || null == orderAndMerchantInfo) {
             return RtnData.fail(orderNumber + "订单不存在!");

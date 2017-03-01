@@ -327,8 +327,8 @@
 			`id`,
 			`used_time`,
 			`used_number`,
-			`remian_number`,
-			`everyday_remian_number`,
+			`remain_number`,
+			`everyday_remain_number`,
 			`remarks`,
 			`order_code`,
 			`order_content_id`
@@ -338,11 +338,46 @@
 				#{id},
 				NOW(),
 				#{usedNumber},
-				#{remianNumber},
-				#{everydayRemianNumber},
+				#{remainNumber},
+				#{everydayRemainNumber},
 				#{remarks},
 				#{orderCode},
 				#{orderContentId}
 			);
 	</insert>
+
+
+	<!--定时任务中使用，更新订单状态，时间超过10分钟状态变为失效订单 -->
+	<update id="updateAllOrder" parameterType="java.util.Map" >
+		UPDATE order_base_info ob
+		SET ob.status='5',ob.remarks=#{remarks}
+		WHERE
+		<![CDATA[
+			ob.order_time < DATE_SUB(NOW(),INTERVAL 10 MINUTE) AND ob.status='0'
+  		]]>
+	</update>
+
+	<update id="updateAllOrderContent" parameterType="java.util.Map" >
+		UPDATE order_content_detail oc
+		SET oc. STATUS = '5',
+		oc.remarks = #{remarks}
+		WHERE
+		oc.order_base_id IN (
+		SELECT
+		ob.id
+		FROM
+		order_base_info ob
+		WHERE
+		<![CDATA[
+		ob.order_time < DATE_SUB(NOW(), INTERVAL 10 MINUTE)
+		AND ob. STATUS = '0'
+		]]>
+		)
+	</update>
+	<!--定时任务中使用,每天24点更新次数票的剩余次数 -->
+	<update id="updateAllEveryRemain" parameterType="java.util.Map">
+		UPDATE order_content_detail oc
+		SET oc.everyday_remain_number=oc.everyday_number
+		WHERE oc.status=#{status}
+	</update>
 </mapper>

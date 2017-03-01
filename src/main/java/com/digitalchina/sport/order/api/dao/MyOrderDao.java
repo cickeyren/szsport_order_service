@@ -155,4 +155,21 @@ public interface MyOrderDao {
 	 * @throws Exception
 	 */
 	int inserUsedRecords(Map<String,Object> params)throws Exception;
+
+    /**
+     * 定时任务中使用，更新订单状态，时间超过10分钟状态变为失效订单
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    int updateAllOrder(Map<String,Object> params)throws Exception;
+    int updateAllOrderContent(Map<String,Object> params)throws Exception;
+
+    /**
+     * 定时任务中使用,每天24点更新次数票的剩余次数
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    int updateAllEveryRemain(Map<String,Object> params)throws Exception;
 }

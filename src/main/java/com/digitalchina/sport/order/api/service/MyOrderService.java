@@ -440,35 +440,46 @@ public class MyOrderService {
      */
     public int updateCheckByMap(Map<String,Object> map) throws Exception{
         Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
+        String totalNumber = "";
+        String remainNumber = "";
+        map.put("remainNumber",orderDetails.get("remain_number"));
+        map.put("everydayRemainNumber",orderDetails.get("everyday_remain_number"));
         if(!StringUtil.isEmpty(orderDetails.get("total_number"))){
-            String totalNumber = orderDetails.get("total_number").toString();
+            totalNumber = (String) orderDetails.get("total_number");
             if(!StringUtil.isEmpty(totalNumber)){
+                if(StringUtil.isEmpty(orderDetails.get("remain_number"))){
+                    remainNumber = totalNumber;
+                }else {
+                    remainNumber = (String) orderDetails.get("remain_number");
+                }
                 double total = Double.parseDouble(totalNumber);
-                if(!StringUtil.isEmpty(orderDetails.get("remain_number"))){
-                    String remainNumber = orderDetails.get("remain_number").toString();
-                    double remain = Double.parseDouble(remainNumber);
-                    if(total>0){
-                        if(checkRemainTime(remainNumber)){
-                            remain = remain -1;
-                            map.put("remainNumber",remain);
-                        }
+                double remain = Double.parseDouble(remainNumber);
+                if(total>0){
+                    if(checkRemainTime(remainNumber)){
+                        remain = remain -1;
+                        map.put("remainNumber",remain);
                     }
                 }
             }
         }
+        //everyday=-1不限次数不需要修改
+        String everydayNumber = "";
+        String everydayRemainNumber = "";
         if(!StringUtil.isEmpty(orderDetails.get("everyday_number"))){
-            String everydayNumber = orderDetails.get("everyday_number").toString();
+            everydayNumber = (String) orderDetails.get("everyday_number");
             if(!StringUtil.isEmpty(everydayNumber)){
+                if(StringUtil.isEmpty(orderDetails.get("everyday_remain_number"))){
+                    everydayRemainNumber = everydayNumber;
+                }else {
+                    everydayRemainNumber = (String) orderDetails.get("everyday_remain_number");
+                }
                 double everyday = Double.parseDouble(everydayNumber);
-                if(!StringUtil.isEmpty(orderDetails.get("everyday_remain_number"))){
-                    String everydayRemainNumber = orderDetails.get("everyday_remain_number").toString();
-                    double everydayRemain = Double.parseDouble(everydayRemainNumber);
-                    if(everyday>0){
-                        if(checkRemainTime(everydayRemainNumber)) {
-                            everydayRemain = everydayRemain - 1;
-                            map.put("everydayRemainNumber", everydayRemain);
-                        }
-                    }//everyday=-1不限次数不需要修改
+                double everydayRemain = Double.parseDouble(everydayRemainNumber);
+                if(everyday>0){
+                    if(checkRemainTime(everydayRemainNumber)){
+                        everydayRemain = everydayRemain -1;
+                        map.put("everydayRemainNumber",everydayRemain);
+                    }
                 }
             }
         }
@@ -480,11 +491,11 @@ public class MyOrderService {
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("id",UUIDUtil.generateUUID());//uuid生成32位随机数
         params.put("usedNumber","1");
-        params.put("remianNumber",map.get("remianNumber"));
-        params.put("everydayRemianNumber",map.get("everydayRemainNumber"));
+        params.put("remainNumber",map.get("remainNumber"));
+        params.put("everydayRemainNumber",map.get("everydayRemainNumber"));
         params.put("orderCode",map.get("orderCode"));
         params.put("orderContentId",orderDetails.get("orderContentId"));
-        params.put("remarks",orderDetails.get("remarks"));
+        params.put("remarks",DateUtil.now()+"验票成功!");
         return myOrderDao.inserUsedRecords(params);
     }
 
@@ -670,7 +681,7 @@ public class MyOrderService {
                             }
                         }else {
                             //无需判断可用时间段=======>>下一步
-                            retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
+                            retMap = CheckRemainNumber(dqtime,dqdate,orderDetailMap);
                         }
                     }else {
                         //type=0表示每日，不用判断周数==============>>下一步
@@ -706,7 +717,7 @@ public class MyOrderService {
         if(!StringUtil.isEmpty(orderDetailMap.get("time_limit"))) {
             if (checkTime(dqtime, orderDetailMap.get("time_limit").toString())) {
                 //验证验票在可用时间段内=============>>下一步
-                retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
+                retMap = CheckRemainNumber(dqtime,dqdate,orderDetailMap);
             }else {
                 //验证验票不在可用时间段内
                 retMap.put("returnKey","false");
@@ -715,57 +726,71 @@ public class MyOrderService {
 
         }else {
             //没有可用时间段限制 ======>>下一步
-            retMap = CheckNumber(dqtime,dqdate,orderDetailMap);
+            retMap = CheckRemainNumber(dqtime,dqdate,orderDetailMap);
         }
         System.out.println(retMap);
         return retMap;
     }
 
-    public Map<String,Object> CheckNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
+    /**
+     * 是否超过剩余次数
+     * @param dqtime
+     * @param dqdate
+     * @param orderDetailMap
+     * @return
+     */
+    public Map<String,Object> CheckRemainNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
         Map<String,Object> retMap = new HashMap<String, Object>();
         //是否超过剩余次数
         if(!StringUtil.isEmpty(orderDetailMap.get("remain_number"))){
             String remain_number = orderDetailMap.get("remain_number").toString();
             if(remain_number.equals("-1")){//-1表示不限次数
-                if(!StringUtil.isEmpty(orderDetailMap.get("everyday_remain_number"))){
-                    String everyday_remain_number = orderDetailMap.get("everyday_remain_number").toString();
-                    if(!everyday_remain_number.equals("-1")){//-1表示不限次数
-                        if (checkRemainTime(everyday_remain_number)){
-                            //是否超过当日使用次数
-                            retMap.put("returnKey","true");
-                            retMap.put("returnMessage","验证通过!");
-                        }else {
-                            retMap.put("returnKey","false");
-                            retMap.put("returnMessage","超过每日限次!");
-                        }
-                    }else {
-                        //-1表示不限次数，通过
-                        retMap.put("returnKey","true");
-                        retMap.put("returnMessage","验证通过!");
-                    }
-                }else{
-                    //表示不限次数，通过
-                    retMap.put("returnKey","true");
-                    retMap.put("returnMessage","验证通过!");
-                }
+                //-1表示不限次数， 下一步判断每日限次
+                retMap = CheckEveryRemainNumber(dqtime,dqdate,orderDetailMap);
             }else {
                 if (checkRemainTime(remain_number)){//是否超过剩余次数
-                    retMap.put("returnKey","true");
-                    retMap.put("returnMessage","验证通过!");
+                    //true，下一步判断每日限次
+                    retMap = CheckEveryRemainNumber(dqtime,dqdate,orderDetailMap);
                 }else {
                     retMap.put("returnKey","false");
                     retMap.put("returnMessage","超过剩余次数!");
                 }
             }
-        }else{
-            //表示不限次数，通过
-            retMap.put("returnKey","true");
-            retMap.put("returnMessage","验证通过!");
         }
         System.out.println(retMap);
         return retMap;
     }
 
+    /**
+     * 是否超过当日剩余次数
+     * @param dqtime
+     * @param dqdate
+     * @param orderDetailMap
+     * @return
+     */
+    public Map<String,Object> CheckEveryRemainNumber(String dqtime,String dqdate,Map<String,Object> orderDetailMap){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //是否超过剩余次数
+        if(!StringUtil.isEmpty(orderDetailMap.get("everyday_remain_number"))){
+            String remain_number = orderDetailMap.get("everyday_remain_number").toString();
+            if(remain_number.equals("-1")){//-1表示不限次数
+                //-1表示不限次数，通过
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","验证通过!");
+            }else {
+                if (checkRemainTime(remain_number)){//是否超过剩余次数
+                    //true，通过
+                    retMap.put("returnKey","true");
+                    retMap.put("returnMessage","验证通过!");
+                }else {
+                    retMap.put("returnKey","false");
+                    retMap.put("returnMessage","超过每日限次!");
+                }
+            }
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
     /**
      * 验证验票时间是否在可用时间段内
      */
@@ -885,5 +910,30 @@ public class MyOrderService {
             }
         }
         return retMap;
+    }
+
+    /**
+     * 定时任务中使用，更新订单状态，时间超过10分钟状态变为失效订单
+     * @param
+     * @return
+     * @throws Exception
+     */
+    public void updateAllOrderStatus(String remarks) throws Exception{
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("remarks",remarks);
+        myOrderDao.updateAllOrder(params);
+        myOrderDao.updateAllOrderContent(params);
+    }
+
+    /**
+     * 定时任务中使用,每天24点更新次数票的剩余次数
+     * @param
+     * @return
+     * @throws Exception
+     */
+    public void updateAllEveryRemain() throws Exception{
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("status","2");//使用中的
+        myOrderDao.updateAllEveryRemain(params);
     }
 }
