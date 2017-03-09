@@ -55,6 +55,8 @@ public class MyOrderController {
         map.put("status",status);
         map.put("orderNumber",orderNumber);
         try {
+            myOrderService.updateAllOrderStatus("超过十分钟的失效订单");
+            //超过十分钟的失效订单
             List<Map<String,Object>> list = myOrderService.getAllOrderByUserId(map);
             int count = myOrderService.getCountByUserId(map);
             Map<String,Object> reqMap=new HashMap<String, Object>();
@@ -153,16 +155,42 @@ public class MyOrderController {
     @ResponseBody
     public RtnData<Object> checkTicketByOrderCode(@RequestParam(value = "orderCode", required = true) String orderCode){
         Map<String,Object> retMap = new HashMap<String, Object>();
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("orderCode",orderCode);
         try {
             if(myOrderService.isHaveByOrderCode(orderCode)>0){
-                retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
-                return RtnData.ok(retMap);
+                Map<String,Object> orderDetailsMap = myOrderService.getOrderDetailByOrderCode(orderCode);
+                String takeStatus = "";
+                if (!StringUtil.isEmpty(orderDetailsMap.get("take_status"))){
+                    takeStatus = orderDetailsMap.get("take_status").toString();
+                }
+                if(takeStatus.equals("1")){
+                    retMap.put("returnKey","false");
+                    retMap.put("returnMessage","该票已取过票,请核实!");
+                    return RtnData.fail(retMap);
+                }else {
+                    //判断是否支付
+                    Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                    checkReturnMap = myOrderService.takeTicket(orderCode);
+                    String returnKey = checkReturnMap.get("returnKey").toString();
+                    if(returnKey.equals("true")){
+                        //未取票状态，可以取票
+                        retMap.put("returnKey","true");
+                        retMap.put("returnMessage","可以取票!");
+                        retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                        return RtnData.ok(retMap);
+                    }else{
+                        return RtnData.fail(checkReturnMap);
+                    }
+                }
             }else {
-                return RtnData.fail("没有查询到符合条件的订单记录!");
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","没有查询到符合条件的订单记录!");
+                return RtnData.fail(retMap);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("查询失败，",e);
+            logger.error("查询失败",e);
             return RtnData.fail("查询失败!");
         }
     }
@@ -171,7 +199,7 @@ public class MyOrderController {
      * 取票操作
      * 根据验票码验证是否存在，存在则返回该票的详情,并修改取票状态，表示取票成功，不存在则返回提示信息
      * @param orderCode
-     * @param takeType
+     * @param
      * @return
      */
     @RequestMapping(value="takeTicket.json",method = RequestMethod.GET)

@@ -24,8 +24,8 @@ public class ScheduledTasks {
     @Autowired
     private MyOrderService myOrderService;
 
-    //定时任务1,10分钟更新订单状态
-    @Scheduled(fixedRate = 1000 * 600)
+    //定时任务1,5分钟更新订单状态
+    @Scheduled(fixedRate = 1000 * 300)
     public void reportCurrentTime() {
     	// 请注意：需要保证在计划的task没有运行时，如何重新运行
         //log.info("########## The task executed at {}", new SimpleDateFormat("HH:mm:ss").format(new Date()));
@@ -39,16 +39,16 @@ public class ScheduledTasks {
         }
     }
 
-    //定时任务2,每天晚上更新次数票的剩余次数
+    //定时任务2,每天晚上更新次数票的每日剩余次数
     //@Scheduled(cron = "0 0 0 * * ?")
     @Scheduled(cron = "0 0 0 * * ?")
     public void reportCurrentByCron() {
         try {
             myOrderService.updateAllEveryRemain();
-            log.info(DateUtil.now()+"########## 更新次数票的剩余次数成功！########## ", DateUtil.now());
+            log.info(DateUtil.now()+"########## 更新次数票的每日剩余次数成功！########## ", DateUtil.now());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(DateUtil.now()+"########## 更新次数票的剩余次数失败！########## ", DateUtil.now());
+            log.error(DateUtil.now()+"########## 更新次数票的每日剩余次数失败！########## ", DateUtil.now());
         }
     }
 }

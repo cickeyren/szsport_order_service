@@ -192,8 +192,10 @@ public class AlipayPayController {
         }
         if("1".equals((String)orderAndMerchantInfo.get("status"))) {
          return RtnData.fail(orderNumber + "该订单已经支付无法再次支付!");
-         }
-
+        }
+        if("5".equals((String)orderAndMerchantInfo.get("status"))) {
+            return RtnData.fail(orderNumber + "该订单已经失效!");
+        }
         String privateKey = (String)orderAndMerchantInfo.get("payKey");
         String outTradeNo = UtilDate.getOrderNum()+UtilDate.getThree();
         AlipayTradeModel alipayTradeModel = payTradeDao.selectAlipayTradeModelByOutTradeNo(outTradeNo);

@@ -368,10 +368,7 @@
 		FROM
 		order_base_info ob
 		WHERE
-		<![CDATA[
-		ob.order_time < DATE_SUB(NOW(), INTERVAL 10 MINUTE)
-		AND ob. STATUS = '0'
-		]]>
+		ob. STATUS = '5'
 		)
 	</update>
 	<!--定时任务中使用,每天24点更新次数票的剩余次数 -->
