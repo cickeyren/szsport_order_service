@@ -297,6 +297,8 @@ public class MyOrderController {
                         checkParam.put("checkType",checkType);
                         if(myOrderService.updateCheckByMap(checkParam) >0){
                             //验票成功返回门票信息
+                            //针对年票/散票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+                            myOrderService.updateOrderBaseStatus("次数已使用完");
                             retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
                             return RtnData.ok(retMap);
                         }else {
