@@ -118,7 +118,7 @@
 				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,
 				`forbidden_date`,`hours_limit`,
 				`take_status`,`check_status`,
-				 status,
+				 status,`approach_time`,`departure_time`
 				`take_type`,`take_time`,
 				`check_type`,`check_time`,
 				`cost_price`,`sell_price`,
@@ -128,7 +128,7 @@
 		   #{remainNumber},#{totalNumber},
 		   #{everydayNumber},#{everydayRemainNumber},#{dateLimit},#{timeLimit},
 		   #{forbiddenDate},#{hoursLimit},
-		   #{takeStatus},#{checkStatus},#{status},
+		   #{takeStatus},#{checkStatus},#{status},#{approachTime},#{departureTime}
 		   #{takeType},#{takeTime},
 		   #{checkType},#{checkTime},
 		   #{costPrice},#{sellPrice},
@@ -376,5 +376,23 @@
 		UPDATE order_content_detail oc
 		SET oc.everyday_remain_number=oc.everyday_number
 		WHERE oc.status=#{status}
+	</update>
+
+	<!--定时任务中使用,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用 -->
+	<update id="updateOrderBaseStatus" parameterType="java.util.Map">
+		UPDATE order_base_info ob
+		SET ob.`status` = '2',
+		 ob.remarks = #{remarks}
+		WHERE
+			ob.id IN (
+				SELECT
+					oc.order_base_id
+				FROM
+					order_content_detail oc
+				WHERE
+					oc.remain_number = 0
+			)
+		AND ob.`status` = '1'
+		AND ob.ticket_type = '0'
 	</update>
 </mapper>

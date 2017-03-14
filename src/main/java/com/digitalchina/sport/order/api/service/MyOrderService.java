@@ -936,4 +936,16 @@ public class MyOrderService {
         params.put("status","2");//使用中的
         myOrderDao.updateAllEveryRemain(params);
     }
+
+    /**
+     * 定时任务中使用，针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+     * @param
+     * @return
+     * @throws Exception
+     */
+    public void updateOrderBaseStatus(String remarks) throws Exception{
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("remarks",remarks);
+        myOrderDao.updateOrderBaseStatus(params);
+    }
 }

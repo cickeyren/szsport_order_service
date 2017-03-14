@@ -172,4 +172,12 @@ public interface MyOrderDao {
      * @throws Exception
      */
     int updateAllEveryRemain(Map<String,Object> params)throws Exception;
+
+	/**
+	 * 定时任务中使用,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	int updateOrderBaseStatus(Map<String,Object> params)throws Exception;
 }

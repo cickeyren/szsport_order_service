@@ -51,4 +51,17 @@ public class ScheduledTasks {
             log.error(DateUtil.now()+"########## 更新次数票的每日剩余次数失败！########## ", DateUtil.now());
         }
     }
+
+    //定时任务3,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+    //@Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(fixedRate = 1000 * 300)
+    public void reportCurrentByTime() {
+        try {
+            myOrderService.updateOrderBaseStatus("次数已使用完");
+            log.info(DateUtil.now()+"########## 更新次数票的主单的状态成功！########## ", DateUtil.now());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(DateUtil.now()+"########## 更新次数票的主单的状态失败！########## ", DateUtil.now());
+        }
+    }
 }
