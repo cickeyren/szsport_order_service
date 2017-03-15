@@ -138,9 +138,9 @@ public class FieldOrderService {
         String fieldId = (String) timeDetail.get("fieldId");
         orderContentDetail.put("fieldId",fieldId);
         //适用日期 String date
-        orderContentDetail.put("date_limit",date);
+        orderContentDetail.put("dateLimit",date);
         //适用时间 "timeInter":"7:00-9:00",
-        orderContentDetail.put("time_limit",timeDetail.get("timeInter"));
+        orderContentDetail.put("timeLimit",timeDetail.get("timeInter"));
         //售价
         //orderContentDetail.put("costPrice",strategyDetail.get("costPrice"));//成本价
         orderContentDetail.put("sellPrice",timeDetail.get("sellPrice"));//售价
