@@ -118,7 +118,7 @@
 				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,
 				`forbidden_date`,`hours_limit`,
 				`take_status`,`check_status`,
-				 status,`approach_time`,`departure_time`
+				 status,`approach_time`,`departure_time`,
 				`take_type`,`take_time`,
 				`check_type`,`check_time`,
 				`cost_price`,`sell_price`,
@@ -128,7 +128,7 @@
 		   #{remainNumber},#{totalNumber},
 		   #{everydayNumber},#{everydayRemainNumber},#{dateLimit},#{timeLimit},
 		   #{forbiddenDate},#{hoursLimit},
-		   #{takeStatus},#{checkStatus},#{status},#{approachTime},#{departureTime}
+		   #{takeStatus},#{checkStatus},#{status},#{approachTime},#{departureTime},
 		   #{takeType},#{takeTime},
 		   #{checkType},#{checkTime},
 		   #{costPrice},#{sellPrice},
@@ -395,4 +395,15 @@
 		AND ob.`status` = '1'
 		AND ob.ticket_type = '0'
 	</update>
+	<!-- 根据商户id查询商户编号 -->
+	<select id="getMerchantNumber" parameterType="String" resultType="String">
+		SELECT
+		merchant_number
+		FROM
+		merchant m
+		WHERE
+		m.id =#{merchantId}
+	</select>
+
+
 </mapper>

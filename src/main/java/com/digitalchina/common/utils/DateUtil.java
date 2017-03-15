@@ -333,7 +333,7 @@ public class DateUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println("now() = [" + now() + "]");
+/*        System.out.println("now() = [" + now() + "]");
         System.out.println("today() = [" + today() + "]");
         System.out.println("format(Date,String) = [" + format(new Date(),NORM_DATE_PATTERN) + "]");
         System.out.println("formatDateTime(Date) = [" + formatDateTime(new Date()) + "]");
@@ -351,7 +351,33 @@ public class DateUtil {
         System.out.println("nowtime() = [" + nowtime() + "]");
         System.out.println("compareDateTo() = [" + compareDateTo("2016-11-30","2017-11-30","2016-11-30") + "]");
         System.out.println("compareTimeTo() = [" + compareTimeTo("12:00:00","18:00:00","12:00:00") + "]");
-        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");
+        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");*/
 
+        int sorts[] = {1,2,3,5,6,8,10,13,14,15};
+        String start= sorts[0]+"";
+        String end = "";
+        String answer= "";
+        for(int i=0;i<sorts.length-1;i++){
+            int sort = sorts[i];
+            int next = sorts[i+1];
+            if(next-sort!=1){
+                end=sort+"";
+                if(start.equals(end)){
+                    answer += start+",";
+                }else {
+                    answer += start + "-"+end+",";
+                }
+                start = next+"";
+            }
+            if (i==sorts.length-2){
+                end = sorts[sorts.length-1]+"";
+                if(start.equals(end)){
+                    answer += start+",";
+                }else {
+                    answer += start + "-"+end+",";
+                }
+            }
+        }
+        System.out.println(answer);
     }
 }
