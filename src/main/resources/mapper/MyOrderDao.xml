@@ -48,7 +48,8 @@
 			ob.ticket_id,
 			ob.ticket_name,
 			ob.sell_price,
-			ob.order_time
+			ob.order_time,
+			ob.status
 		FROM
 			order_base_info ob
 		WHERE
@@ -425,8 +426,8 @@
 		WHERE
 		m.id =#{merchantId}
 	</select>
-	<!-- 验票=====>>更新字单 -->
-	<update id="updateField" parameterType="java.util.Map" >
+	<!-- 场地验票=====>>更新字单 -->
+	<update id="updateFieldContent" parameterType="java.util.Map" >
 		UPDATE order_content_detail oc
 		SET
 			oc.check_status = #{checkStatus},
@@ -437,5 +438,38 @@
 		WHERE
 		oc.order_code = #{orderCode}
 	</update>
+	<!-- 一个已付款的订单下的所有待使用的子订单个数 -->
+	<select id="getOrderCountByMap" parameterType="String" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			order_content_detail oc
+		WHERE
+			oc.order_base_id = #{orderBaseId}
+		AND oc.`status` = '1'
+	</select>
 
+
+	<!-- 锁定该场地、该日期、该时间段的场地状态为1：已锁定 -->
+	<insert id="insertLockField" parameterType="java.util.Map">
+	INSERT INTO `szsport_order_mgr`.`site_time_interval_status` (
+		`id`,
+		`field_id`,
+		`order_date`,
+		`time_interval_id`,
+		`status`,
+		`create_time`,
+		`update_time`
+	)
+	VALUES
+		(
+			#{id},
+			#{fieldId},
+			#{orderDate},
+			#{timeIntervalId},
+			#{status},
+			NOW(),
+			NOW(),
+		);
+	</insert>
 </mapper>

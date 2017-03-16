@@ -80,6 +80,11 @@ public class FieldOrderService {
                                     orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
                                     //添加子订单内容到数据库返回orderBase表id
                                     this.insertOrderContentDetail(orderContentDetail);
+                                    //锁定该场地、该日期、该时间段的场地状态为1：已锁定
+                                    this.lockField(date,timeList);
+
+
+
                                     System.out.println("orderContentDetail======"+orderContentDetail);
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -240,6 +245,30 @@ public class FieldOrderService {
         myOrderDao.inserOrderContentDetail(orderContentDetail);
     }
 
+    /**
+     * 锁定该场地、该日期、该时间段的场地状态为1：已锁定
+     * @param
+     */
+    public void lockField(String date,List<Map<String,Object>> timeList) throws Exception{
+        for (int i=0;i<timeList.size();i++){
+            String fieldId = (String) timeList.get(i).get("fieldId");
+            if (StringUtil.isEmpty(timeList.get(i).get("timeIntervalId"))){
+                String timeIntervalId[] = timeList.get(i).get("timeIntervalId").toString().split(",");
+                for (int j=0;j<timeIntervalId.length;j++){
+                    String id = UUIDUtil.generateUUID();//uuid生成32位随机数
+                    Map<String,Object> param = new HashMap<String, Object>();
+                    param.put("id",id);
+                    param.put("fieldId",fieldId);
+                    param.put("timeIntervalId",timeIntervalId[j]);
+                    param.put("orderDate",date);
+                    param.put("status","1");
+                    myOrderDao.insertLockField(param);
+                }
+            }
+        }
+
+
+    }
 
     /**
      * 验票
@@ -368,7 +397,27 @@ public class FieldOrderService {
      * @return
      */
     public int updateCheckByMap(Map<String,Object> map) throws Exception{
-        map.put("remarks","场地票验票");
-        return myOrderDao.updateCheck(map);
+        int ret;
+        try {
+            map.put("remarks","场地票验票");
+            ret = myOrderDao.updateFieldContent(map);
+
+            Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
+            String orderBaseId=(String) orderDetails.get("order_base_id");
+            String status = (String) myOrderDao.getOrderDetails(orderBaseId).get("status");//获得主单状态
+            if (status.equals("1")){//主单是待使用状态才需要判断
+                int count = myOrderDao.getOrderCountByMap(orderBaseId);//一个已付款的订单下的所有待使用的子订单个数
+                if (count ==0){//当个数为0的时候修改主单为已使用
+                    Map<String,Object> params = new HashMap<String, Object>();
+                    params.put("status","2");//状态改为已使用
+                    params.put("remarks","订单已使用");
+                    myOrderDao.cancelOrderBase(params);
+                }
+            }
+            return ret;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

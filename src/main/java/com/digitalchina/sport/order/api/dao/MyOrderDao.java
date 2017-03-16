@@ -189,4 +189,14 @@ public interface MyOrderDao {
 	 */
 	String getMerchantNumber(String merchantId) throws Exception;
 
+	/**
+	 * 验票=====>>更新字单
+	 * @param params
+	 */
+	int updateFieldContent(Map<String,Object> params) throws Exception;
+
+	int getOrderCountByMap(String orderBaseId) throws Exception;
+
+	int insertLockField(Map<String,Object> orderContentDetail) throws Exception;
+
 }
