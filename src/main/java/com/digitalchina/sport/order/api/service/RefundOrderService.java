@@ -49,4 +49,22 @@ public class RefundOrderService {
     public Map<String,Object> getMerchantPayAccount(Map<String, Object> map) {
         return refundOrderDao.getMerchantPayAccount(map);
     }
+
+    /**
+     * 根據订单号查询支付的订单信息
+     * @param map
+     * @return
+     */
+    public Map<String,Object> getAplyOrder(Map<String, Object> map) {
+        return refundOrderDao.getAplyOrder(map);
+    }
+
+    /**
+     * 添加数据到退款记录表中
+     * @param params
+     * @return
+     */
+    public int insertRefundOrder(Map<String, Object> params) {
+        return refundOrderDao.insertRefundOrder(params);
+    }
 }

@@ -2,7 +2,6 @@ package com.digitalchina.sport.order.api.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -27,4 +26,18 @@ public interface RefundOrderDao {
      * @return
      */
     Map<String,Object> getMerchantPayAccount(Map<String, Object> map);
+
+    /**
+     * 根据订单号查询支付的订单列表
+     * @param map
+     * @return
+     */
+    Map<String,Object> getAplyOrder(Map<String, Object> map);
+
+    /**
+     * 添加数据到退款记录表中
+     * @param params
+     * @return
+     */
+    int insertRefundOrder(Map<String, Object> params);
 }

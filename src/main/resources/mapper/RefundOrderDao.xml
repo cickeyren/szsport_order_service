@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.digitalchina.sport.order.api.dao.RefundOrderDao">
-    <resultMap id="BaseResultMap" type="com.digitalchina.sport.order.api.model.RefundOrder">
-        <!--
-          WARNING - @mbggenerated
-        -->
-        <result column="id" property="id" jdbcType="VARCHAR"/>
-        <result column="order_base_id" property="order_base_id" jdbcType="VARCHAR"/>
-        <result column="order_id" property="order_id" jdbcType="VARCHAR"/>
-        <result column="order_code" property="order_code" jdbcType="VARCHAR"/>
-        <result column="end_time" property="end_time" jdbcType="TIMESTAMP"/>
-        <result column="field_name" property="field_name" jdbcType="VARCHAR"/>
-        <result column="field_num" property="field_num" jdbcType="VARCHAR"/>
-        <result column="cost_price" property="cost_price" jdbcType="VARCHAR"/>
-        <result column="sell_price" property="sell_price" jdbcType="VARCHAR"/>
-        <result column="order_from" property="order_from" jdbcType="VARCHAR"/>
-        <result column="refund_application_time" property="refund_application_time" jdbcType="TIMESTAMP"/>
-        <result column="refund_time" property="refund_time" jdbcType="TIMESTAMP"/>
-        <result column="refund_monery" property="refund_monery" jdbcType="VARCHAR"/>
-        <result column="refund_method" property="refund_method" jdbcType="VARCHAR"/>
-    </resultMap>
+    <insert id="insertRefundOrder" parameterType="HashMap">
+
+  INSERT INTO refund_order (id, refund_monery, refund_method, code, msg, buyer_logon_id, buyer_user_id, fund_change, gmt_refund_pay, open_id, out_trade_no, trade_no, userId, orderId, orderContentId)
+   VALUES
+  (#{id},#{refund_monery},#{refund_method},#{code},#{msg},#{buyer_logon_id},#{buyer_user_id},#{fund_change},#{gmt_refund_pay},#{open_id},#{out_trade_no},#{trade_no},#{userId},#{orderId},#{orderContentId})
+
+    </insert>
     <!--修改子订单的状态-->
-    <update id="updateOrderContentDetail"    parameterType="HashMap">
+    <update id="updateOrderContentDetail" parameterType="HashMap">
         UPDATE order_content_detail SET status=#{status} WHERE id=#{orderContentId}
     </update>
     <!--通过查询信息查询子订单信息-->
     <select id="getorderContent" resultType="java.util.Map" parameterType="HashMap">
         SELECT  obi.id,obi.order_number,obi.stadium_name,obi.order_channel,obi.user_id,obi.user_name,obi.user_tel,obi.pay_type,obi.pay_acount,obi.pay_time,
-        obi.merchant_id,
+        obi.merchant_id,obi.ticket_type,
         ocd.order_code,ocd.start_time,ocd.end_time,ocd.can_retreat,ocd.remain_number,ocd.total_number,ocd.everyday_number,ocd.everyday_remain_number,
         ocd.date_limit,ocd.time_limit,ocd.cost_price,ocd.sell_price
         FROM order_base_info obi
@@ -41,5 +29,9 @@
     <!--获取相应的支付信息-->
     <select id="getMerchantPayAccount" resultType="java.util.Map" parameterType="HashMap">
         SELECT * FROM  merchant_pay_account WHERE pay_way=#{pay_type} AND merchant_id=#{merchant_id}
+    </select>
+    <!--根据支付号查询支付的订单刘表-->
+    <select id="getAplyOrder" resultType="java.util.Map" parameterType="HashMap">
+        SELECT * FROM alipay_orderticket_trade_info WHERE order_number =#{order_number} and  local_status='1'
     </select>
 </mapper>
