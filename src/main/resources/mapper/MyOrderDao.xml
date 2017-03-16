@@ -200,10 +200,14 @@
 			oc.check_status,
 			oc.check_time,
 			oc.sell_price,
-			oc.cost_price
+			oc.cost_price,
+			oc.approach_time,
+			oc.departure_time,
+			f.field_name
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON oc.order_base_id = ob.id
+		LEFT JOIN field f ON f.id=oc.field_id
 		WHERE
 			oc.order_code = #{orderCode}
 	</select>
@@ -395,6 +399,23 @@
 		AND ob.`status` = '1'
 		AND ob.ticket_type = '0'
 	</update>
+	<!--定时任务中使用,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用 -->
+	<update id="updateUnOrderBaseStatus" parameterType="java.util.Map">
+		UPDATE order_base_info ob
+		SET ob.`status` = '1',
+			ob.remarks = #{remarks}
+		WHERE
+			ob.id IN (
+				SELECT
+				oc.order_base_id
+				FROM
+				order_content_detail oc
+				WHERE
+				oc.remain_number != 0
+			)
+		AND ob.`status` = '1'
+		AND ob.ticket_type = '2'
+	</update>
 	<!-- 根据商户id查询商户编号 -->
 	<select id="getMerchantNumber" parameterType="String" resultType="String">
 		SELECT
@@ -404,6 +425,17 @@
 		WHERE
 		m.id =#{merchantId}
 	</select>
-
+	<!-- 验票=====>>更新字单 -->
+	<update id="updateField" parameterType="java.util.Map" >
+		UPDATE order_content_detail oc
+		SET
+			oc.check_status = #{checkStatus},
+			oc.check_time = NOW(),
+			oc.check_type=#{checkType},
+			oc.remarks=#{remarks},
+			oc.status=#{status}
+		WHERE
+		oc.order_code = #{orderCode}
+	</update>
 
 </mapper>

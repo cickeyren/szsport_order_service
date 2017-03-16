@@ -180,7 +180,7 @@ public interface MyOrderDao {
 	 * @throws Exception
 	 */
 	int updateOrderBaseStatus(Map<String,Object> params)throws Exception;
-
+	int updateUnOrderBaseStatus(Map<String,Object> params)throws Exception;
 	/**
 	 * 根据商户id查询商户编号
 	 * @param merchantId

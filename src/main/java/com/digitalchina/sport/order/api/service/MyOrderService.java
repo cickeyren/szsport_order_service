@@ -943,9 +943,12 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
-    public void updateOrderBaseStatus(String remarks) throws Exception{
+    public void updateOrderBaseStatus() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
-        params.put("remarks",remarks);
+        params.put("remarks","次数已使用完");
         myOrderDao.updateOrderBaseStatus(params);
+        Map<String,Object> params1 = new HashMap<String, Object>();
+        params1.put("remarks","次数未使用完");
+        myOrderDao.updateUnOrderBaseStatus(params);
     }
 }

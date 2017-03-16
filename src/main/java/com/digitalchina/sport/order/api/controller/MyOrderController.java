@@ -7,6 +7,7 @@ import com.digitalchina.common.utils.BarcodeUtil;
 import com.digitalchina.common.utils.MyOrcode;
 import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.sport.order.api.service.EquipmentService;
+import com.digitalchina.sport.order.api.service.FieldOrderService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.slf4j.Logger;
@@ -33,6 +34,9 @@ public class MyOrderController {
     private MyOrderService myOrderService;
     @Autowired
     private EquipmentService equipmentService;
+    @Autowired
+    private FieldOrderService fieldOrderService;
+
     /**
      * 根据用户id，按照状态查询所有订单
      * @return
@@ -284,29 +288,66 @@ public class MyOrderController {
                 if(equKey.equals("false")){
                     return RtnData.fail(retMap,"验票失败!");//不匹配
                 }else {
-                    //根据验票规则验票
-                    Map<String,Object> checkReturnMap = new HashMap<String, Object>();
-                    checkReturnMap = myOrderService.checkTicket(orderCode);
-                    retMap.put("checkReturnMap",checkReturnMap);
-                    String returnKey = checkReturnMap.get("returnKey").toString();
-                    if (returnKey.equals("true")){
-                        Map<String,Object> checkParam = new HashMap<String, Object>();
-                        checkParam.put("orderCode",orderCode);
-                        checkParam.put("checkStatus","1");//验票状态改为1，已验票
-                        checkParam.put("status","2");//使用状态改为2，已使用
-                        checkParam.put("checkType",checkType);
-                        if(myOrderService.updateCheckByMap(checkParam) >0){
-                            //验票成功返回门票信息
-                            //针对年票/散票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
-                            myOrderService.updateOrderBaseStatus("次数已使用完");
-                            retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
-                            return RtnData.ok(retMap);
+                    //产品类型:0=散票/年卡，1=场地预定，2=散客预定
+                    String ticketType = (String) orderDetailsMap.get("ticket_type");
+                    if(!StringUtil.isEmpty(ticketType)){
+                        Map<String,Object> checkReturnMap = new HashMap<String, Object>();
+                        if (ticketType.equals("0")) {
+                            //年票  =======     根据验票规则验票
+                            checkReturnMap = myOrderService.checkTicket(orderCode);
+                            retMap.put("checkReturnMap",checkReturnMap);
+                            String returnKey = checkReturnMap.get("returnKey").toString();
+                            if (returnKey.equals("true")){
+                                Map<String,Object> checkParam = new HashMap<String, Object>();
+                                checkParam.put("orderCode",orderCode);
+                                checkParam.put("checkStatus","1");//验票状态改为1，已验票
+                                checkParam.put("status","2");//使用状态改为2，已使用
+                                checkParam.put("checkType",checkType);
+                                if(myOrderService.updateCheckByMap(checkParam) >0){
+                                    //验票成功返回门票信息
+                                    //针对年票/散票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+                                    myOrderService.updateOrderBaseStatus();
+                                    retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                                    return RtnData.ok(retMap);
+                                }else {
+                                    return RtnData.fail(retMap,"验票状态修改失败!");
+                                }
+                            }else {
+                                return RtnData.fail(retMap,"验票失败!");
+                            }
+                        } else if (ticketType.equals("1")){
+                            //场地票  =======     根据验票规则验票
+                            checkReturnMap = fieldOrderService.checkFieldTicket(orderCode);
+                            retMap.put("checkReturnMap",checkReturnMap);
+                            String returnKey = checkReturnMap.get("returnKey").toString();
+                            if (returnKey.equals("true")){
+                                Map<String,Object> checkParam = new HashMap<String, Object>();
+                                checkParam.put("orderCode",orderCode);
+                                checkParam.put("checkStatus","1");//验票状态改为1，已验票
+                                checkParam.put("status","2");//使用状态改为2，已使用
+                                checkParam.put("checkType",checkType);
+                                if(fieldOrderService.updateCheckByMap(checkParam) >0){
+                                    //验票成功返回门票信息
+                                    retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
+                                    return RtnData.ok(retMap);
+                                }else {
+                                    return RtnData.fail(retMap,"验票状态修改失败!");
+                                }
+                            }else {
+                                return RtnData.fail(retMap,"验票失败!");
+                            }
                         }else {
-                            return RtnData.fail(retMap,"验票状态修改失败!");
+                            retMap.put("returnKey","false");
+                            retMap.put("returnMessage","门票类型找不到!");
+                            return RtnData.fail(retMap,"门票类型找不到!");
                         }
                     }else {
-                        return RtnData.fail(retMap,"验票失败!");
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","门票类型为空!");
+                        return RtnData.fail(retMap,"门票类型为空!");
                     }
+
+
                 }
             }else {
                 Map<String,Object> checkReturnMap = new HashMap<String, Object>();

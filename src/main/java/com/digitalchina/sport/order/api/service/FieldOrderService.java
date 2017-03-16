@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -239,4 +240,135 @@ public class FieldOrderService {
         myOrderDao.inserOrderContentDetail(orderContentDetail);
     }
 
+
+    /**
+     * 验票
+     * 验证是否付款，是否失效等
+     场地票验票逻辑
+     step1：闸机和场馆的匹配
+            闸机是否开启
+     step2：场馆是否闭馆
+     step3：状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+     step4：验证该票是否属于该场馆
+     step5：验证该票进场时间是否超时
+     * @return
+     */
+    public Map<String,Object> checkFieldTicket(String orderCode) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            Map<String,Object>  orderDetailMap = myOrderDao.getOrderDetailByOrderCode(orderCode);
+            String status = (String) orderDetailMap.get("status");
+            //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+            if(status.equals("1")){
+                retMap = CheckDate(orderDetailMap);
+            }else if(status.equals("0")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单未支付");
+            }else if(status.equals("2")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已使用");//目前不做，增加限用人次判断
+            }else if(status.equals("3")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单支付失败");
+            }else if(status.equals("4")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已退款");//退款目前不做，之后可拓展为待退款和已退款
+            }else if(status.equals("5")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已失效");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+
+    /**
+     * 验证该票进场日期是否吻合
+     * dqdate
+     * @param orderDetailMap
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> CheckDate(Map<String,Object> orderDetailMap) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        String dqtime = DateUtil.nowtime();//当前时间
+        String dqdate = DateUtil.today();//当前日期
+        if(!StringUtil.isEmpty(orderDetailMap.get("date_limit"))){
+            String dateLimit = orderDetailMap.get("date_limit").toString();
+            if(!dqdate.equals(dateLimit)){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该时段不可用,请稍候尝试!");
+            }else {
+                //=======通过，判断下一步
+                retMap = CheckApproachTime(dqdate,dqtime,orderDetailMap);
+            }
+        }else {
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","该时段不可用,请稍候尝试!");
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+    /**
+     * 验证该票进场时间是否超时
+     * ApproachTime
+     * @param orderDetailMap
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> CheckApproachTime(String dqdate,String dqtime,Map<String,Object> orderDetailMap) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        //07:00:00$09:30:00,9:45:00$12:15:00
+        if (!StringUtil.isEmpty(orderDetailMap.get("time_limit"))){
+            String timeLimits = orderDetailMap.get("time_limit").toString();
+            String timeToTimes[] =timeLimits.split(",");
+            if (timeToTimes.length>0){
+                for (int i=0;i<timeToTimes.length;i++){
+                    String timeToTime[] = timeToTimes[i].split("\\$");
+                    if (timeToTime.length>0){
+                        String startTime = timeToTime[0];
+                        String endTime = timeToTime[1];
+                        if(!StringUtil.isEmpty(orderDetailMap.get("approach_time"))) {
+                            int approachTime = Integer.parseInt((String) orderDetailMap.get("approach_time"));
+                            if (approachTime != -1) {
+                                startTime = DateUtil.offsiteDateTime(dqdate + " "+ startTime, Calendar.MINUTE, -approachTime);
+                            }
+                            if (DateUtil.compareTimeTo(startTime, endTime, dqtime)) {//公用的时间对比方法
+                                retMap.put("returnKey", "true");
+                                retMap.put("returnMessage", "验票通过，该时段可用!");
+                            } else {
+                                retMap.put("returnKey", "false");
+                                retMap.put("returnMessage", "该时段不可用,请稍候尝试!");
+                            }
+                        }else {
+                            retMap.put("returnKey", "false");
+                            retMap.put("returnMessage", "数据有误请联系管理员!");
+                        }
+                    }else {
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","该时段不可用,请稍候尝试!");
+                    }
+                }
+            }else {
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该时段不可用,请稍候尝试!");
+            }
+        }else {
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","该时段不可用,请稍候尝试!");
+        }
+        System.out.println(retMap);
+        return retMap;
+    }
+    /**
+     * 修改验票状态
+     * @param map
+     * @return
+     */
+    public int updateCheckByMap(Map<String,Object> map) throws Exception{
+        map.put("remarks","场地票验票");
+        return myOrderDao.updateCheck(map);
+    }
 }

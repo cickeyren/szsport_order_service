@@ -224,6 +224,17 @@ public class DateUtil {
         cal.add(calendarField, offsite);
         return cal.getTime();
     }
+
+    public static String offsiteDateTime(String dateTime, int calendarField, int offsite){
+        System.out.print(dateTime);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(parse(dateTime,"yyyy-MM-dd HH:mm:ss"));
+        cal.add(calendarField, offsite);
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");//设置格式
+        return df.format(cal.getTime());
+    }
+
+
     // ------------------------------------ Offset end ----------------------------------------------
 
     /**
@@ -333,7 +344,7 @@ public class DateUtil {
     }
 
     public static void main(String[] args) {
-/*        System.out.println("now() = [" + now() + "]");
+        System.out.println("now() = [" + now() + "]");
         System.out.println("today() = [" + today() + "]");
         System.out.println("format(Date,String) = [" + format(new Date(),NORM_DATE_PATTERN) + "]");
         System.out.println("formatDateTime(Date) = [" + formatDateTime(new Date()) + "]");
@@ -351,8 +362,16 @@ public class DateUtil {
         System.out.println("nowtime() = [" + nowtime() + "]");
         System.out.println("compareDateTo() = [" + compareDateTo("2016-11-30","2017-11-30","2016-11-30") + "]");
         System.out.println("compareTimeTo() = [" + compareTimeTo("12:00:00","18:00:00","12:00:00") + "]");
-        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");*/
+        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");
+        String date = "2017-03-16";
+        String time = "10:35:00";
+        System.out.println("parse() = [" + DateUtil.parse(date + " "+ time) + "]");
+        int approachTime=10;
+        System.out.println("offsiteDateTime() = [" + offsiteDateTime(date + " "+ time,Calendar.MINUTE, -approachTime) + "]");
 
+
+
+/*
         int sorts[] = {1,2,3,5,6,8,10,13,14,15};
         String start= sorts[0]+"";
         String end = "";
@@ -378,6 +397,6 @@ public class DateUtil {
                 }
             }
         }
-        System.out.println(answer);
+        System.out.println(answer);*/
     }
 }
