@@ -383,7 +383,7 @@
 		WHERE oc.status=#{status}
 	</update>
 
-	<!--定时任务中使用,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用 -->
+	<!--定时任务中使用,针对年票，当剩余次数都没有的时候，表示子单已全部使用完成，那么子单所在的主单的状态就应该为已使用 -->
 	<update id="updateOrderBaseStatus" parameterType="java.util.Map">
 		UPDATE order_base_info ob
 		SET ob.`status` = '2',
@@ -400,7 +400,7 @@
 		AND ob.`status` = '1'
 		AND ob.ticket_type = '0'
 	</update>
-	<!--定时任务中使用,针对年票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用 -->
+	<!--定时任务中使用,针对年票，只要子单的状态是未使用，主单的状态就还是待使用，如果未使用的子单没有了，就变成已使用 -->
 	<update id="updateUnOrderBaseStatus" parameterType="java.util.Map">
 		UPDATE order_base_info ob
 		SET ob.`status` = '1',
