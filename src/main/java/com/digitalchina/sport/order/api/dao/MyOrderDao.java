@@ -199,4 +199,7 @@ public interface MyOrderDao {
 
 	int insertLockField(Map<String,Object> orderContentDetail) throws Exception;
 
+	List<Map<String,Object>> getOrderContentListByOrderId(String orderId) throws Exception;
+
+	int updateLockField(Map<String,Object> params) throws Exception;
 }

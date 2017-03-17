@@ -8,6 +8,7 @@ import com.digitalchina.pay.alipay.config.AlipayConfig;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.PayTradeDao;
 import com.digitalchina.sport.order.api.model.AlipayTradeModel;
+import com.digitalchina.sport.order.api.service.FieldOrderService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,10 @@ public class AlipayPayController {
     private MyOrderService orderService;
     @Autowired
     private PropertyConfig config;
+    @Autowired
+    private FieldOrderService fieldOrderService;
+
+
     private Gson gson = new Gson();
     private Log logger = LogFactory.getLog(AlipayPayController.class);
     @RequestMapping(value = "/notify.json")
@@ -150,6 +155,8 @@ public class AlipayPayController {
                         } else {
                             logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
                         }
+                        //更新场地票锁的状态
+                        fieldOrderService.updateLockField(tradeVo.getOrderNumber());
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error("========================支付成功后业务处理发生错误=================",e);

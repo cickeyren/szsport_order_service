@@ -11,6 +11,7 @@ public class OrderBaseInfo {
     private String orderNumber;//订单流水号
     private String stadiumName;//主场馆名称
     private String classify;
+    private String subStadiumId;
     private String subStadiumName;//子场馆名称
     private String personKind;//适用人群票型（1成人票，2儿童票，3老年票）
     private String ticketId;//产品id（就是门票id）
@@ -19,6 +20,7 @@ public class OrderBaseInfo {
     private Timestamp orderTime;
     private String orderChannel;//下单方式app
     private int status;//状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
+    private int refundStatus;//退款状态：0待退款，1已退款，2退款失败
     private String costPrice;//订单成本
     private String sellPrice;//订单售价
     private String userId;//用户id
@@ -31,6 +33,22 @@ public class OrderBaseInfo {
     private String merchantId;//商户id
     private int sonOrders;//字单个数
     private String remarks;//备注
+
+    public String getSubStadiumId() {
+        return subStadiumId;
+    }
+
+    public void setSubStadiumId(String subStadiumId) {
+        this.subStadiumId = subStadiumId;
+    }
+
+    public int getRefundStatus() {
+        return refundStatus;
+    }
+
+    public void setRefundStatus(int refundStatus) {
+        this.refundStatus = refundStatus;
+    }
 
     public String getId() {
         return id;

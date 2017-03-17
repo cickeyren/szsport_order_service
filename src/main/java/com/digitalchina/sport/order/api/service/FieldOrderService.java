@@ -147,8 +147,9 @@ public class FieldOrderService {
         orderContentDetail.put("dateLimit",date);
         //适用时间 "timeInter":"7:00-9:00",
         orderContentDetail.put("timeLimit",timeDetail.get("timeInter"));
+        //时段编号
+        orderContentDetail.put("timeIntervalId",timeDetail.get("timeIntervalId"));
         //售价
-        //orderContentDetail.put("costPrice",strategyDetail.get("costPrice"));//成本价
         orderContentDetail.put("sellPrice",timeDetail.get("sellPrice"));//售价
         //验票规则
         orderContentDetail.put("canRetreat",siteTicketInfo.get("orderRefundRule"));//是否可退（0可以1不可以）
@@ -266,10 +267,34 @@ public class FieldOrderService {
                 }
             }
         }
-
-
     }
-
+    /**
+     * 支付完成场地为2已订购
+     * @param
+     */
+    public void updateLockField(String orderNumber){
+        try {
+            OrderBaseInfo ob = myOrderDao.getOrderByOrderNumer(orderNumber);
+            String orderBaseId = ob.getId();
+            List<Map<String,Object>> orderContentList = myOrderDao.getOrderContentListByOrderId(orderBaseId);
+            for (int i=0;i<orderContentList.size();i++){
+                String fieldId = (String) orderContentList.get(i).get("fieldId");
+                if (StringUtil.isEmpty(orderContentList.get(i).get("timeIntervalId"))){
+                    String timeIntervalId[] = orderContentList.get(i).get("timeIntervalId").toString().split(",");
+                    for (int j=0;j<timeIntervalId.length;j++){
+                        Map<String,Object> param = new HashMap<String, Object>();
+                        param.put("fieldId",fieldId);
+                        param.put("timeIntervalId",timeIntervalId[j]);
+                        param.put("orderDate",orderContentList.get(i).get("dateLimit"));
+                        param.put("status","2");//2已订购
+                        myOrderDao.updateLockField(param);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 验票
      * 验证是否付款，是否失效等

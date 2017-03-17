@@ -448,8 +448,6 @@
 			oc.order_base_id = #{orderBaseId}
 		AND oc.`status` = '1'
 	</select>
-
-
 	<!-- 锁定该场地、该日期、该时间段的场地状态为1：已锁定 -->
 	<insert id="insertLockField" parameterType="java.util.Map">
 	INSERT INTO `szsport_order_mgr`.`site_time_interval_status` (
@@ -472,4 +470,33 @@
 			NOW(),
 		);
 	</insert>
+	<!-- 场地票=====>>更新场地锁定状态 -->
+	<update id="updateLockField" parameterType="java.util.Map" >
+		UPDATE site_time_interval_status s
+		SET
+			s.status=#{status},
+			s.update_time=NOW()
+		WHERE
+			s.field_id = #{fieldId} AND s.order_date=#{orderDate} AND s.time_interval_id=#{timeIntervalId}
+	</update>
+
+	<!-- 一个订单下的所有子订单详情 -->
+	<select id="getOrderContentListByOrderId" parameterType="java.util.Map" resultType="java.util.HashMap">
+		SELECT
+			ob.id AS orderBaseId,
+			ob.sub_stadium_id AS subStadiumId,
+			ob.order_number AS orderNumber,
+			ob.ticket_id AS ticketId,
+			oc.id as orderContentId,
+			oc.date_limit AS dateLimit,
+			oc.time_interval_id AS timeIntervalId,
+			oc.time_limit AS timeLimit,
+			CAST(oc.status AS CHAR) AS status,
+			oc.field_id AS fieldId
+		FROM
+			order_content_detail oc
+			LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
+		WHERE
+			ob.id= #{orderId}
+	</select>
 </mapper>
