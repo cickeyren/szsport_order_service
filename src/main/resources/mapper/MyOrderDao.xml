@@ -412,10 +412,9 @@
 				FROM
 				order_content_detail oc
 				WHERE
-				oc.remain_number != 0
+				oc.`status` != '1'
 			)
-		AND ob.`status` = '1'
-		AND ob.ticket_type = '2'
+		AND ob.`status` ='2' AND ob.ticket_type='0'
 	</update>
 	<!-- 根据商户id查询商户编号 -->
 	<select id="getMerchantNumber" parameterType="String" resultType="String">
