@@ -469,6 +469,15 @@
 			NOW(),
 		);
 	</insert>
+	<!-- 验过票的未使用订单修改状态 -->
+	<update id="updateOrderContentStatus" parameterType="java.util.Map" >
+		UPDATE order_content_detail oc
+		SET oc.`status` = '2',
+			oc.remarks=#{remarks}
+		WHERE
+			oc.check_status = '1'
+		AND oc.`status` = '1'
+	</update>
 	<!-- 场地票=====>>更新场地锁定状态 -->
 	<update id="updateLockField" parameterType="java.util.Map" >
 		UPDATE site_time_interval_status s

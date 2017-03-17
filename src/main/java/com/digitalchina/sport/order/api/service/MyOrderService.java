@@ -949,6 +949,9 @@ public class MyOrderService {
         myOrderDao.updateOrderBaseStatus(params);
         Map<String,Object> params1 = new HashMap<String, Object>();
         params1.put("remarks","次数未使用完");
-        myOrderDao.updateUnOrderBaseStatus(params);
+        myOrderDao.updateUnOrderBaseStatus(params1);
+        Map<String,Object> params2 = new HashMap<String, Object>();
+        params2.put("remarks","验过票的未使用订单修改状态");
+        myOrderDao.updateOrderContentStatus(params2);
     }
 }

@@ -104,7 +104,7 @@ public interface MyOrderDao {
 	 * @param params
 	 */
 	int updateOrderContent(Map<String,Object> params) throws Exception;
-
+	int updateOrderContentStatus(Map<String,Object> params) throws Exception;
 	/**
 	 * 支付相关等=====>>更新主订单内容
 	 * @param params

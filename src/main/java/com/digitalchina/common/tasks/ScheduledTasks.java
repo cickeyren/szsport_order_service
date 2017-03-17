@@ -52,7 +52,7 @@ public class ScheduledTasks {
         }
     }
 
-    //定时任务3,针对年票/散票，只要是剩余次数还有，主单的状态就还是待使用，如果次数没有了，就变成已使用
+    //定时任务3,针对年票/散票，只要子单的状态是未使用，主单的状态就还是待使用，如果未使用的子单没有了，就变成已使用
     //@Scheduled(cron = "0 0 0 * * ?")
     @Scheduled(fixedRate = 1000 * 60)
     public void reportCurrentByTime() {
