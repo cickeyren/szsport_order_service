@@ -11,11 +11,14 @@
 			sell_price,
 			order_time,
 			stadium_name,
-			order_number
+			order_number,
+			CAST(refund_status AS CHAR) AS refundStatus
 		FROM
 			order_base_info
-		WHERE
-			user_id = #{userId}
+		WHERE 1=1
+		<if test="userId != null and userId != ''">
+			AND user_id = #{userId}
+		</if>
 		<if test="status != null and status != ''">
 			AND `status` = #{status}
 		</if>
@@ -506,5 +509,14 @@
 			LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
 		WHERE
 			ob.id= #{orderId}
+	</select>
+	<!-- 失效订单，释放场地状态 -->
+	<select id="getOrderNumberByStatus" parameterType="String" resultType="java.util.HashMap">
+		SELECT
+			ob.order_number AS orderNumber
+		FROM
+			order_base_info ob
+		WHERE
+			ob.`status` = #{status}
 	</select>
 </mapper>

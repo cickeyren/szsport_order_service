@@ -3,6 +3,7 @@ package com.digitalchina.common.tasks;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.digitalchina.common.utils.DateUtil;
+import com.digitalchina.sport.order.api.service.FieldOrderService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class ScheduledTasks {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
     @Autowired
     private MyOrderService myOrderService;
+    @Autowired
+    private FieldOrderService fieldOrderService;
 
     //定时任务1,5分钟更新订单状态
     @Scheduled(fixedRate = 1000 * 300)
@@ -32,6 +35,9 @@ public class ScheduledTasks {
 
         try {
             myOrderService.updateAllOrderStatus("超过十分钟的失效订单");
+            //20170320 update by rensq
+            //失效订单，释放场地状态。
+            fieldOrderService.updateSxLockField();
             log.info(DateUtil.now()+"########## 更新失效订单成功！########## ", DateUtil.now());
         } catch (Exception e) {
             e.printStackTrace();

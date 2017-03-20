@@ -202,4 +202,13 @@ public interface MyOrderDao {
 	List<Map<String,Object>> getOrderContentListByOrderId(String orderId) throws Exception;
 
 	int updateLockField(Map<String,Object> params) throws Exception;
+
+	/**
+	 * 根据状态获得订单流水号
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	List<Map<String,Object>> getOrderNumberByStatus(String status) throws Exception;
+
 }

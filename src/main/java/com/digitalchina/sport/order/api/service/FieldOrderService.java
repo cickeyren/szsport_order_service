@@ -272,7 +272,7 @@ public class FieldOrderService {
      * 支付完成场地为2已订购
      * @param
      */
-    public void updateLockField(String orderNumber){
+    public void updateLockField(String orderNumber,String status){
         try {
             OrderBaseInfo ob = myOrderDao.getOrderByOrderNumer(orderNumber);
             String orderBaseId = ob.getId();
@@ -286,7 +286,7 @@ public class FieldOrderService {
                         param.put("fieldId",fieldId);
                         param.put("timeIntervalId",timeIntervalId[j]);
                         param.put("orderDate",orderContentList.get(i).get("dateLimit"));
-                        param.put("status","2");//2已订购
+                        param.put("status",status);//2已订购
                         myOrderDao.updateLockField(param);
                     }
                 }
@@ -443,6 +443,27 @@ public class FieldOrderService {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    /**
+     * 失效订单，释放场地状态。0：可预订
+     * @param
+     */
+    public void updateSxLockField() throws Exception{
+        try {
+            //获取所有失效订单
+            List<Map<String,Object>> list = myOrderDao.getOrderNumberByStatus("5");
+            if (list.size()>0) {
+                for (int i=0;i<list.size();i++){
+                    if (!StringUtil.isEmpty(list.get(i).get("orderNumber"))){
+                        String orderNumber = (String) list.get(i).get("orderNumber");
+                        this.updateLockField(orderNumber,"0");//失效订单。0：可预订
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

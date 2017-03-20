@@ -155,8 +155,8 @@ public class AlipayPayController {
                         } else {
                             logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
                         }
-                        //更新场地票锁的状态
-                        fieldOrderService.updateLockField(tradeVo.getOrderNumber());
+                        //更新场地票锁的状态//支付完成场地为2已订购
+                        fieldOrderService.updateLockField(tradeVo.getOrderNumber(),"2");//status = "2";
                     } catch (Exception e) {
                         e.printStackTrace();
                         logger.error("========================支付成功后业务处理发生错误=================",e);
