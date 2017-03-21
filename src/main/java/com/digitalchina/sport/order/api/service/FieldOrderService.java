@@ -279,7 +279,7 @@ public class FieldOrderService {
             List<Map<String,Object>> orderContentList = myOrderDao.getOrderContentListByOrderId(orderBaseId);
             for (int i=0;i<orderContentList.size();i++){
                 String fieldId = (String) orderContentList.get(i).get("fieldId");
-                if (StringUtil.isEmpty(orderContentList.get(i).get("timeIntervalId"))){
+                if (!StringUtil.isEmpty(orderContentList.get(i).get("timeIntervalId"))){
                     String timeIntervalId[] = orderContentList.get(i).get("timeIntervalId").toString().split(",");
                     for (int j=0;j<timeIntervalId.length;j++){
                         Map<String,Object> param = new HashMap<String, Object>();
