@@ -407,17 +407,21 @@
 	<update id="updateUnOrderBaseStatus" parameterType="java.util.Map">
 		UPDATE order_base_info ob
 		SET ob.`status` = '1',
-			ob.remarks = #{remarks}
+		 ob.remarks = #{remarks}
 		WHERE
 			ob.id IN (
 				SELECT
-				oc.order_base_id
+					oc.order_base_id
 				FROM
-				order_content_detail oc
+					order_content_detail oc
 				WHERE
-				oc.`status` != '1'
+				<![CDATA[
+					oc.remain_number > 0
+				]]>
+				AND oc.status IN(1,2)
 			)
-		AND ob.`status` ='2' AND ob.ticket_type='0'
+		AND ob.`status` = '2'
+		AND ob.ticket_type = '0'
 	</update>
 	<!-- 根据商户id查询商户编号 -->
 	<select id="getMerchantNumber" parameterType="String" resultType="String">
