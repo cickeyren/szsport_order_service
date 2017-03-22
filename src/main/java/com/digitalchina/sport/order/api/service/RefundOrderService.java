@@ -37,8 +37,8 @@ public class RefundOrderService {
      * @param map
      * @return
      */
-    public int updateOrderContentDetail(Map<String, Object> map) {
-        return refundOrderDao.updateOrderContentDetail(map);
+    public int updateOrderAll(Map<String, Object> map) {
+        return refundOrderDao.updateOrderAll(map);
     }
 
     /**

@@ -34,6 +34,7 @@ public class OrderContentDetail {
     private String fieldId;//使用场地
     private String remarks;//备注
 
+
     public String getId() {
         return id;
     }

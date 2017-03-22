@@ -74,6 +74,10 @@ public class RefundOrder {
      * 子订单id
      */
     private String orderContentId;
+    /**
+     * 子订单id
+     */
+    private String refund_fee;
 
     public String getId() {
         return id;
@@ -193,5 +197,13 @@ public class RefundOrder {
 
     public void setOrderContentId(String orderContentId) {
         this.orderContentId = orderContentId;
+    }
+
+    public String getRefund_fee() {
+        return refund_fee;
+    }
+
+    public void setRefund_fee(String refund_fee) {
+        this.refund_fee = refund_fee;
     }
 }

@@ -49,6 +49,8 @@ public class AlipayConfig {
 	// 调用的接口名，无需修改
 	public static String service = "refund_fastpay_by_platform_nopwd";
 
+	public static String key = "";
+
 
 }
 

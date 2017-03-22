@@ -18,7 +18,7 @@ public interface RefundOrderDao {
      * @param map
      * @return
      */
-    int updateOrderContentDetail(Map<String, Object> map);
+    int updateOrderAll(Map<String, Object> map);
 
     /**
      * 获取支付宝相应的支付方式
