@@ -17,6 +17,7 @@ import com.digitalchina.sport.order.api.service.MyOrderService;
 import com.digitalchina.sport.order.api.service.RefundOrderService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import net.sf.json.JSONObject;
 import org.apache.ibatis.transaction.Transaction;
 import org.aspectj.lang.annotation.Before;
@@ -31,6 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * （一句话描述）
@@ -58,7 +62,7 @@ public class RefundOrderController {
      *
      * @return
      */
-    @RequestMapping(value = "refundOrder.json", method = RequestMethod.POST)
+    @RequestMapping(value = "refundOrder.json")
     @ResponseBody
     public synchronized RtnData<Object> refundOrder(@RequestParam(value = "userId", required = true) String userId,
                                        @RequestParam(value = "orderId", required = true) String orderId,
@@ -102,12 +106,12 @@ public class RefundOrderController {
                         }
 
                         //3.规则通过，修改该子订单的状态为待退款状态
-                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
+//                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
                         map.put("order_detailid", orderContent.get("order_detailid"));
-                        int num1 = refundOrderService.updateOrderAll(map);
-                        if (num1 > 0) {
-                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
-                        }
+//                        int num1 = refundOrderService.updateOrderAll(map);
+//                        if (num1 > 0) {
+//                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
+//                        }
 
                         //5.调用支付宝退款接口进行退款操作  获取该订单商家的支付信息
                         if (ContextConstants.PAY_TYPE1.equals(orderContent.get("pay_type").toString())) {
@@ -134,13 +138,28 @@ public class RefundOrderController {
                             params.put("orderId", orderId);
                             params.put("orderContentId", orderContentId);
 
+                            Thread current = Thread.currentThread();
+                            System.out.println("调用支付宝之前线程数量"+current.activeCount());
+
                             //支付宝无密退款公共方法
                             String responceMessage = alipayRefundRequestwumi(out_trade_no, trade_no, refund_amount, params);
+                            Thread current1 = Thread.currentThread();
+                            System.out.println("调用支付宝之后线程数量"+current1.activeCount());
                             System.out.println("=============================="+responceMessage);
                             if ("10000".equals(responceMessage)) {
                                 //5.修改该子订单的状态为已退款状态
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS6));//
-                                if (refundOrderService.updateOrderAll(map) > 0) {
+                                Thread current3 = Thread.currentThread();
+                                System.out.println("更新数据库状态为已退款状态之前"+current3.activeCount());
+                                System.out.println("---------------------------"+map);
+                                if (refundOrderService.updateOrderForOrder(map) > 0) {
+                                    List<Map<String,Object>>  res =  myOrderService.getTotalOrderByUserIdAndOrderId(map);
+                                    for (Map<String,Object> m :res) {
+                                        System.out.println("*******"+m);
+                                    }
+                                    System.out.println("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+                                    Thread current4 = Thread.currentThread();
+                                    System.out.println("更新数据库状态为已退款状态之后"+current4.activeCount());
                                     System.out.println(orderContentId + "订单已为已退款状态");
                                 }
                                 System.out.println(">>>>>>>>>>>>>支付宝退款成功<<<<<<<<<<<<<<");
@@ -150,6 +169,7 @@ public class RefundOrderController {
                             } else {
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS7));
                                 map.put("order_detailid", orderContent.get("order_detailid"));
+
                                 if (refundOrderService.updateOrderAll(map) > 0) {
                                     System.out.println(orderContentId + "订单已为退款失败状态");
                                 }

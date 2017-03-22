@@ -1,6 +1,8 @@
 package com.digitalchina.sport.order.api.service;
 
 import com.digitalchina.sport.order.api.dao.RefundOrderDao;
+import com.sun.org.apache.xpath.internal.SourceTree;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,4 +69,15 @@ public class RefundOrderService {
     public int insertRefundOrder(Map<String, Object> params) {
         return refundOrderDao.insertRefundOrder(params);
     }
+
+    /**
+     * 更新子单状态
+     * @param map
+     * @return
+     */
+    public int updateOrderForOrder(Map<String, Object> map) {
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+map);
+        return  refundOrderDao.updateOrderForOrder(map);
+    }
+
 }

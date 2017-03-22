@@ -40,4 +40,12 @@ public interface RefundOrderDao {
      * @return
      */
     int insertRefundOrder(Map<String, Object> params);
+
+    /**
+     * 更新子单状态
+     *
+     * @param map
+     * @return
+     */
+    int updateOrderForOrder(Map<String, Object> map);
 }

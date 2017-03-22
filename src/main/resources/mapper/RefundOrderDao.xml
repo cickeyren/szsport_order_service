@@ -15,6 +15,9 @@
     <update id="updateOrderAll" parameterType="HashMap">
         UPDATE order_content_detail SET status=#{statusAll},used_number='订单状态已修改' WHERE id=#{order_detailid}
     </update>
+    <update id="updateOrderForOrder" parameterType="HashMap">
+                UPDATE order_content_detail od SET od.status=#{statusAll} WHERE od.id=#{order_detailid}
+    </update>
     <!--通过查询信息查询子订单信息-->
     <select id="getorderContent" resultType="java.util.Map" parameterType="HashMap">
         SELECT  obi.id,obi.order_number,obi.stadium_name,obi.order_channel,obi.user_id,obi.user_name,obi.user_tel,obi.pay_type,obi.pay_acount,obi.pay_time,
