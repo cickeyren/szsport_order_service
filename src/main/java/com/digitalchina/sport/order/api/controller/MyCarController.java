@@ -55,7 +55,7 @@ public class MyCarController {
             param.put("userId",userId);
             param.put("carNumber",carNumber);
             retMap = carService.insertCar(param);
-            return RtnData.ok(retMap,"添加成功!");
+            return RtnData.ok(retMap);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class MyCarController {
                 return RtnData.ok(retMap,"解绑成功!");
             }else {
                 retMap.put("id",id);
-                return RtnData.ok(retMap,"解绑失败!");
+                return RtnData.ok(retMap,"解绑失败，车辆不存在!");
             }
         } catch (Exception e) {
             e.printStackTrace();
