@@ -29,6 +29,11 @@ public class CarService {
             reMap.put("carNumber",map.get("carNumber"));
             reMap.put("returnKey","false");
             reMap.put("returnMessage","该车辆已绑定!");
+        }else if (count>=5) {
+            reMap.put("userId",map.get("userId"));
+            reMap.put("carNumber",map.get("carNumber"));
+            reMap.put("returnKey","false");
+            reMap.put("returnMessage","同一账号最多可绑定5个车牌号!");
         }else {
             String id = UUIDUtil.generateUUID();//uuid生成32位随机数id
             map.put("id",id);
