@@ -7,6 +7,7 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.digitalchina.common.RtnData;
+import com.digitalchina.common.utils.HttpClientUtil;
 import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.common.utils.UtilDate;
 import com.digitalchina.sport.order.api.common.config.AlipayConfig;
@@ -67,6 +68,8 @@ public class RefundOrderController {
     public synchronized RtnData<Object> refundOrder(@RequestParam(value = "userId", required = true) String userId,
                                        @RequestParam(value = "orderId", required = true) String orderId,
                                        @RequestParam(value = "orderContentId", required = true) String orderContentId) {
+
+
         Map<String, Object> map = new HashMap<String, Object>();
         Gson gson = new Gson();
         if (StringUtil.isEmpty(userId)) {
@@ -106,12 +109,12 @@ public class RefundOrderController {
                         }
 
                         //3.规则通过，修改该子订单的状态为待退款状态
-//                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
+                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
                         map.put("order_detailid", orderContent.get("order_detailid"));
-//                        int num1 = refundOrderService.updateOrderAll(map);
-//                        if (num1 > 0) {
-//                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
-//                        }
+                        int num1 = refundOrderService.updateOrderAll(map);
+                        if (num1 > 0) {
+                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
+                        }
 
                         //5.调用支付宝退款接口进行退款操作  获取该订单商家的支付信息
                         if (ContextConstants.PAY_TYPE1.equals(orderContent.get("pay_type").toString())) {
@@ -138,31 +141,23 @@ public class RefundOrderController {
                             params.put("orderId", orderId);
                             params.put("orderContentId", orderContentId);
 
-                            Thread current = Thread.currentThread();
-                            System.out.println("调用支付宝之前线程数量"+current.activeCount());
 
                             //支付宝无密退款公共方法
-                            String responceMessage = alipayRefundRequestwumi(out_trade_no, trade_no, refund_amount, params);
-                            Thread current1 = Thread.currentThread();
-                            System.out.println("调用支付宝之后线程数量"+current1.activeCount());
+                            String responceMessage = refundOrderService.alipayRefundRequestwumi(out_trade_no, trade_no, refund_amount, params);
                             System.out.println("=============================="+responceMessage);
                             if ("10000".equals(responceMessage)) {
                                 //5.修改该子订单的状态为已退款状态
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS6));//
-                                Thread current3 = Thread.currentThread();
-                                System.out.println("更新数据库状态为已退款状态之前"+current3.activeCount());
                                 System.out.println("---------------------------"+map);
                                 if (refundOrderService.updateOrderForOrder(map) > 0) {
                                     List<Map<String,Object>>  res =  myOrderService.getTotalOrderByUserIdAndOrderId(map);
                                     for (Map<String,Object> m :res) {
                                         System.out.println("*******"+m);
                                     }
-                                    System.out.println("okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                                    Thread current4 = Thread.currentThread();
-                                    System.out.println("更新数据库状态为已退款状态之后"+current4.activeCount());
                                     System.out.println(orderContentId + "订单已为已退款状态");
                                 }
                                 System.out.println(">>>>>>>>>>>>>支付宝退款成功<<<<<<<<<<<<<<");
+                                return RtnData.ok("支付宝退款成功");
 
                                 //6如果退款成功了要释放场地状态的，从已预订变成可预订
 
@@ -213,84 +208,5 @@ public class RefundOrderController {
             return RtnData.fail("该订单信息无可退款信息，请检查该订单信息");
         }
     }
-
-
-    /**
-     * 无密退款调用方式
-     *
-     * @param trade_no
-     * @param refund_amount
-     * @param params
-     *
-     * @return
-     */
-    private String alipayRefundRequestwumi(String out_trade_no, String trade_no, Double refund_amount, Map<String, String> params) throws AlipayApiException {
-
-        // 发送请求
-        String strResponse = null;
-        try {
-            String alipayurl = params.get("alipayurl");
-            String app_id = params.get("app_id");
-            String private_key = params.get("private_key");
-            String content_type = params.get("content_type");
-            String input_charset = params.get("_input_charset");
-            String ali_public_key = params.get("ali_public_key");
-            String sign_type = params.get("sign_type");
-
-            Gson gson = new Gson();
-
-            AlipayClient alipayClient = new DefaultAlipayClient(alipayurl, app_id, private_key, content_type,
-                    input_charset, ali_public_key, sign_type);
-            AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
-            Map<String, Object> refundMap = new HashMap<String, Object>();
-            refundMap.put("out_trade_no", out_trade_no);
-            refundMap.put("trade_no", trade_no);
-            refundMap.put("out_request_no", trade_no + "_" + UtilDate.getSix());//订单流水号+6位随机数
-            refundMap.put("refund_amount", refund_amount);
-            refundMap.put("refund_reason", "");
-            String reqStr = gson.toJson(refundMap);
-            request.setBizContent(reqStr);
-            AlipayTradeRefundResponse response = (AlipayTradeRefundResponse) alipayClient.execute(request);
-            System.out.println(">>>>>>>>>>>>>>第一次调用<<<<<<<<<<");
-//            Thread.sleep(6000);//获取等待时间
-
-            Map<String, Object> param = new HashMap<>();
-            if ("10000".equals(response.getCode())) {
-                strResponse = "10000";
-
-                JSONObject refundDate = JSONObject.fromObject(response.getBody());
-
-                //准备参数  不管成功与否，都将数据存到退款记录表中
-                param.put("id", UUID.randomUUID().toString());
-                param.put("code", refundDate.get("code"));
-                param.put("msg", refundDate.get("msg"));
-                param.put("buyer_logon_id", refundDate.get("buyer_logon_id"));
-                param.put("buyer_user_id", "");
-                param.put("fund_change", refundDate.get("fund_change"));
-                param.put("gmt_refund_pay", refundDate.get("gmt_refund_pay"));
-                param.put("open_id", refundDate.get("open_id"));
-                param.put("out_trade_no", refundDate.get("out_trade_no"));
-                param.put("trade_no", refundDate.get("trade_no"));
-                param.put("trade_no", refundDate.get("refund_fee"));
-                param.put("refund_monery", refund_amount);
-                param.put("refund_method", "1");
-                param.put("userId", params.get("userId"));
-                param.put("orderId", params.get("orderId"));
-                param.put("orderContentId", params.get("orderContentId"));
-                int totalnum = refundOrderService.insertRefundOrder(param);
-                if (totalnum > 0) {
-                    System.out.println(">>>>>>>>>>>>>>>退款信息已添加到数据表中<<<<<<<<<<<<<<<<<<<");
-                }
-
-            } else {
-                strResponse = response.getSubMsg();
-            }
-        } catch (Exception e) {
-            LOGGER.error("请求退款失败", e);
-        }
-        return strResponse;
-    }
-
-
 
 }
