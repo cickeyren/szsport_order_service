@@ -149,11 +149,17 @@ public class MyOrderService {
             if(list.size()>0){
                 for (int i=0 ;i<list.size();i++){
                     Map<String,Object> ocmap = new HashMap<String, Object>();
+                    String orderContentId = (String) list.get(i).get("id");
+                    String status = (String) list.get(i).get("status");
                     ocmap.put("status",params.get("status").toString());
-                    ocmap.put("orderCode",list.get(i).get("order_code"));
-                    if(!list.get(i).get("status").equals("4") && !list.get(i).get("status").equals("5")){//订单状态为4或者5的时候，不更新该订单状态
+                    ocmap.put("remarks",params.get("remarks").toString());
+                    ocmap.put("orderContentId",orderContentId);
+                    if (status.equals("0")){
                         myOrderDao.updateOrderContent(ocmap);
                     }
+                    /*if(!list.get(i).get("status").equals("4") && !list.get(i).get("status").equals("5")){//订单状态为4或者5的时候，不更新该订单状态
+                        myOrderDao.updateOrderContent(ocmap);
+                    }*/
                 }
             }
         }

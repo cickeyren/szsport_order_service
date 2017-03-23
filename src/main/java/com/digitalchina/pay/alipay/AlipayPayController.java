@@ -145,6 +145,7 @@ public class AlipayPayController {
                         Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
                         String orderNumber = tradeVo.getOrderNumber();
                         orderUpdateMap.put("orderNumber",tradeVo.getOrderNumber());
+                        orderUpdateMap.put("remarks","支付更新订单状态status=1");
                         orderUpdateMap.put("status","1");
                         orderUpdateMap.put("payType","1");
                         orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
