@@ -31,9 +31,12 @@
            count(0)
         FROM
           car_info c
-        WHERE
-          c.user_id = #{userId}
-        AND
-          c.car_number = #{carNumber}
+        WHERE 1=1
+        <if test="userId != null and userId != ''">
+            AND c.user_id = #{userId}
+        </if>
+        <if test="carNumber != null and carNumber != ''">
+            AND c.car_number = #{carNumber}
+        </if>
     </select>
 </mapper>
