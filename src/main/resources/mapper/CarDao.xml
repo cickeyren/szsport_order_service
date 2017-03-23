@@ -25,4 +25,15 @@
     <delete id="deleteCar" parameterType="java.util.Map">
         delete from car_info where id = #{id}
     </delete>
+
+    <select id="getCount" parameterType="java.util.Map" resultType="int">
+        SELECT
+           count(0)
+        FROM
+          car_info c
+        WHERE
+          c.user_id = #{userId}
+        AND
+          c.car_number = #{carNumber}
+    </select>
 </mapper>

@@ -54,16 +54,9 @@ public class MyCarController {
             Map<String,Object> param = new HashMap<String, Object>();
             param.put("userId",userId);
             param.put("carNumber",carNumber);
-            int count = carService.insertCar(param);
-            if (count>0){
-                retMap.put("userId",userId);
-                retMap.put("carNumber",carNumber);
-                return RtnData.ok(retMap,"添加成功!");
-            }else {
-                retMap.put("userId",userId);
-                retMap.put("carNumber",carNumber);
-                return RtnData.ok(retMap,"添加失败!");
-            }
+            retMap = carService.insertCar(param);
+            return RtnData.ok(retMap,"添加成功!");
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("添加失败!",e);

@@ -16,4 +16,6 @@ public interface CarDao {
     int insertCar(Map<String,Object> map);
 
     int deleteCar(Map<String,Object> map);
+
+    int getCount(Map<String,Object> map);
 }
