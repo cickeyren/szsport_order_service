@@ -51,10 +51,7 @@ public class MyCarController {
                                      @RequestParam(value = "carNumber", required = true) String carNumber){
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
-            Map<String,Object> param = new HashMap<String, Object>();
-            param.put("userId",userId);
-            param.put("carNumber",carNumber);
-            retMap = carService.insertCar(param);
+            retMap = carService.insertCar(userId,carNumber);
             return RtnData.ok(retMap);
 
         } catch (Exception e) {

@@ -21,18 +21,23 @@ public class CarService {
         return carDao.getCarList(map);
     };
 
-    public Map<String,Object> insertCar(Map<String,Object> map){
-        Map<String,Object> param = map;//添加车辆的参数
+    public Map<String,Object> insertCar(String userId,String carNumber){
+        Map<String,Object> reMap = new HashMap<String, Object>();//作为返回的参数
 
-        Map<String,Object> reMap = new HashMap<String, Object>();
+        Map<String,Object> param = new HashMap<String, Object>();//作为添加车辆的参数
+        param.put("userId",userId);//添加车辆的参数
+        param.put("carNumber",carNumber);//添加车辆的参数
+        Map<String,Object> map = new HashMap<String, Object>();//作为判断的参数
+        map.put("userId",userId);
+        map.put("carNumber",carNumber);
         int count = carDao.getCount(map);//判断车辆是否被绑定
+        Map<String,Object> map2 = new HashMap<String, Object>();//作为判断的参数
+        map2.put("userId",userId);
+        int count2 = carDao.getCount(map2);//判断最多绑定5个车牌号
         if (count>0) {
             reMap.put("returnKey","false");
             reMap.put("returnMessage","该车辆已绑定!");
-        }
-        map.remove("carNumber");
-        int count2 = carDao.getCount(map);//判断最多绑定5个车牌号
-        if (count2>=5) {
+        }else if (count2>=5) {
             reMap.put("returnKey","false");
             reMap.put("returnMessage","同一账号最多可绑定5个车牌号!");
         }else {
@@ -46,8 +51,8 @@ public class CarService {
                 reMap.put("returnMessage","绑定失败!");
             }
         }
-        reMap.put("userId",param.get("userId"));
-        reMap.put("carNumber",param.get("carNumber"));
+        reMap.put("userId",userId);
+        reMap.put("carNumber",carNumber);
         return reMap;
     };
 
