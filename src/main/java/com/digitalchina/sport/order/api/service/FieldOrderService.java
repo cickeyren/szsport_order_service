@@ -101,6 +101,7 @@ public class FieldOrderService {
 
                         retMap.put("returnKey","true");
                         retMap.put("returnMessage","下单成功!");
+                        retMap.put("orderId",orderBaseInfo.get("id"));//订单编号
                         retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
                     } catch (Exception e) {
                         e.printStackTrace();
