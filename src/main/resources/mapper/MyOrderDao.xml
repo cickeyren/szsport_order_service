@@ -64,7 +64,7 @@
 			oc.id,
 			oc.remain_number,
 			oc.order_code,
-			CAST(oc. STATUS AS CHAR) AS STATUS,
+			CAST(oc.status AS CHAR) AS status,
 			oc.date_limit,
 			oc.time_limit,
 			oc.approach_time,
