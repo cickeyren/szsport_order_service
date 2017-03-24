@@ -64,10 +64,16 @@
 			oc.id,
 			oc.remain_number,
 			oc.order_code,
-			CAST(oc.status AS CHAR) AS status
+			CAST(oc. STATUS AS CHAR) AS STATUS,
+			oc.date_limit,
+			oc.time_limit,
+			oc.approach_time,
+			oc.departure_time,
+			f.field_name
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
+		LEFT JOIN field f ON oc.field_id = f.id
 		WHERE
 			ob.id= #{orderId}
 		<if test="userId != null and userId != ''">
