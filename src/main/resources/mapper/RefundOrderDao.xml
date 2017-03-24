@@ -15,8 +15,21 @@
     <update id="updateOrderAll" parameterType="HashMap">
         UPDATE order_content_detail SET status=#{statusAll},used_number='订单状态已修改' WHERE id=#{order_detailid}
     </update>
+    <!--修改子订单状态-->
     <update id="updateOrderForOrder" parameterType="HashMap">
-                UPDATE order_content_detail od SET od.status=#{statusAll} WHERE od.id=#{order_detailid}
+        UPDATE order_content_detail od SET od.status=#{statusAll} WHERE od.id=#{order_detailid}
+    </update>
+    <!--修改主订单退款状态-->
+    <update id="updateBaseOrder" parameterType="HashMap">
+        UPDATE order_base_info
+        SET refund_status = #{Basestatus}
+        WHERE id =#{orderId}
+    </update>
+    <!--修改主订单订单状态-->
+    <update id="updateBaseOrderByOrder" parameterType="HashMap">
+        UPDATE order_base_info
+        SET status = #{infostatus}
+        WHERE id =#{orderId}
     </update>
     <!--通过查询信息查询子订单信息-->
     <select id="getorderContent" resultType="java.util.Map" parameterType="HashMap">
@@ -40,5 +53,22 @@
     <!--根据支付号查询支付的订单刘表-->
     <select id="getAplyOrder" resultType="java.util.Map" parameterType="HashMap">
         SELECT * FROM alipay_orderticket_trade_info WHERE order_number =#{order_number} and  local_status='1'
+    </select>
+    <!--查询所有待使用的条数-->
+    <select id="getNumsByOrderID" resultType="java.lang.Integer">
+      SELECT count(*)
+      FROM order_content_detail
+      WHERE order_base_id = #{orderId} AND  status = '1'
+    </select>
+    <!--根据主订单查询所有主订单状态-->
+    <select id="getByOrderID" resultType="map" parameterType="HashMap">
+      SELECT * FROM order_content_detail WHERE order_base_id = #{orderId}
+    </select>
+    <select id="getSiteTicket" resultType="java.util.Map" parameterType="HashMap">
+        SELECT  stbi.* FROM  order_base_info obi
+        JOIN site_ticket_basic_info stbi
+        ON obi.ticket_id = stbi.id
+        WHERE  obi.ticket_type = '1' AND  obi.user_id = #{userId}
+        AND obi.id = #{orderId}
     </select>
 </mapper>

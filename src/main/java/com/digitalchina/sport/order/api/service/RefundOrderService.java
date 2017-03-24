@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -82,7 +83,6 @@ public class RefundOrderService {
      * @return
      */
     public int updateOrderForOrder(Map<String, Object> map) {
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+map);
         return  refundOrderDao.updateOrderForOrder(map);
     }
 
@@ -163,4 +163,48 @@ public class RefundOrderService {
         return strResponse;
     }
 
+
+    /**
+     * 更新主订单的退款状态
+     * @param map
+     * @return
+     */
+    public int updateBaseOrder(Map<String, Object> map) {
+        return refundOrderDao.updateBaseOrder(map);
+    }
+
+    /**
+     * 查询主订单下子订单状态已退款的订单数量
+     * @param map
+     * @return
+     */
+    public int getNumsByOrderID(Map<String, Object> map) {
+        return refundOrderDao.getNumsByOrderID(map);
+    }
+
+    /**
+     * 根据主订单查询子订单
+     * @param map
+     * @return
+     */
+    public List<Map<String,Object>> getByOrderID(Map<String, Object> map) {
+        return  refundOrderDao.getByOrderID(map);
+    }
+
+    /**
+     * 更新主订单  订单状态
+     * @param map
+     */
+    public int updateBaseOrderByOrder(Map<String, Object> map) {
+        return refundOrderDao.updateBaseOrderByOrder(map);
+    }
+
+    /**
+     * 根据用户及主订单 场地类型 获取场地票的退票规则
+     * @param map
+     * @return
+     */
+    public Map<String,Object> getSiteTicket(Map<String, Object> map) {
+        return refundOrderDao.getSiteTicket(map);
+    }
 }
