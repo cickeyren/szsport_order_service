@@ -301,7 +301,7 @@ public class RefundOrderController {
                                     List<Map<String,Object>>  res =  myOrderService.getTotalOrderByUserIdAndOrderId(map);
                                     Boolean flag = true;
                                     for (Map<String,Object> m :res) {
-                                        if (ContextConstants.STATUS5.equals(m.get("status"))){
+                                        if (ContextConstants.STATUS6.equals(m.get("status"))){
                                             flag = true;
                                         }else {
                                             flag = false;
