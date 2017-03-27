@@ -165,34 +165,36 @@ public class FieldOrderService {
         Map<String,Object> retMap = new HashMap<String, Object>();
         if(!StringUtil.isEmpty(timesCount)){
             int count = Integer.parseInt(timesCount);
+            int minTimesNum = -1;
             if(!StringUtil.isEmpty(siteTicketInfo.get("minimumTimeLimit"))) {
-                int minTimesNum = Integer.parseInt(siteTicketInfo.get("minimumTimeLimit").toString());
-                if (minTimesNum != -1) {
-                    if(count >= minTimesNum){
-                        if(!StringUtil.isEmpty(siteTicketInfo.get("siteNumLimit"))) {
-                            int maxTimesNum = Integer.parseInt(siteTicketInfo.get("siteNumLimit").toString());
-                            if (maxTimesNum != -1) {
-                                if(count<=maxTimesNum){
-                                    retMap.put("returnKey","true");
-                                    retMap.put("returnMessage","可下单!");
-                                }else{
-                                    retMap.put("returnKey","false");
-                                    retMap.put("returnMessage","超过限订场次,下单失败!");
-                                }
-                            }else{//-1不判断
-                                retMap.put("returnKey","true");
-                                retMap.put("returnMessage","可下单!");
-                            }
-                        }
-                    }else {
-                        retMap.put("returnKey","false");
-                        retMap.put("returnMessage","未达到起订时限,下单失败!");
-                    }
-                }else{//-1不判断
-                    retMap.put("returnKey","true");
-                    retMap.put("returnMessage","可下单!");
-                }
+                minTimesNum = Integer.parseInt(siteTicketInfo.get("minimumTimeLimit").toString());
             }//-1不判断
+            if (minTimesNum != -1) {
+                if(count >= minTimesNum){
+                    int maxTimesNum = -1;
+                    if(!StringUtil.isEmpty(siteTicketInfo.get("siteNumLimit"))) {
+                        maxTimesNum = Integer.parseInt(siteTicketInfo.get("siteNumLimit").toString());
+                    }//-1不判断
+                    if (maxTimesNum != -1) {
+                        if(count<=maxTimesNum){
+                            retMap.put("returnKey","true");
+                            retMap.put("returnMessage","可下单!");
+                        }else{
+                            retMap.put("returnKey","false");
+                            retMap.put("returnMessage","超过限订场次,下单失败!");
+                        }
+                    }else{//-1不判断
+                        retMap.put("returnKey","true");
+                        retMap.put("returnMessage","可下单!");
+                    }
+                }else {
+                    retMap.put("returnKey","false");
+                    retMap.put("returnMessage","未达到起订时限,下单失败!");
+                }
+            }else{//-1不判断
+                retMap.put("returnKey","true");
+                retMap.put("returnMessage","可下单!");
+            }
         }else {
             retMap.put("returnKey","false");
             retMap.put("returnMessage","未选择场次,下单失败!");
