@@ -114,13 +114,13 @@ public class RefundOrderController {
                         }
 
 
-                        //3.规则通过，修改该子订单的状态为待退款状态
-                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
-                        map.put("order_detailid", orderContent.get("order_detailid"));
-                        int num1 = refundOrderService.updateOrderAll(map);
-                        if (num1 > 0) {
-                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
-                        }
+//                        //3.规则通过，修改该子订单的状态为待退款状态
+//                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
+//                        map.put("order_detailid", orderContent.get("order_detailid"));
+//                        int num1 = refundOrderService.updateOrderAll(map);
+//                        if (num1 > 0) {
+//                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
+//                        }
 
                         //5.调用支付宝退款接口进行退款操作  获取该订单商家的支付信息
                         if (ContextConstants.PAY_TYPE1.equals(orderContent.get("pay_type").toString())) {
@@ -254,12 +254,12 @@ public class RefundOrderController {
                         }
 
                         //3.规则通过，修改该子订单的状态为待退款状态
-                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
-                        map.put("order_detailid", orderContent.get("order_detailid"));
-                        int num1 = refundOrderService.updateOrderAll(map);
-                        if (num1 > 0) {
-                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
-                        }
+//                        map.put("statusAll", Integer.parseInt(ContextConstants.STATUS4));
+//                        map.put("order_detailid", orderContent.get("order_detailid"));
+//                        int num1 = refundOrderService.updateOrderAll(map);
+//                        if (num1 > 0) {
+//                            System.out.println(orderContentId + "修改子订单状态为待退款状态成功！");
+//                        }
 
                         //5.调用支付宝退款接口进行退款操作  获取该订单商家的支付信息
                         if (ContextConstants.PAY_TYPE1.equals(orderContent.get("pay_type").toString())) {
