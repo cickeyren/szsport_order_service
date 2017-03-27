@@ -227,12 +227,18 @@ public class RefundOrderController {
                             //开场前多少小时可以退款
                             String no_refund_time =   orderSiteTicket.get("no_refund_time").toString();
                             Long refund_time = Long.parseLong(no_refund_time);
-                            //进场时间
-                            String approach_time = orderSiteTicket.get("orderSiteTicket").toString();
+
+                            String date_limit = orderContent.get("date_limit").toString();//获取子单的生效日期
+                            String time_limit = orderContent.get("time_limit").toString();//获取字单的生效时间
+                            String time_li = time_limit.substring(0,time_limit.indexOf("$"));//截取开始时间
+                            String data_time = date_limit+" "+time_li;
                             DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                            Date d1 = df.parse(approach_time);
+                            Date d1 = df.parse(data_time);
                             Date d2 = new Date();
+                            if (d1.getTime()<d2.getTime()){
+                                return RtnData.fail("该票已经超过退票规定的时间");
+                            }
                             long diff = d1.getTime() - d2.getTime();//这样得到的差值是微秒级别
                             long days = diff / (1000 * 60 * 60 * 24);
 
@@ -240,7 +246,9 @@ public class RefundOrderController {
                             long minutes = (diff-days*(1000 * 60 * 60 * 24)-hours*(1000* 60 * 60))/(1000* 60);
                             System.out.println(""+days+"天"+hours+"小时"+minutes+"分");
 
-                            if (refund_time-hours<0){
+                            Double timeAll = (Double.valueOf(days)*24)+Double.valueOf(hours)+(Double.valueOf(minutes)/60);//获取当前时间里验票时间总小时
+
+                            if (timeAll-refund_time<0){
                                 return RtnData.fail("开场前"+refund_time+"小时不可退");
                             }
                         }
