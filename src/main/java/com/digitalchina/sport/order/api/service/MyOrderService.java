@@ -966,7 +966,7 @@ public class MyOrderService {
     public void updateTimeOverOrder() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks","超过了验票时间,已过期");
-        myOrderDao.updateTimeOverSiteOrder(params);
-        myOrderDao.updateTimeOverYearOrder(params);
+        //myOrderDao.updateTimeOverSiteOrder(params);
+        //myOrderDao.updateTimeOverYearOrder(params);
     }
 }
