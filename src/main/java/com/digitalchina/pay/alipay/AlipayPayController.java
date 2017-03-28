@@ -113,8 +113,6 @@ public class AlipayPayController {
 
                 //——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
 
-
-
                 if(trade_status.equals("TRADE_FINISHED")){
                     //判断该笔订单是否在商户网站中已经做过处理
                     //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
@@ -127,8 +125,10 @@ public class AlipayPayController {
                     if (params.containsKey("refund_status")){
                         if (refund_status.equals("REFUND_SUCCESS")){
                             logger.error("========================支付宝退款成功=================");
+                            return ;
                         }else {
                             logger.error("========================支付宝退款失败=================");
+                            return;
                         }
                     }else {
                         //判断该笔订单是否在商户网站中已经做过处理
@@ -189,6 +189,7 @@ public class AlipayPayController {
 
                 }else if (trade_status.equals("TRADE_CLOSED")){
                     logger.error("========================支付宝主单金额已全部退款完毕=================");
+                    return;
                 }
 
                 //——请根据您的业务逻辑来编写程序（以上代码仅作参考）——

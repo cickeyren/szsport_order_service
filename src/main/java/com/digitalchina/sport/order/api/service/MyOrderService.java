@@ -5,14 +5,10 @@ import com.digitalchina.common.utils.*;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.dao.MyOrderDao;
 import com.digitalchina.sport.order.api.model.OrderBaseInfo;
-import com.digitalchina.sport.order.api.model.OrderContentDetail;
-import com.google.common.collect.Maps;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 /**

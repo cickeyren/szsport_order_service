@@ -1,6 +1,5 @@
 package com.digitalchina.sport.order.api.service;
 
-import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradeRefundRequest;
@@ -96,7 +95,7 @@ public class RefundOrderService {
      * @return
      */
     @Transactional
-    public synchronized String alipayRefundRequestwumi(String out_trade_no, String trade_no, Double refund_amount, Map<String, String> params) throws AlipayApiException {
+    public synchronized String alipayRefundRequestwumi(String out_trade_no, String trade_no, Double refund_amount, Map<String, String> params) {
 
         // 发送请求
         String strResponse = null;

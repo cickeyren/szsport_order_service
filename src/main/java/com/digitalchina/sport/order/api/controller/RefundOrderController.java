@@ -1,44 +1,26 @@
 package com.digitalchina.sport.order.api.controller;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.alipay.api.AlipayApiException;
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AlipayEbppPdeductSignValidateModel;
-import com.alipay.api.request.AlipayTradeRefundRequest;
-import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.digitalchina.common.RtnData;
-import com.digitalchina.common.utils.HttpClientUtil;
 import com.digitalchina.common.utils.StringUtil;
-import com.digitalchina.common.utils.UtilDate;
 import com.digitalchina.sport.order.api.common.config.AlipayConfig;
-import com.digitalchina.sport.order.api.common.config.AlipayNotify;
 import com.digitalchina.sport.order.api.common.config.ContextConstants;
-import com.digitalchina.sport.order.api.common.config.JsonUtils;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import com.digitalchina.sport.order.api.service.RefundOrderService;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sun.org.apache.xpath.internal.SourceTree;
-import net.sf.json.JSONObject;
-import org.apache.ibatis.transaction.Transaction;
-import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * （一句话描述）
