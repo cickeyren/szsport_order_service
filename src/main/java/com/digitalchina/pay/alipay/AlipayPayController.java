@@ -124,63 +124,71 @@ public class AlipayPayController {
                     //退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
                     //请务必判断请求时的total_fee、seller_id与通知时获取的total_fee、seller_id为一致的
                 } else if (trade_status.equals("TRADE_SUCCESS")){
-                    //判断该笔订单是否在商户网站中已经做过处理
-                    //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-                    //如果有做过处理，不执行商户的业务程序
-                    if( null != tradeVo) {
-                        tradeVo.setOutTradeNo(out_trade_no);
-                        tradeVo.setTradeNo(trade_no);
-                        tradeVo.setAlipayStatus(trade_status);
-                        tradeVo.setBuyerId(buyer_id);
-                        tradeVo.setBody(body);
-                        tradeVo.setNotifyTime(notify_time);
-                        tradeVo.setSubject(subject);
-                        tradeVo.setDiscount(discount);
-                        tradeVo.setBuyerEmail(buyer_email);
-                        tradeVo.setGmtCreate(gmt_create);
-                        tradeVo.setPrice(price);
-                        tradeVo.setTotalFee(total_fee);
-                        tradeVo.setSellerId(seller_id);
-                        tradeVo.setLocalSatus("1");
-                        System.out.println(params.toString());
-                        try {
-                            //更新支付状态
-                            if(payTradeDao.updateAlipayTradeModel(tradeVo) == 0) {
-                                logger.error("========================更新支付状态发生错误=================");
-                            } else {
-                                logger.error("========================更新支付宝流水订单成功=================");
-                            }
-                            //更新用户状态
-                            Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
-                            String orderNumber = tradeVo.getOrderNumber();
-                            orderUpdateMap.put("orderNumber",tradeVo.getOrderNumber());
-                            orderUpdateMap.put("remarks","支付更新订单状态status=1");
-                            orderUpdateMap.put("status","1");
-                            orderUpdateMap.put("payType","1");
-                            orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
-                            orderUpdateMap.put("payPrice", total_fee);
-                            orderUpdateMap.put("payTime", gmt_create);
-                            if(orderService.updateOrder(orderUpdateMap) == 0) {
-                                logger.error("========================更新订单【"+orderNumber+"】状态发生错误=================");
-                            } else {
-                                logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
-                            }
-                            //更新场地票锁的状态//支付完成场地为2已订购
-                            fieldOrderService.updateLockField(tradeVo.getOrderNumber(),"2");//status = "2";
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            logger.error("========================支付成功后业务处理发生错误=================",e);
+                    if (params.containsKey("refund_status")){
+                        if (refund_status.equals("REFUND_SUCCESS")){
+                            logger.error("========================支付宝退款成功=================");
+                        }else {
+                            logger.error("========================支付宝退款失败=================");
                         }
-                    } else {
-                        logger.error("========================查询到订单为空=================");
+                    }else {
+                        //判断该笔订单是否在商户网站中已经做过处理
+                        //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
+                        //如果有做过处理，不执行商户的业务程序
+                        if( null != tradeVo) {
+                            tradeVo.setOutTradeNo(out_trade_no);
+                            tradeVo.setTradeNo(trade_no);
+                            tradeVo.setAlipayStatus(trade_status);
+                            tradeVo.setBuyerId(buyer_id);
+                            tradeVo.setBody(body);
+                            tradeVo.setNotifyTime(notify_time);
+                            tradeVo.setSubject(subject);
+                            tradeVo.setDiscount(discount);
+                            tradeVo.setBuyerEmail(buyer_email);
+                            tradeVo.setGmtCreate(gmt_create);
+                            tradeVo.setPrice(price);
+                            tradeVo.setTotalFee(total_fee);
+                            tradeVo.setSellerId(seller_id);
+                            tradeVo.setLocalSatus("1");
+                            System.out.println(params.toString());
+                            try {
+                                //更新支付状态
+                                if(payTradeDao.updateAlipayTradeModel(tradeVo) == 0) {
+                                    logger.error("========================更新支付状态发生错误=================");
+                                } else {
+                                    logger.error("========================更新支付宝流水订单成功=================");
+                                }
+                                //更新用户状态
+                                Map<String, Object> orderUpdateMap = new HashMap<String,Object>();
+                                String orderNumber = tradeVo.getOrderNumber();
+                                orderUpdateMap.put("orderNumber",tradeVo.getOrderNumber());
+                                orderUpdateMap.put("remarks","支付更新订单状态status=1");
+                                orderUpdateMap.put("status","1");
+                                orderUpdateMap.put("payType","1");
+                                orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
+                                orderUpdateMap.put("payPrice", total_fee);
+                                orderUpdateMap.put("payTime", gmt_create);
+                                if(orderService.updateOrder(orderUpdateMap) == 0) {
+                                    logger.error("========================更新订单【"+orderNumber+"】状态发生错误=================");
+                                } else {
+                                    logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
+                                }
+                                //更新场地票锁的状态//支付完成场地为2已订购
+                                fieldOrderService.updateLockField(tradeVo.getOrderNumber(),"2");//status = "2";
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                logger.error("========================支付成功后业务处理发生错误=================",e);
+                            }
+                        } else {
+                            logger.error("========================查询到订单为空=================");
+                        }
+                        //注意：
+                        //付款完成后，支付宝系统发送该交易状态通知
+                        //请务必判断请求时的total_fee、seller_id与通知时获取的total_fee、seller_id为一致的
                     }
-                    //注意：
-                    //付款完成后，支付宝系统发送该交易状态通知
-                    //请务必判断请求时的total_fee、seller_id与通知时获取的total_fee、seller_id为一致的
 
 
-                }else if (refund_status.equals("REFUND_SUCCESS")){
-                    logger.error("========================支付宝退款成功=================");
+                }else if (trade_status.equals("TRADE_CLOSED")){
+                    logger.error("========================支付宝主单金额已全部退款完毕=================");
                 }
 
                 //——请根据您的业务逻辑来编写程序（以上代码仅作参考）——
