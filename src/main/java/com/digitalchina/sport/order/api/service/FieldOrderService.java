@@ -387,21 +387,20 @@ public class FieldOrderService {
                     if (timeToTime.length>0){
                         String startTime = timeToTime[0];
                         String endTime = timeToTime[1];
+                        String approachTimeStr = "0";
                         if(!StringUtil.isEmpty(orderDetailMap.get("approach_time"))) {
-                            int approachTime = Integer.parseInt((String) orderDetailMap.get("approach_time"));
-                            if (approachTime != -1) {
-                                startTime = DateUtil.offsiteDateTime(dqdate + " "+ startTime, Calendar.MINUTE, -approachTime);
-                            }
-                            if (DateUtil.compareTimeTo(startTime, endTime, dqtime)) {//公用的时间对比方法
-                                retMap.put("returnKey", "true");
-                                retMap.put("returnMessage", "验票通过，该时段可用!");
-                            } else {
-                                retMap.put("returnKey", "false");
-                                retMap.put("returnMessage", "该时段不可用,请稍候尝试!");
-                            }
-                        }else {
+                            approachTimeStr = (String) orderDetailMap.get("approach_time");
+                        }
+                        int approachTime = Integer.parseInt(approachTimeStr);
+                        if (approachTime != -1) {
+                            startTime = DateUtil.offsiteDateTime(dqdate + " "+ startTime, Calendar.MINUTE, -approachTime);
+                        }
+                        if (DateUtil.compareTimeTo(startTime, endTime, dqtime)) {//公用的时间对比方法
+                            retMap.put("returnKey", "true");
+                            retMap.put("returnMessage", "验票通过，该时段可用!");
+                        } else {
                             retMap.put("returnKey", "false");
-                            retMap.put("returnMessage", "数据有误请联系管理员!");
+                            retMap.put("returnMessage", "该时段不可用,请稍候尝试!");
                         }
                     }else {
                         retMap.put("returnKey","false");
@@ -425,14 +424,18 @@ public class FieldOrderService {
      * @return
      */
     public int updateCheckByMap(Map<String,Object> map) throws Exception{
-        int ret;
         try {
+            int ret=0;
             map.put("remarks","场地票验票");
             ret = myOrderDao.updateFieldContent(map);
-
             Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
             String orderBaseId=(String) orderDetails.get("order_base_id");
-            String status = (String) myOrderDao.getOrderDetails(orderBaseId).get("status");//获得主单状态
+            Map<String,Object> orderBaseDetails = myOrderDao.getOrderDetails(orderBaseId);
+            String status="";
+            if(!StringUtil.isEmpty(orderBaseDetails.get("status"))){
+                status = orderBaseDetails.get("status").toString();//获得主单状态
+            }
+            System.out.print(orderBaseDetails.get("status"));
             if (status.equals("1")){//主单是待使用状态才需要判断
                 int count = myOrderDao.getOrderCountByMap(orderBaseId);//一个已付款的订单下的所有待使用的子订单个数
                 if (count ==0){//当个数为0的时候修改主单为已使用

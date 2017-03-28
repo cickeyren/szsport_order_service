@@ -211,4 +211,12 @@ public interface MyOrderDao {
 	 */
 	List<Map<String,Object>> getOrderNumberByStatus(String status) throws Exception;
 
+	/**
+	 * -定时任务中使用,当订单超过了验票时间，状态变为已过期=8
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	int updateTimeOverSiteOrder(Map<String,Object> params) throws Exception;
+	int updateTimeOverYearOrder(Map<String,Object> params) throws Exception;
 }

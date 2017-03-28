@@ -480,7 +480,7 @@
 			#{timeIntervalId},
 			#{status},
 			NOW(),
-			NOW(),
+			NOW()
 		);
 	</insert>
 	<!-- 验过票的未使用订单修改状态 -->
@@ -530,4 +530,38 @@
 		WHERE
 			ob.`status` = #{status}
 	</select>
+
+	<!--定时任务中使用,当订单超过了验票时间，状态变为已过期=8 -->
+	<update id="updateTimeOverSiteOrder" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE order_content_detail oc
+		SET oc.`status` = '8',
+			ob.remarks = #{remarks}
+		WHERE
+			CONCAT(
+				oc.date_limit,' ',
+				substring_index(oc.time_limit, "$" ,- 1)
+				) < NOW()
+		AND oc.`status` = '1'
+		AND oc.end_time IS NULL
+		AND (
+			oc.check_status IS NULL
+			OR oc.check_status = '0'
+			)
+		]]>
+	</update>
+	<update id="updateTimeOverYearOrder" parameterType="java.util.Map">
+		<![CDATA[
+		UPDATE order_content_detail oc
+		SET oc.`status` = '8',
+			ob.remarks = #{remarks}
+		WHERE
+			oc.end_time < NOW()
+		AND oc.`status` = '1'
+		AND (
+			oc.check_status IS NULL
+			OR oc.check_status = '0'
+		)
+		]]>
+	</update>
 </mapper>

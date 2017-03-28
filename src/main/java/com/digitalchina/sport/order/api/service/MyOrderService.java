@@ -960,4 +960,13 @@ public class MyOrderService {
         params2.put("remarks","验过票的未使用订单修改状态");
         myOrderDao.updateOrderContentStatus(params2);
     }
+    /**
+     * -定时任务中使用,当订单超过了验票时间，状态变为已过期=8
+     */
+    public void updateTimeOverOrder() throws Exception{
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("remarks","超过了验票时间,已过期");
+        myOrderDao.updateTimeOverSiteOrder(params);
+        myOrderDao.updateTimeOverYearOrder(params);
+    }
 }

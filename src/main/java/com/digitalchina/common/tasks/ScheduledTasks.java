@@ -38,6 +38,11 @@ public class ScheduledTasks {
             //20170320 update by rensq
             //失效订单，释放场地状态。
             fieldOrderService.updateSxLockField();
+
+            /**
+             * 当订单超过了验票时间，状态变为已过期=8
+             */
+            myOrderService.updateTimeOverOrder();
             log.info(DateUtil.now()+"########## 更新失效订单成功！########## ", DateUtil.now());
         } catch (Exception e) {
             e.printStackTrace();
