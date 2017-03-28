@@ -536,7 +536,7 @@
 		<![CDATA[
 		UPDATE order_content_detail oc
 		SET oc.`status` = '8',
-			ob.remarks = #{remarks}
+			oc.remarks = #{remarks}
 		WHERE
 			CONCAT(
 				oc.date_limit,' ',
@@ -554,7 +554,7 @@
 		<![CDATA[
 		UPDATE order_content_detail oc
 		SET oc.`status` = '8',
-			ob.remarks = #{remarks}
+			oc.remarks = #{remarks}
 		WHERE
 			oc.end_time < NOW()
 		AND oc.`status` = '1'
