@@ -456,6 +456,7 @@ public class FieldOrderService {
      * 失效订单，释放场地状态。0：可预订
      * @param
      */
+    @Transactional
     public void updateSxLockField() throws Exception{
         try {
             //获取所有失效订单

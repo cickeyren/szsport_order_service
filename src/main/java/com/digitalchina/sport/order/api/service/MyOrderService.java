@@ -924,6 +924,7 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
+    @Transactional
     public void updateAllOrderStatus(String remarks) throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks",remarks);
@@ -961,7 +962,7 @@ public class MyOrderService {
         myOrderDao.updateOrderContentStatus(params2);
     }
     /**
-     * -定时任务中使用,当订单超过了验票时间，状态变为已过期=8
+     * 定时任务中使用,当订单超过了验票时间，状态变为已过期=8
      */
     public void updateTimeOverOrder() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
