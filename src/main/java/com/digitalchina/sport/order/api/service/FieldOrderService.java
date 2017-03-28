@@ -256,7 +256,7 @@ public class FieldOrderService {
     public void lockField(String date,List<Map<String,Object>> timeList) throws Exception{
         for (int i=0;i<timeList.size();i++){
             String fieldId = (String) timeList.get(i).get("fieldId");
-            if (StringUtil.isEmpty(timeList.get(i).get("timeIntervalId"))){
+            if (!StringUtil.isEmpty(timeList.get(i).get("timeIntervalId"))){
                 String timeIntervalId[] = timeList.get(i).get("timeIntervalId").toString().split(",");
                 for (int j=0;j<timeIntervalId.length;j++){
                     String id = UUIDUtil.generateUUID();//uuid生成32位随机数
