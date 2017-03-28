@@ -118,14 +118,13 @@
 		WHERE
 			ob.order_number=#{orderNumber}
 	</select>
-
 	<!-- 新增子订单详情信息 -->
 	<insert id="inserOrderContentDetail" parameterType="java.util.Map">
 	INSERT INTO `szsport_order_mgr`.`order_content_detail` (
 		       	`id`,`order_code`,`order_base_id`,
 				`start_time`,`end_time`,`can_retreat`,
 				`remain_number`,`total_number`,
-				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,
+				`everyday_number`,`everyday_remain_number`,`date_limit`,`time_limit`,`time_interval_id`,
 				`forbidden_date`,`hours_limit`,
 				`take_status`,`check_status`,
 				 status,`approach_time`,`departure_time`,
@@ -136,7 +135,7 @@
 	VALUES(#{id},#{orderCode},#{orderBaseId},
 		   #{startTime},#{endTime},#{canRetreat},
 		   #{remainNumber},#{totalNumber},
-		   #{everydayNumber},#{everydayRemainNumber},#{dateLimit},#{timeLimit},
+		   #{everydayNumber},#{everydayRemainNumber},#{dateLimit},#{timeLimit},#{timeIntervalId},
 		   #{forbiddenDate},#{hoursLimit},
 		   #{takeStatus},#{checkStatus},#{status},#{approachTime},#{departureTime},
 		   #{takeType},#{takeTime},
@@ -529,6 +528,7 @@
 			order_base_info ob
 		WHERE
 			ob.`status` = #{status}
+			AND ob.ticket_type='1'
 	</select>
 
 	<!--定时任务中使用,当订单超过了验票时间，状态变为已过期=8 -->
