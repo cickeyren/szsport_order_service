@@ -126,6 +126,7 @@ public class MyOrderService {
      * 取票=====>>更新字单
      * @param params
      */
+    @Transactional
     public boolean updateTake(Map<String,Object> params)throws Exception{
         if (myOrderDao.updateTake(params)>0){
             return true;
@@ -938,6 +939,7 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
+    @Transactional
     public void updateAllEveryRemain() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("status","2");//使用中的
@@ -950,6 +952,7 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
+    @Transactional
     public void updateOrderBaseStatus() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks","次数已使用完");
@@ -964,10 +967,11 @@ public class MyOrderService {
     /**
      * 定时任务中使用,当订单超过了验票时间，状态变为已过期=8
      */
+    @Transactional
     public void updateTimeOverOrder() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks","超过了验票时间,已过期");
-        //myOrderDao.updateTimeOverSiteOrder(params);
-        //myOrderDao.updateTimeOverYearOrder(params);
+        myOrderDao.updateTimeOverSiteOrder(params);
+        myOrderDao.updateTimeOverYearOrder(params);
     }
 }

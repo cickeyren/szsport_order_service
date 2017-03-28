@@ -47,34 +47,38 @@ public class FieldOrderService {
 
             Map<String,Object> siteTicketInfo = this.getSiteTicketInfoToOrder(ticketId);//提供接口门票信息,获取订单所需字段；
             //从门票详细中获取
-            //预定规则：minimum_time_limit起订时限，最少选择几个时间段
-            //预定规则：site_num_limit限订场次数，最多选择几个场次
-            String timesCount = orderJsonObject.get("timesCount").toString();
-            //============>>判断预定规则
-            Map<String,Object> checkTimesCountMap = CheckTimesCount(timesCount,siteTicketInfo);
-            if(!checkTimesCountMap.get("returnKey").equals("false")){
-                Map<String,Object> orderBaseInfo =  this.getOrderBaseInfoFromMap(siteTicketInfo);//从门票详细中提取订单基本信息
-                //order基本信息
-                if (orderBaseInfo!=null) {
+            Map<String,Object> orderBaseInfo =  this.getOrderBaseInfoFromMap(siteTicketInfo);//从门票详细中提取订单基本信息
+            //order基本信息
+            if (orderBaseInfo!=null) {
+                //前端传入基本信息
+                orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
+                orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
+                orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
+                orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
+                //价格
+                orderBaseInfo.put("sellPrice",orderJsonObject.get("totalSellPrice").toString());
 
-                    //前端传入基本信息
-                    orderBaseInfo.put("userId",orderJsonObject.get("userId").toString());
-                    orderBaseInfo.put("userName",orderJsonObject.get("userName").toString());
-                    orderBaseInfo.put("userTel",orderJsonObject.get("userTel").toString());
-                    orderBaseInfo.put("orderChannel",orderJsonObject.get("orderChannel").toString());
-                    //价格
-                    orderBaseInfo.put("sellPrice",orderJsonObject.get("totalSellPrice").toString());
+                try {
+                    Map<String,Object> checkTimesCountMap = new HashMap<String, Object>();
 
-                    try {
-                        //子订单详细信息(多个)
-                        List<Map<String,Object>> timeList = (List<Map<String, Object>>) orderJsonObject.get("list");
-                        //字单个数
-                        if(!StringUtil.isEmpty(timeList)){
-                            orderBaseInfo.put("sonOrders",timeList.size());
-                            //添加主订单内容到数据库返回orderBase表id
-                            String orderBaseId = this.insertOrderBaseInfo(orderBaseInfo);
-                            for (int i=0;i<timeList.size();i++){
-                                try {
+                    //子订单详细信息(多个)
+                    List<Map<String,Object>> timeList = (List<Map<String, Object>>) orderJsonObject.get("list");
+                    //字单个数
+                    if(!StringUtil.isEmpty(timeList)){
+                        orderBaseInfo.put("sonOrders",timeList.size());
+                        //添加主订单内容到数据库返回orderBase表id
+                        String orderBaseId = this.insertOrderBaseInfo(orderBaseInfo);
+                        for (int i=0;i<timeList.size();i++){
+                            try {
+                                //预定规则：minimum_time_limit起订时限，最少选择几个时间段
+                                //预定规则：site_num_limit限订场次数，最多选择几个场次
+                                String timesCount = "";
+                                //============>>判断预定规则
+                                if (!StringUtil.isEmpty(timeList.get(i).get("timesCount"))){
+                                    timesCount = timeList.get(i).get("timesCount").toString();
+                                }
+                                checkTimesCountMap = CheckTimesCount(timesCount,siteTicketInfo);
+                                if(!checkTimesCountMap.get("returnKey").equals("false")){
                                     //order详细内容
                                     Map<String,Object> orderContentDetail = this.getOrderContentDetailFromMap(date,siteTicketInfo,timeList.get(i));
                                     orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
@@ -82,36 +86,37 @@ public class FieldOrderService {
                                     this.insertOrderContentDetail(orderContentDetail);
                                     //锁定该场地、该日期、该时间段的场地状态为1：已锁定
                                     this.lockField(date,timeList);
-
-
-
                                     System.out.println("orderContentDetail======"+orderContentDetail);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    retMap.put("returnKey","false");
-                                    retMap.put("returnMessage","订单详细信息不全,下单失败!");
+                                }else {
+                                    retMap = checkTimesCountMap;
+                                    break;
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                retMap.put("returnKey","false");
+                                retMap.put("returnMessage","订单详细信息不全,下单失败!");
                             }
-                        }else {
-                            retMap.put("returnKey","false");
-                            retMap.put("returnMessage","未选择场次,下单失败!");
                         }
-
-                        System.out.println("orderBaseInfo======"+orderBaseInfo);
-
+                    }else {
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","未选择场次,下单失败!");
+                    }
+                    System.out.println("orderBaseInfo======"+orderBaseInfo);
+                    if(!checkTimesCountMap.get("returnKey").equals("false")){
                         retMap.put("returnKey","true");
                         retMap.put("returnMessage","下单成功!");
                         retMap.put("orderId",orderBaseInfo.get("id"));//订单编号
                         retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    }else {
+                        retMap = checkTimesCountMap;
                     }
-                }else {
-                    retMap.put("returnKey","false");
-                    retMap.put("returnMessage","订单基本信息不全,下单失败!");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-            }else retMap = checkTimesCountMap;
+            }else {
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","订单基本信息不全,下单失败!");
+            }
         }else {
             retMap.put("returnKey","false");
             retMap.put("returnMessage","场地票策略为空!");
@@ -466,6 +471,7 @@ public class FieldOrderService {
                     if (!StringUtil.isEmpty(list.get(i).get("orderNumber"))){
                         String orderNumber = (String) list.get(i).get("orderNumber");
                         this.updateLockField(orderNumber,"0");//失效订单。0：可预订
+                        //System.out.print("释放失效订单场地状态！！！！！！！！");
                     }
                 }
             }
