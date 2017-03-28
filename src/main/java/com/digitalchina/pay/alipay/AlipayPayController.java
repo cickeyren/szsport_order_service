@@ -106,6 +106,7 @@ public class AlipayPayController {
         //判断回调参数是否包含refund_status字段
         if (params.containsKey("refund_status")){
                 logger.error("========================支付宝退款成功=================");
+                return;
         }else {
             if(com.digitalchina.pay.alipay.util.AlipayNotify.verify(params,tradeVo.getPartnerId())){
                 //////////////////////////////////////////////////////////////////////////////////////////
