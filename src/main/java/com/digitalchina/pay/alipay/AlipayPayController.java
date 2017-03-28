@@ -77,8 +77,11 @@ public class AlipayPayController {
         String trade_no = request.getParameter("trade_no");
         //交易状态
         String trade_status = request.getParameter("trade_status");
-        //退款状态
-        String refund_status = request.getParameter("refund_status");
+        String  refund_status = "";
+        if (params.containsKey("refund_status")){
+            //退款状态
+            refund_status = request.getParameter("refund_status");
+        }
         String buyer_id = request.getParameter("buyer_id");
         String body = request.getParameter("body");
         String notify_time = request.getParameter("notify_time");
