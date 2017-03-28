@@ -285,12 +285,8 @@ public class RefundOrderController {
                             params.put("userId", userId);
                             params.put("orderId", orderId);
                             params.put("orderContentId", orderContentId);
-
-
-
                             //支付宝无密退款公共方法
                             String responceMessage = refundOrderService.alipayRefundRequestwumi(out_trade_no, trade_no, refund_amount, params);
-
 
                             System.out.println("=============================="+responceMessage);
                             if ("10000".equals(responceMessage)) {
