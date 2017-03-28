@@ -122,7 +122,6 @@ public class MyOrderService {
      * 取票=====>>更新字单
      * @param params
      */
-    @Transactional
     public boolean updateTake(Map<String,Object> params)throws Exception{
         if (myOrderDao.updateTake(params)>0){
             return true;
@@ -874,7 +873,6 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
-    @Transactional
     public Map<String,Object> cancelOrderByOrderId(String orderId) throws Exception{
         //客户主动取消订单
         //状态（0待支付，1待使用，2已使用，3支付失败，4退款:待退款，已退款，5失效订单）
@@ -921,7 +919,6 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
-    @Transactional
     public void updateAllOrderStatus(String remarks) throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks",remarks);
@@ -935,7 +932,6 @@ public class MyOrderService {
      * @return
      * @throws Exception
      */
-    @Transactional
     public void updateAllEveryRemain() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("status","2");//使用中的
@@ -963,7 +959,6 @@ public class MyOrderService {
     /**
      * 定时任务中使用,当订单超过了验票时间，状态变为已过期=8
      */
-    @Transactional
     public void updateTimeOverOrder() throws Exception{
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks","超过了验票时间,已过期");
