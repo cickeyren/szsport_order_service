@@ -88,6 +88,7 @@ public class FieldOrderService {
                                     this.lockField(date,timeList);
                                     System.out.println("orderContentDetail======"+orderContentDetail);
                                 }else {
+                                    myOrderDao.deleteOrderBase(orderBaseId);
                                     retMap = checkTimesCountMap;
                                     break;
                                 }

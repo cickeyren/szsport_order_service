@@ -219,4 +219,6 @@ public interface MyOrderDao {
 	 */
 	int updateTimeOverSiteOrder(Map<String,Object> params) throws Exception;
 	int updateTimeOverYearOrder(Map<String,Object> params) throws Exception;
+
+    int deleteOrderBase(String id) throws Exception;
 }
