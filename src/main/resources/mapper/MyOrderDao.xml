@@ -564,4 +564,8 @@
 		)
 		]]>
 	</update>
+
+	<delete id="deleteOrderBase" parameterType="String">
+		delete from order_base_info where id = #{id}
+	</delete>
 </mapper>

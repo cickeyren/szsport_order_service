@@ -153,9 +153,6 @@ public class MyOrderService {
                     if (status.equals("0")){
                         myOrderDao.updateOrderContent(ocmap);
                     }
-                    /*if(!list.get(i).get("status").equals("4") && !list.get(i).get("status").equals("5")){//订单状态为4或者5的时候，不更新该订单状态
-                        myOrderDao.updateOrderContent(ocmap);
-                    }*/
                 }
             }
         }
