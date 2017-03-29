@@ -105,7 +105,7 @@ public class AlipayPayController {
         //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以上仅供参考)//
         //判断回调参数是否包含refund_status字段
         if (params.containsKey("refund_status")){
-                logger.error("========================支付宝退款成功=================");
+                logger.error("进入退款----------支付宝退款成功（第一次条件判断）=================");
                 return;
         }else {
             if(com.digitalchina.pay.alipay.util.AlipayNotify.verify(params,tradeVo.getPartnerId())){
@@ -113,7 +113,6 @@ public class AlipayPayController {
                 //请在这里加上商户的业务逻辑程序代码
 
                 //——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
-
                 if(trade_status.equals("TRADE_FINISHED")){
                     //判断该笔订单是否在商户网站中已经做过处理
                     //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
@@ -125,16 +124,18 @@ public class AlipayPayController {
                 } else if (trade_status.equals("TRADE_SUCCESS")){
                     if (params.containsKey("refund_status")){
                         if (refund_status.equals("REFUND_SUCCESS")){
-                            logger.error("========================支付宝退款成功=================");
+                            logger.error("进入退款====================支付宝退款成功（第二次返回退款状态）=================");
                             return ;
                         }else {
-                            logger.error("========================支付宝退款失败=================");
+                            logger.error("进入退款=====================支付宝退款失败=================");
                             return;
                         }
                     }else {
+
                         //判断该笔订单是否在商户网站中已经做过处理
                         //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
                         //如果有做过处理，不执行商户的业务程序
+                        logger.error("进入支付----------=================");
                         if( null != tradeVo) {
                             tradeVo.setOutTradeNo(out_trade_no);
                             tradeVo.setTradeNo(trade_no);
@@ -175,6 +176,7 @@ public class AlipayPayController {
                                 }
                                 //更新场地票锁的状态//支付完成场地为2已订购
                                 fieldOrderService.updateLockField(tradeVo.getOrderNumber(),"2");//status = "2";
+                                logger.error("退出支付----------=================");
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 logger.error("========================支付成功后业务处理发生错误=================",e);
@@ -189,7 +191,7 @@ public class AlipayPayController {
 
 
                 }else if (trade_status.equals("TRADE_CLOSED")){
-                    logger.error("========================支付宝主单金额已全部退款完毕=================");
+                    logger.error("进入退款==================支付宝主单金额已全部退款完毕=================");
                     return;
                 }
 

@@ -6,8 +6,12 @@ server:
 --- # logging
 logging:
   level:
-#    org.springframework.web.servlet.mvc: debug
-#    org.mybatis: debug
+    root: INFO
+    com:
+      digitalchina: DEBUG
+
+    org.springframework.web.servlet.mvc: debug
+    org.mybatis: debug
 
 --- # datasource
 spring:

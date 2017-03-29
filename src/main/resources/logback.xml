@@ -28,9 +28,9 @@
 	</appender>
 	
 	<root>
-		<level value="INFO" />
+		<level value="DEBUG" />
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
-	<logger name="dao" level="INFO"/>
+	<logger name="dao" level="DEBUG"/>
 </configuration>

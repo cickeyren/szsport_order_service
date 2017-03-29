@@ -13,7 +13,7 @@
     </insert>
     <!--修改子订单的状态-->
     <update id="updateOrderAll" parameterType="HashMap">
-        UPDATE order_content_detail SET status=#{statusAll},used_number='订单状态已修改' WHERE id=#{order_detailid}
+        UPDATE order_content_detail SET status=#{statusAll} WHERE id=#{order_detailid}
     </update>
     <!--修改子订单状态-->
     <update id="updateOrderForOrder" parameterType="HashMap">

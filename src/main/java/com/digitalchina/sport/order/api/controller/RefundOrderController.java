@@ -50,7 +50,7 @@ public class RefundOrderController {
      */
     @RequestMapping(value = "refundOrder.json")
     @ResponseBody
-    public synchronized RtnData<Object> refundOrder(@RequestParam(value = "userId", required = true) String userId,
+    public  RtnData<Object> refundOrder(@RequestParam(value = "userId", required = true) String userId,
                                        @RequestParam(value = "orderId", required = true) String orderId,
                                        @RequestParam(value = "orderContentId", required = true) String orderContentId) {
 
@@ -112,6 +112,7 @@ public class RefundOrderController {
                             //根据支付方式查询出对应的商户基本数据
                             map.put("pay_type", orderContent.get("pay_type"));//支付方式  1.支付宝  2.微信
                             map.put("merchant_id", orderContent.get("merchant_id"));//商户ID
+                            map.put("order_detailid", orderContent.get("order_detailid"));
                             Map<String, Object> merchant_pay_account = refundOrderService.getMerchantPayAccount(map);
                             Map<String, String> params = new HashMap<>();
 
@@ -140,6 +141,7 @@ public class RefundOrderController {
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS6));//
                                 System.out.println("---------------------------"+map);
                                 if (refundOrderService.updateOrderForOrder(map) > 0) {
+                                    System.out.println("---------------状态已经修改为已退款状态----------------");
                                     List<Map<String,Object>>  res =  myOrderService.getTotalOrderByUserIdAndOrderId(map);
                                     Boolean flag = true;
                                     for (Map<String,Object> m :res) {
@@ -154,25 +156,16 @@ public class RefundOrderController {
                                     if (flag==true){
                                         map.put("infostatus","4");//修改主订单订单状态为全部退款状态
                                         refundOrderService.updateBaseOrderByOrder(map);
-                                    }{
-
                                     }
                                     System.out.println(orderContentId + "订单已为已退款状态");
                                 }
-                                System.out.println(">>>>>>>>>>>>>支付宝退款成功<<<<<<<<<<<<<<");
-
                                 map.put("Basestatus",ContextConstants.BASESTATUS1);
                                 //更改主订购的状态为已退款状态
                                 refundOrderService.updateBaseOrder(map);
-
                                 return RtnData.ok("支付宝退款成功");
 
                             } else {
-
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS7));
-
-                                map.put("order_detailid", orderContent.get("order_detailid"));
-
                                 if (refundOrderService.updateOrderAll(map) > 0) {
                                     System.out.println(orderContentId + "订单已为退款失败状态");
                                 }
@@ -200,6 +193,7 @@ public class RefundOrderController {
                         //2.验证规则  1.是否可退（0可以1不可以）2.在规定范围内可退 3.该订单是否失效及过期
                         //获取场地票验证规则
                         map.put("ticket_type",orderContent.get("ticket_type"));
+                        map.put("order_detailid", orderContent.get("order_detailid"));
                         Map<String,Object> orderSiteTicket = refundOrderService.getSiteTicket(map);
 
                         if (ContextConstants.SITETATUS0.equals(orderSiteTicket.get("order_refund_rule"))){
@@ -276,6 +270,7 @@ public class RefundOrderController {
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS6));//
                                 System.out.println("---------------------------"+map);
                                 if (refundOrderService.updateOrderForOrder(map) > 0) {
+                                    System.out.println("状态已经修改为-----已退款状态");
                                     List<Map<String,Object>>  res =  myOrderService.getTotalOrderByUserIdAndOrderId(map);
                                     Boolean flag = true;
                                     for (Map<String,Object> m :res) {
@@ -299,8 +294,6 @@ public class RefundOrderController {
 
                             } else {
                                 map.put("statusAll", Integer.parseInt(ContextConstants.STATUS7));
-                                map.put("order_detailid", orderContent.get("order_detailid"));
-
                                 if (refundOrderService.updateOrderAll(map) > 0) {
                                     System.out.println(orderContentId + "订单已为退款失败状态");
                                 }

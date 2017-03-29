@@ -94,8 +94,7 @@ public class RefundOrderService {
      *
      * @return
      */
-    @Transactional
-    public synchronized String alipayRefundRequestwumi(String out_trade_no, String trade_no, Double refund_amount, Map<String, String> params) {
+    public  String alipayRefundRequestwumi(String out_trade_no, String trade_no, Double refund_amount, Map<String, String> params) {
 
         // 发送请求
         String strResponse = null;
