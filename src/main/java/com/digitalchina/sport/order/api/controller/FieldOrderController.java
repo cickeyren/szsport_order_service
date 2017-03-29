@@ -40,7 +40,13 @@ public class FieldOrderController {
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             retMap = fieldOrderService.createFieldOrder(orderJson);
-            return RtnData.ok(retMap);
+            String returnKey = retMap.get("returnKey").toString();
+            if (returnKey.equals("true")){
+                return RtnData.ok(retMap,"下单成功！");
+            }else {
+                return RtnData.fail(retMap,"下单成功！");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("下单失败!",e);
