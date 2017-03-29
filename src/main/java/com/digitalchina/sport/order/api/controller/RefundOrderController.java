@@ -4,6 +4,7 @@ import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.StringUtil;
 import com.digitalchina.sport.order.api.common.config.AlipayConfig;
 import com.digitalchina.sport.order.api.common.config.ContextConstants;
+import com.digitalchina.sport.order.api.service.FieldOrderService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import com.digitalchina.sport.order.api.service.RefundOrderService;
 import com.google.gson.Gson;
@@ -38,6 +39,8 @@ public class RefundOrderController {
     private RefundOrderService refundOrderService;
     @Autowired
     private MyOrderService myOrderService;
+    @Autowired
+    private FieldOrderService fieldOrderService;
 
     /**
      * 退款申请会传入  用户ID，总订单id 子订单id
@@ -290,6 +293,9 @@ public class RefundOrderController {
                                 map.put("Basestatus",ContextConstants.BASESTATUS1);
                                 //更改主订购的状态为已退款状态
                                 refundOrderService.updateBaseOrder(map);
+
+                                //退款成功，釋放場地
+                                fieldOrderService.updateLockField(orderContent.get("order_number").toString(),"0");
                                 return RtnData.ok("支付宝退款成功");
 
                             } else {
