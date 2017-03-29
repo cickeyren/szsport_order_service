@@ -36,11 +36,21 @@ public class ContextConstants {
     public final static String TICKET_TYPE1 = "1";//场地票
     public final static String TICKET_TYPE2 = "2";//散客预定
     /**
-     *退款状态：0待退款，1已退款，2退款失败
+     *主单退款状态：0待退款，1已退款，2退款失败
      */
     public final static String BASESTATUS0 = "0";//0待退款
     public final static String BASESTATUS1= "1";//0已退款
     public final static String BASESTATUS2 = "2";//0退款失败
+
+    /**
+     * 主订单状态
+     */
+    public final static String MAINSTATUS0 = "0";//0待支付
+    public final static String MAINSTATUS1 = "1";//1待使用
+    public final static String MAINSTATUS2 = "2";//2已使用
+    public final static String MAINSTATUS3 = "3";//3支付失败
+    public final static String MAINSTATUS4 = "4";//4全部退款
+    public final static String MAINSTATUS5 = "5";//5失效订单
 
     /**
      * 场地票退票规则  退款规则 0：不可退 1：随时退 2：条件退

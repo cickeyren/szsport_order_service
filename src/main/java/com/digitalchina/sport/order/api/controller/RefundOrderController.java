@@ -154,7 +154,7 @@ public class RefundOrderController {
                                     }
                                     //如果所有数据都为5 ，表面全部为退款状态
                                     if (flag==true){
-                                        map.put("infostatus","4");//修改主订单订单状态为全部退款状态
+                                        map.put("infostatus",ContextConstants.MAINSTATUS4);//修改主订单订单状态为全部退款状态
                                         refundOrderService.updateBaseOrderByOrder(map);
                                     }
                                     System.out.println(orderContentId + "订单已为已退款状态");
@@ -225,7 +225,7 @@ public class RefundOrderController {
                             Double timeAll = (Double.valueOf(days)*24)+Double.valueOf(hours)+(Double.valueOf(minutes)/60);//获取当前时间里验票时间总小时
 
                             if (timeAll-refund_time<0){
-                                return RtnData.fail("开场前"+refund_time+"小时不可退");
+                                return RtnData.fail("开场前"+refund_time+"小时内不可退，离开场时间剩余"+days+"天"+hours+"小时"+minutes+"分");
                             }
                         }
 
@@ -281,7 +281,7 @@ public class RefundOrderController {
                                         }
                                     }
                                     if (flag==true){
-                                        map.put("infostatus","4");//修改主订单订单状态为全部退款状态
+                                        map.put("infostatus",ContextConstants.MAINSTATUS4);//修改主订单订单状态为全部退款状态
                                         refundOrderService.updateBaseOrderByOrder(map);
                                     }
                                     System.out.println(orderContentId + "订单已为已退款状态");
