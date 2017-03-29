@@ -47,6 +47,7 @@ public class MyOrderController {
                                          @RequestParam(value = "pageSize",defaultValue = "10", required = false) int pageSize,
                                          @RequestParam(value = "userId", required = false) String userId,
                                          @RequestParam(value = "status", required = false) String status,
+                                         @RequestParam(value = "refundStatus", required = false) String refundStatus,
                                          @RequestParam(value = "orderNumber", required = false) String orderNumber) {
         Map<String,Object> map = new HashMap<String, Object>();
         if(pageIndex == 0){
@@ -57,6 +58,7 @@ public class MyOrderController {
         map.put("pageSize",pageSize);
         map.put("userId",userId);
         map.put("status",status);
+        map.put("refundStatus",refundStatus);
         map.put("orderNumber",orderNumber);
         try {
             myOrderService.updateAllOrderStatus("超过十分钟的失效订单");
