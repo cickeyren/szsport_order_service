@@ -80,7 +80,8 @@
 			oc.time_limit,
 			oc.approach_time,
 			oc.departure_time,
-			f.field_name
+			f.field_name,
+			oc.can_retreat
 		FROM
 			order_content_detail oc
 		LEFT JOIN order_base_info ob ON ob.id = oc.order_base_id
