@@ -351,19 +351,19 @@ public class HttpClientUtil {
     public static void main(String[] args){
         String url = "http://suzhou.24parking.com.cn/index.php/Mobile/Order/getParkingInfo";
         Map<String,String> reMap = new HashMap<String, String>();//作为返回的参数
-        String userId="1b5002f407634ad7b23de84cd4181843";
+        String userId="5eb76ae3dd5246bda465b22aa1fdb0a8";
         String carNumber = "苏E12345";
         reMap.put("uid",userId);
         reMap.put("carno",carNumber);
         String number = "004";
         reMap.put("number",number);
-        reMap.put("title","篮球馆");
-        reMap.put("category","普通票");
-        reMap.put("ordernumber","10000220170329173937696749927");
-        reMap.put("type","0");
+        reMap.put("title","");
+        reMap.put("category","");
+        reMap.put("ordernumber","");
+        reMap.put("type","");
         String sign = MD5Utils.getPwd(userId+number+carNumber);
         reMap.put("sign",sign);
-        String mark = "1A 2017-03-29 17:00:00-18:00:00,18:15:00-19:15:00";
+        String mark = "";
         reMap.put("mark",mark);
 
         System.out.println(getRetMapByPost(url,"getParkingInfo",reMap));

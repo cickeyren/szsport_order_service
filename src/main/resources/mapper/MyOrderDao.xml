@@ -544,37 +544,37 @@
 	</select>
 
 	<!--定时任务中使用,当订单超过了验票时间，状态变为已过期=8 -->
-	<update id="updateTimeOverSiteOrder" parameterType="java.util.Map">
-		<![CDATA[
-		UPDATE order_content_detail oc
-		SET oc.`status` = '8',
-			oc.remarks = #{remarks}
+	<select id="getTimeOverSiteOrder" resultType="java.util.HashMap">
+		<![CDATA[SELECT
+		oc.id
+		FROM
+		order_content_detail oc
 		WHERE
-			CONCAT(
-				oc.date_limit,' ',
-				substring_index(oc.time_limit, "$" ,- 1)
-				) < NOW()
+		oc.end_time IS NULL
+		AND DATE(oc.date_limit) < NOW()
 		AND oc.`status` = '1'
-		AND oc.end_time IS NULL
 		AND (
-			oc.check_status IS NULL
-			OR oc.check_status = '0'
-			)
-		]]>
-	</update>
-	<update id="updateTimeOverYearOrder" parameterType="java.util.Map">
-		<![CDATA[
-		UPDATE order_content_detail oc
-		SET oc.`status` = '8',
-			oc.remarks = #{remarks}
+		oc.check_status IS NULL
+		OR oc.check_status = '0'
+		)]]>
+	</select>
+	<select id="getTimeOverYearOrder" resultType="java.util.HashMap">
+		<![CDATA[SELECT
+			oc.id
+		FROM
+			order_content_detail oc
 		WHERE
-			oc.end_time < NOW()
+			oc.end_time IS NOT NULL
+		AND oc.end_time < NOW()
 		AND oc.`status` = '1'
 		AND (
 			oc.check_status IS NULL
 			OR oc.check_status = '0'
-		)
-		]]>
+		)]]>
+	</select>
+	<update id="updateTimeOver" parameterType="java.util.Map">
+		UPDATE order_content_detail SET `status` = '8',remarks = #{remarks}
+		WHERE id = #{id}
 	</update>
 
 	<delete id="deleteOrderBase" parameterType="String">

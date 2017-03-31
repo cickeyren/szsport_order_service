@@ -126,7 +126,14 @@ public class CarService {
             }
 
         }else {
-
+            reMap.put("title","");
+            reMap.put("category","");
+            reMap.put("ordernumber","");
+            reMap.put("type","");
+            String sign = MD5Utils.getPwd(userId+number+carNumber);
+            reMap.put("sign",sign);
+            String mark = "";
+            reMap.put("mark",mark);
         }
         //System.out.print(reMap.toString());
         return reMap;

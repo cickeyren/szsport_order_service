@@ -96,11 +96,11 @@ public class MyCarController {
             String status = retMap.get("status").toString();
             status = status.substring(0, status.length() - 2);
             if (status.equals(Constants.RTN_SIGN_SUCCESS)){
-                logger.info("查询成功!");
-                return RtnData.ok(retMap,"查询成功!");
+                logger.info("!");
+                return RtnData.ok(retMap,"查询我的停车信息成功!");
             }else {
-                logger.info("查询失败!");
-                return RtnData.fail(retMap,"查询失败!");
+                logger.info("未查到我的停车信息!");
+                return RtnData.fail(retMap,"未查到我的停车信息!");
             }
 
 

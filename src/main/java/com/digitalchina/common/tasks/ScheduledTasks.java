@@ -52,15 +52,10 @@ public class ScheduledTasks {
         try {
             myOrderService.updateAllEveryRemain();
 
-            /**
-             * 当订单超过了验票时间，状态变为已过期=8
-             */
-            myOrderService.updateTimeOverOrder();
-            log.info(DateUtil.now()+"########## 更新过期票状态成功！########## ", DateUtil.now());
             log.info(DateUtil.now()+"########## 更新次数票的每日剩余次数成功！########## ", DateUtil.now());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(DateUtil.now()+"########## 更新过期票状态成功失败！########## ", DateUtil.now());
+
             log.error(DateUtil.now()+"########## 更新次数票的每日剩余次数失败！########## ", DateUtil.now());
         }
     }
@@ -75,6 +70,23 @@ public class ScheduledTasks {
         } catch (Exception e) {
             e.printStackTrace();
             log.error(DateUtil.now()+"########## 更新次数票的主单的状态失败！########## ", DateUtil.now());
+        }
+    }
+
+    //定时任务4,每天晚上更新,当订单超过了验票时间，状态变为已过期=8
+    //@Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 50 23 * * ?")
+    public void reportCurrent() {
+        try {
+            /**
+             * 当订单超过了验票时间，状态变为已过期=8
+             */
+            myOrderService.updateTimeOverOrder();
+            log.info(DateUtil.now()+"########## 更新过期票状态成功！########## ", DateUtil.now());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(DateUtil.now()+"########## 更新过期票状态失败！########## ", DateUtil.now());
         }
     }
 }

@@ -213,12 +213,14 @@ public interface MyOrderDao {
 
 	/**
 	 * -定时任务中使用,当订单超过了验票时间，状态变为已过期=8
-	 * @param params
+	 * @param
 	 * @return
 	 * @throws Exception
 	 */
-	int updateTimeOverSiteOrder(Map<String,Object> params) throws Exception;
-	int updateTimeOverYearOrder(Map<String,Object> params) throws Exception;
+	List<Map<String,Object>> getTimeOverYearOrder() throws Exception;
+	List<Map<String,Object>> getTimeOverSiteOrder() throws Exception;
+
+	int updateTimeOver(Map<String,Object> params) throws Exception;
 
     int deleteOrderBase(String id) throws Exception;
 }

@@ -957,9 +957,28 @@ public class MyOrderService {
      * 定时任务中使用,当订单超过了验票时间，状态变为已过期=8
      */
     public void updateTimeOverOrder() throws Exception{
-        Map<String,Object> params = new HashMap<String, Object>();
-        params.put("remarks","超过了验票时间,已过期");
-        myOrderDao.updateTimeOverSiteOrder(params);
-        myOrderDao.updateTimeOverYearOrder(params);
+        List<Map<String,Object>> listSite = myOrderDao.getTimeOverSiteOrder();
+        List<Map<String,Object>> listYear = myOrderDao.getTimeOverYearOrder();
+        if (listSite.size()>0){
+            for (int i=0;i<listSite.size();i++){
+                String id = listSite.get(i).get("id").toString();
+                Map<String,Object> params = new HashMap<String, Object>();
+                params.put("remarks","超过了验票时间,已过期");
+                params.put("id",id);
+                myOrderDao.updateTimeOver(params);
+            }
+        }
+        if (listYear.size()>0){
+            for (int i=0;i<listYear.size();i++){
+                String id = listYear.get(i).get("id").toString();
+                Map<String,Object> params = new HashMap<String, Object>();
+                params.put("remarks","超过了验票时间,已过期!");
+                params.put("id",id);
+                myOrderDao.updateTimeOver(params);
+            }
+        }
+
+
+
     }
 }
