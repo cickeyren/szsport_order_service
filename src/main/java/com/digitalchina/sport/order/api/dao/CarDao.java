@@ -18,4 +18,6 @@ public interface CarDao {
     int deleteCar(Map<String,Object> map);
 
     int getCount(Map<String,Object> map);
+
+    List<Map<String,Object>> getOrderDetailList(Map<String,Object> map);
 }

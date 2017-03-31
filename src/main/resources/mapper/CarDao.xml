@@ -39,4 +39,35 @@
             AND c.car_number = #{carNumber}
         </if>
     </select>
+    <select id="getOrderDetailList" parameterType="java.util.Map" resultType="java.util.HashMap">
+        SELECT
+            ob.user_id AS userId,
+            ob.classify,
+            ob.sub_stadium_name AS subStadiumName,
+            ob.person_kind AS personKind,
+            ob.ticket_type AS ticketType,
+            ob.order_number AS orderNumber,
+            f.field_name AS fieldName,
+            oc.date_limit AS dateLimit,
+            oc.time_limit AS timeLimit,
+            oc.sell_price AS sellPrice,
+            ob.son_orders AS sonOrders,
+            oc.check_time AS checkTime
+        FROM
+          order_base_info ob
+        LEFT JOIN order_content_detail oc ON ob.id = oc.order_base_id
+        LEFT JOIN sub_stadium s ON ob.sub_stadium_id = s.id
+        LEFT JOIN field f ON f.id=oc.field_id
+        WHERE
+        <![CDATA[
+          ob.user_id = #{userId}
+          AND oc.check_time >= #{startTime}
+          AND oc.check_time <= #{endTime}
+          AND s.parent_id = #{stadiumId}
+        ]]>
+        <if test="ticketType != null and ticketType != ''">
+          AND ob.ticket_type = #{ticketType}
+        </if>
+        ORDER BY oc.check_time DESC
+    </select>
 </mapper>

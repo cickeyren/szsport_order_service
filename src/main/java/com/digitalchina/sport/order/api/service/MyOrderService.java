@@ -220,7 +220,7 @@ public class MyOrderService {
      * http://192.168.31.181:8080/yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId=1";
      */
     public Map<String,Object> getYearStrategyTicketModelInfo(String yearStrategyId){
-        return HttpClientUtil.getMapResultByURLAndKey(proConfig.SPORT_RESOURCEMGR_URL
+        return HttpClientUtil.getMapResultByURLAndKey(proConfig.SPORT_RESOURCE_URL
                 +"yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId="
                 +yearStrategyId,"根据yearStrategyId获取门票策略和场馆详情");
     }

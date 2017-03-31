@@ -29,7 +29,7 @@ public class FieldOrderService {
      * http://localhost:8080/siteTicket/api/getSiteTicketInfoToOrder.json?ticketId=513c75c6163f4476ba3a79fca90ddd51
      */
     public Map<String,Object> getSiteTicketInfoToOrder(String ticketId){
-        return HttpClientUtil.getMapResultByURLAndKey(proConfig.SPORT_RESOURCEMGR_URL
+        return HttpClientUtil.getMapResultByURLAndKey(proConfig.SPORT_RESOURCE_URL
                 +"siteTicket/api/getSiteTicketInfoToOrder.json?ticketId="
                 +ticketId,"根据ticketId获取门票策略和场馆详情");
     }

@@ -1,8 +1,9 @@
 package com.digitalchina.sport.order.api.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.digitalchina.sport.order.api.common.Constants;
+import net.sf.json.JSONObject;
 import com.digitalchina.common.RtnData;
+import com.digitalchina.common.utils.HttpClientUtil;
 import com.digitalchina.sport.order.api.service.CarService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
 import org.slf4j.Logger;
@@ -79,6 +80,33 @@ public class MyCarController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("解绑失败!",e);
+            return RtnData.fail("解绑失败!");
+        }
+    }
+
+    @RequestMapping(value="getParkInfo.json")
+    @ResponseBody
+    public RtnData<Object> getParkInfo(@RequestParam(value = "userId", required = true) String userId,
+                                       @RequestParam(value = "carNumber", required = true) String carNumber){
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        try {
+            Map<String,String> params = carService.getParkingInfoParams(userId,carNumber);
+
+            retMap = carService.getParkingInfo(params);
+            String status = retMap.get("status").toString();
+            status = status.substring(0, status.length() - 2);
+            if (status.equals(Constants.RTN_SIGN_SUCCESS)){
+                logger.info("查询成功!");
+                return RtnData.ok(retMap,"查询成功!");
+            }else {
+                logger.info("查询失败!");
+                return RtnData.fail(retMap,"查询失败!");
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("查询失败!",e);
             return RtnData.fail("解绑失败!");
         }
     }
