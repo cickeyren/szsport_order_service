@@ -44,7 +44,7 @@ public class FieldOrderController {
             if (returnKey.equals("true")){
                 return RtnData.ok(retMap,"下单成功！");
             }else {
-                return RtnData.fail(retMap,"下单成功！");
+                return RtnData.fail(retMap,"下单失败！");
             }
 
         } catch (Exception e) {

@@ -221,7 +221,7 @@ public class MyOrderService {
      */
     public Map<String,Object> getYearStrategyTicketModelInfo(String yearStrategyId){
         return HttpClientUtil.getMapResultByURLAndKey(proConfig.SPORT_RESOURCE_URL
-                +"yearstrategyticket/api/getYearStrategyTicketModelInfo.json?yearStrategyId="
+                +"api/ticket/getYearStrategyTicketModelInfo.json?yearStrategyId="
                 +yearStrategyId,"根据yearStrategyId获取门票策略和场馆详情");
     }
 
