@@ -63,7 +63,8 @@
 			ob.ticket_name,
 			ob.sell_price,
 			ob.order_time,
-			ob.status
+			ob.status,
+			ob.son_orders sonOrders
 		FROM
 			order_base_info ob
 		WHERE
@@ -462,7 +463,7 @@
 		WHERE
 		oc.order_code = #{orderCode}
 	</update>
-	<!-- 一个已付款的订单下的所有待使用的子订单个数 -->
+	<!-- 一个已付款的订单下的所有 某个状态  的子订单个数 -->
 	<select id="getOrderCountByMap" parameterType="String" resultType="int">
 		SELECT
 			COUNT(0)
@@ -470,7 +471,7 @@
 			order_content_detail oc
 		WHERE
 			oc.order_base_id = #{orderBaseId}
-		AND oc.`status` = '1'
+		AND oc.`status` = #{status}
 	</select>
 	<!-- 锁定该场地、该日期、该时间段的场地状态为1：已锁定 -->
 	<insert id="insertLockField" parameterType="java.util.Map">
@@ -580,4 +581,14 @@
 	<delete id="deleteOrderBase" parameterType="String">
 		delete from order_base_info where id = #{id}
 	</delete>
+
+	<!--  -->
+	<select id="getOrderBaseByOrderContentId" parameterType="String" resultType="String">
+		SELECT
+			oc.order_base_id
+		FROM
+			order_content_detail oc
+		WHERE
+			oc.id=#{id}
+	</select>
 </mapper>

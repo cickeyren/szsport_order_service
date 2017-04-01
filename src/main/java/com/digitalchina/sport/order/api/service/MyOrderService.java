@@ -966,6 +966,7 @@ public class MyOrderService {
                 params.put("remarks","超过了验票时间,已过期");
                 params.put("id",id);
                 myOrderDao.updateTimeOver(params);
+                this.updateTimeOverMainOrder(id);
             }
         }
         if (listYear.size()>0){
@@ -975,10 +976,45 @@ public class MyOrderService {
                 params.put("remarks","超过了验票时间,已过期!");
                 params.put("id",id);
                 myOrderDao.updateTimeOver(params);
+                this.updateTimeOverMainOrder(id);
             }
         }
-
-
-
+    }
+    /**
+     * 修改主单过期状态
+     * 当主单的所有子单都变成过期，则主单也过期
+     * @param
+     * @return
+     */
+    public void updateTimeOverMainOrder(String id) throws Exception{
+        try {
+            String orderBaseId = myOrderDao.getOrderBaseByOrderContentId(id);
+            if(!StringUtil.isEmpty(orderBaseId)) {
+                Map<String, Object> orderBaseDetails = myOrderDao.getOrderDetails(orderBaseId);
+                String status = "";
+                int sonOrders = 0;
+                if (!StringUtil.isEmpty(orderBaseDetails.get("status"))) {
+                    status = orderBaseDetails.get("status").toString();//获得主单状态
+                }
+                if (!StringUtil.isEmpty(orderBaseDetails.get("sonOrders"))) {
+                    sonOrders = Integer.parseInt(orderBaseDetails.get("sonOrders").toString());//获得子单个数
+                }
+                if (status.equals("1")) {//主单是待使用状态才需要判断
+                    Map<String, Object> params1 = new HashMap<String, Object>();
+                    params1.put("orderBaseId", orderBaseId);
+                    params1.put("status", "8");//已过期=8
+                    int count = myOrderDao.getOrderCountByMap(params1);//当主单的所有子单都变成过期，则主单也过期
+                    if (count == sonOrders) {//过期的子单个数=总的子单个数
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("status", "8");//状态改为已过期
+                        params.put("remarks", "订单已过期");
+                        params.put("orderId", orderBaseId);
+                        myOrderDao.cancelOrderBase(params);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

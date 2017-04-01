@@ -443,17 +443,25 @@ public class FieldOrderService {
             Map<String,Object> orderDetails = myOrderDao.getOrderDetailByOrderCode(map.get("orderCode").toString());
             String orderBaseId=(String) orderDetails.get("order_base_id");
             Map<String,Object> orderBaseDetails = myOrderDao.getOrderDetails(orderBaseId);
-            String status="";
+            String status = "";
+            int sonOrders = 0;
             if(!StringUtil.isEmpty(orderBaseDetails.get("status"))){
                 status = orderBaseDetails.get("status").toString();//获得主单状态
             }
+            if(!StringUtil.isEmpty(orderBaseDetails.get("sonOrders"))){
+                sonOrders = Integer.parseInt(orderBaseDetails.get("sonOrders").toString());//获得子单个数
+            }
             System.out.print(orderBaseDetails.get("status"));
             if (status.equals("1")){//主单是待使用状态才需要判断
-                int count = myOrderDao.getOrderCountByMap(orderBaseId);//一个已付款的订单下的所有待使用的子订单个数
-                if (count ==0){//当个数为0的时候修改主单为已使用
+                Map<String,Object> params1 = new HashMap<String, Object>();
+                params1.put("orderBaseId",orderBaseId);
+                params1.put("status","2");
+                int count = myOrderDao.getOrderCountByMap(params1);//一个已付款的订单下的所有子订单都是已使用=2
+                if (count == sonOrders){//待使用的子单个数=总的子单个数
                     Map<String,Object> params = new HashMap<String, Object>();
                     params.put("status","2");//状态改为已使用
                     params.put("remarks","订单已使用");
+                    params.put("orderId", orderBaseId);
                     myOrderDao.cancelOrderBase(params);
                 }
             }

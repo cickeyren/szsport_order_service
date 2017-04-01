@@ -195,7 +195,7 @@ public interface MyOrderDao {
 	 */
 	int updateFieldContent(Map<String,Object> params) throws Exception;
 
-	int getOrderCountByMap(String orderBaseId) throws Exception;
+	int getOrderCountByMap(Map<String,Object> params) throws Exception;
 
 	int insertLockField(Map<String,Object> orderContentDetail) throws Exception;
 
@@ -223,4 +223,6 @@ public interface MyOrderDao {
 	int updateTimeOver(Map<String,Object> params) throws Exception;
 
     int deleteOrderBase(String id) throws Exception;
+
+	String getOrderBaseByOrderContentId(String id) throws Exception;
 }
