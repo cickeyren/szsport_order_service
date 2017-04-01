@@ -523,10 +523,19 @@ public class MyOrderService {
                 retMap.put("returnMessage","该订单支付失败");
             }else if(status.equals("4")){
                 retMap.put("returnKey","false");
-                retMap.put("returnMessage","该订单已退款");//退款目前不做，之后可拓展为待退款和已退款
+                retMap.put("returnMessage","该订单待退款");//退款目前不做，之后可拓展为待退款和已退款
             }else if(status.equals("5")){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该订单已失效");
+            }else if(status.equals("6")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已退款");
+            }else if(status.equals("7")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单退款失败");
+            }else if(status.equals("8")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已过期");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -568,10 +577,19 @@ public class MyOrderService {
                 retMap.put("returnMessage","该订单支付失败");
             }else if(status.equals("4")){
                 retMap.put("returnKey","false");
-                retMap.put("returnMessage","该订单已退款");//退款目前不做，之后可拓展为待退款和已退款
+                retMap.put("returnMessage","该订单待退款");//退款目前不做，之后可拓展为待退款和已退款
             }else if(status.equals("5")){
                 retMap.put("returnKey","false");
                 retMap.put("returnMessage","该订单已失效");
+            }else if(status.equals("6")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已退款");
+            }else if(status.equals("7")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单退款失败");
+            }else if(status.equals("8")){
+                retMap.put("returnKey","false");
+                retMap.put("returnMessage","该订单已过期");
             }
         } catch (Exception e) {
             e.printStackTrace();
