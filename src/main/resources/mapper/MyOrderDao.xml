@@ -495,6 +495,28 @@
 			NOW()
 		);
 	</insert>
+
+	<select id="getSiteTimeIntervalStatusCount" parameterType="String" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			site_time_interval_status s
+		WHERE
+			s.field_id = #{fieldId}
+		AND s.order_date = #{orderDate}
+		AND s.time_interval_id = #{timeIntervalId}
+	</select>
+
+	<select id="getSiteTimeIntervalStatus" parameterType="String" resultType="java.util.Map">
+		SELECT
+			s.`status` AS  status
+		FROM
+			site_time_interval_status s
+		WHERE
+			s.field_id = #{fieldId}
+		AND s.order_date = #{orderDate}
+		AND s.time_interval_id = #{timeIntervalId}
+	</select>
 	<!-- 验过票的未使用订单修改状态 -->
 	<update id="updateOrderContentStatus" parameterType="java.util.Map" >
 		UPDATE order_content_detail oc

@@ -28,7 +28,7 @@ public class ScheduledTasks {
     private FieldOrderService fieldOrderService;
 
     //定时任务1,5分钟更新订单状态
-    //@Scheduled(fixedRate = 1000 * 300)
+    @Scheduled(fixedRate = 1000 * 300)
     public void reportCurrentTime() {
     	// 请注意：需要保证在计划的task没有运行时，如何重新运行
         //log.info("########## The task executed at {}", new SimpleDateFormat("HH:mm:ss").format(new Date()));
@@ -47,7 +47,7 @@ public class ScheduledTasks {
 
     //定时任务2,每天晚上更新次数票的每日剩余次数
     //@Scheduled(cron = "0 0 0 * * ?")
-    //@Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void reportCurrentByCron() {
         try {
             myOrderService.updateAllEveryRemain();
@@ -62,7 +62,7 @@ public class ScheduledTasks {
 
     //定时任务3,针对年票/散票，只要子单的状态是未使用，主单的状态就还是待使用，如果未使用的子单没有了，就变成已使用
     //@Scheduled(cron = "0 0 0 * * ?")
-    //@Scheduled(fixedRate = 1000 * 60)
+    @Scheduled(fixedRate = 1000 * 60)
     public void reportCurrentByTime() {
         try {
             myOrderService.updateOrderBaseStatus();

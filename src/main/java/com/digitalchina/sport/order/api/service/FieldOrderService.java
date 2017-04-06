@@ -65,7 +65,7 @@ public class FieldOrderService {
                 }
                 try {
                     Map<String,Object> checkTimesCountMap = new HashMap<String, Object>();
-
+                    Map<String,Object> checkField = new HashMap<String, Object>();
                     //子订单详细信息(多个)
                     List<Map<String,Object>> timeList = (List<Map<String, Object>>) orderJsonObject.get("list");
                     //字单个数
@@ -87,11 +87,21 @@ public class FieldOrderService {
                                     //order详细内容
                                     Map<String,Object> orderContentDetail = this.getOrderContentDetailFromMap(date,siteTicketInfo,timeList.get(i));
                                     orderContentDetail.put("orderBaseId",orderBaseId);//主订单的id
-                                    //添加子订单内容到数据库返回orderBase表id
-                                    this.insertOrderContentDetail(orderContentDetail);
-                                    //锁定该场地、该日期、该时间段的场地状态为1：已锁定
-                                    this.lockField(date,timeList);
-                                    System.out.println("orderContentDetail======"+orderContentDetail);
+
+                                    //判断场地状态
+
+                                    checkField = this.checkLockField(date,timeList.get(i));
+                                    if(checkField.get("returnKey").equals("true")){
+                                        //添加子订单内容到数据库返回orderBase表id
+                                        this.insertOrderContentDetail(orderContentDetail);
+                                        //锁定该场地、该日期、该时间段的场地状态为1：已锁定
+                                        this.lockField(date,timeList.get(i));
+                                        System.out.println("orderContentDetail======"+orderContentDetail);
+                                    }else {
+                                        myOrderDao.deleteOrderBase(orderBaseId);
+                                        retMap = checkField;
+                                        break;
+                                    }
                                 }else {
                                     myOrderDao.deleteOrderBase(orderBaseId);
                                     retMap = checkTimesCountMap;
@@ -109,10 +119,14 @@ public class FieldOrderService {
                     }
                     System.out.println("orderBaseInfo======"+orderBaseInfo);
                     if(!checkTimesCountMap.get("returnKey").equals("false")){
-                        retMap.put("returnKey","true");
-                        retMap.put("returnMessage","下单成功!");
-                        retMap.put("orderId",orderBaseInfo.get("id"));//订单编号
-                        retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+                        if(checkField.get("returnKey").equals("true")){
+                            retMap.put("returnKey","true");
+                            retMap.put("returnMessage","下单成功!");
+                            retMap.put("orderId",orderBaseInfo.get("id"));//订单编号
+                            retMap.put("orderNumber",orderBaseInfo.get("orderNumber"));//订单流水号
+                        }else {
+                            retMap = checkField;
+                        }
                     }else {
                         retMap = checkTimesCountMap;
                     }
@@ -261,28 +275,97 @@ public class FieldOrderService {
         myOrderDao.inserOrderContentDetail(orderContentDetail);
     }
 
+
     /**
      * 锁定该场地、该日期、该时间段的场地状态为1：已锁定
      * @param
      */
-    public void lockField(String date,List<Map<String,Object>> timeList) throws Exception{
-        for (int i=0;i<timeList.size();i++){
-            String fieldId = (String) timeList.get(i).get("fieldId");
-            if (!StringUtil.isEmpty(timeList.get(i).get("timeIntervalId"))){
-                String timeIntervalId[] = timeList.get(i).get("timeIntervalId").toString().split(",");
-                for (int j=0;j<timeIntervalId.length;j++){
-                    String id = UUIDUtil.generateUUID();//uuid生成32位随机数
-                    Map<String,Object> param = new HashMap<String, Object>();
-                    param.put("id",id);
-                    param.put("fieldId",fieldId);
-                    param.put("timeIntervalId",timeIntervalId[j]);
-                    param.put("orderDate",date);
-                    param.put("status","1");
-                    myOrderDao.insertLockField(param);
-                }
+    public void lockField(String date,Map<String,Object> times) throws Exception{
+        String fieldId = (String) times.get("fieldId");
+        if (!StringUtil.isEmpty(times.get("timeIntervalId"))){
+            String timeIntervalId[] = times.get("timeIntervalId").toString().split(",");
+            for (int j=0;j<timeIntervalId.length;j++){
+                String id = UUIDUtil.generateUUID();//uuid生成32位随机数
+                Map<String,Object> param = new HashMap<String, Object>();
+                param.put("id",id);
+                param.put("fieldId",fieldId);
+                param.put("timeIntervalId",timeIntervalId[j]);
+                param.put("orderDate",date);
+                param.put("status","1");
+                myOrderDao.insertLockField(param);
             }
         }
     }
+
+    /**
+     * 判断场地状态
+     * @param
+     */
+    public Map<String,Object> checkLockField(String date,Map<String,Object> times) throws Exception{
+        Map<String,Object> retMap = new HashMap<String, Object>();
+        String fieldId = (String) times.get("fieldId");
+        if (!StringUtil.isEmpty(times.get("timeIntervalId"))){
+            String timeIntervalId[] = times.get("timeIntervalId").toString().split(",");
+            for (int j=0;j<timeIntervalId.length;j++){
+
+                Map<String,Object> param = new HashMap<String, Object>();
+                param.put("fieldId",fieldId);
+                param.put("timeIntervalId",timeIntervalId[j]);
+                param.put("orderDate",date);
+
+                String status = getSiteTimeIntervalStatus(date,timeIntervalId[j],fieldId);
+                //状态(0:可预订 1：已锁定 2：已订购 3：已屏蔽)
+                if (!StringUtil.isEmpty(status)){
+                    if (status.equals("0")){
+                        retMap.put("returnKey","true");
+                        retMap.put("returnMessage","场地可预订!");
+                    }else if (status.equals("1")){
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","场地不可预订，请重新选择!");
+                        break;
+                    }else if (status.equals("2")){
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","场地不可预订，请重新选择!");
+                        break;
+                    }else if (status.equals("3")){
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","场地不可预订，请重新选择!");
+                        break;
+                    }else{
+                        retMap.put("returnKey","false");
+                        retMap.put("returnMessage","场地不可预订，请重新选择!");
+                        break;
+                    }
+                }else {
+                    retMap.put("returnKey","true");
+                    retMap.put("returnMessage","场地可预订!");
+                }
+            }
+        }else {
+            retMap.put("returnKey","false");
+            retMap.put("returnMessage","未选择场次,下单失败!");
+        }
+        return retMap;
+    }
+
+    /**
+     * 根据场地、日期、时间段的获取场地状态
+     * @param
+     */
+    public String getSiteTimeIntervalStatus(String date,String timeIntervalId,String fieldId) throws Exception{
+        String status = "";
+        Map<String,Object> param = new HashMap<String, Object>();
+        param.put("fieldId",fieldId);
+        param.put("timeIntervalId",timeIntervalId);
+        param.put("orderDate",date);
+        int count = myOrderDao.getSiteTimeIntervalStatusCount(param);
+        if (count>0){
+            List<Map<String,Object>> list =  myOrderDao.getSiteTimeIntervalStatus(param);
+            status = list.get(0).get("status").toString();
+        }
+        return status;
+    }
+
     /**
      * 支付完成场地为2已订购
      * @param
