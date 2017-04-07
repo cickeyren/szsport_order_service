@@ -102,12 +102,10 @@ public class MyCarController {
                 logger.info("未查到我的停车信息!");
                 return RtnData.fail(retMap,"未查到我的停车信息!");
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("查询失败!",e);
-            return RtnData.fail("解绑失败!");
+            return RtnData.fail("查询失败!");
         }
     }
 }

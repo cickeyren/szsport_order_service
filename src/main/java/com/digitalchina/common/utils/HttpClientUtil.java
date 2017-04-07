@@ -335,6 +335,9 @@ public class HttpClientUtil {
                 }else if(Constants.RTN_SIGN_NULL.equals(status)) {
                     resultMap = gsonMap;
                     logger.error("=========调用远程"+interfaceName+"接口时发生错误,必填项有空值===========");
+                }else if(Constants.RTN_SIGN_NOCAR.equals(status)) {
+                    resultMap = gsonMap;
+                    logger.error("=========调用远程"+interfaceName+"接口时发生错误,车辆未入场===========");
                 }else if(Constants.RTN_SIGN_OTHER.equals(status)) {
                     resultMap = gsonMap;
                     logger.error("=========调用远程"+interfaceName+"接口时发生错误,其他错误===========");

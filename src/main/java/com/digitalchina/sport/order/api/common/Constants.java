@@ -14,6 +14,7 @@ public class Constants {
     public final static String RTN_CODE_FAIL = "999999";
     public final static String RTN_SIGN_FAIL = "100";
     public final static String RTN_SIGN_NULL = "101";
+    public final static String RTN_SIGN_NOCAR = "201";//车辆未入场
     public final static String RTN_SIGN_OTHER = "102";
 
 
