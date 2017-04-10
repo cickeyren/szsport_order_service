@@ -19,8 +19,14 @@
 		<if test="userId != null and userId != ''">
 			AND user_id = #{userId}
 		</if>
-		<if test="status != null and status != ''">
+		<if test="status != null and status != '' and status != 5">
 			AND `status` = #{status}
+		</if>
+		<if test="status == 5">
+			AND `status` = #{status}
+			<![CDATA[
+			AND order_time > DATE_SUB(NOW(),INTERVAL 1 DAY)
+  			]]>
 		</if>
 		<if test="refundStatus != null and refundStatus != ''">
 			AND `refund_status` = #{refundStatus}
@@ -43,8 +49,14 @@
 		<if test="userId != null and userId != ''">
 			AND user_id = #{userId}
 		</if>
-		<if test="status != null and status != ''">
+		<if test="status != null and status != '' and status != 5">
 			AND `status` = #{status}
+		</if>
+		<if test="status == 5">
+			AND `status` = #{status}
+			<![CDATA[
+			AND order_time > DATE_SUB(NOW(),INTERVAL 1 DAY)
+  			]]>
 		</if>
 		<if test="refundStatus != null and refundStatus != ''">
 			AND `refund_status` = #{refundStatus}
