@@ -236,9 +236,6 @@ public class MyOrderService {
         }else if(StringUtil.isEmpty(orderJsonObject.get("count"))){
             retMap.put("returnKey","false");
             retMap.put("returnMessage","购买个数为空!");
-        }else if(StringUtil.isEmpty(orderJsonObject.get("count"))){
-            retMap.put("returnKey","false");
-            retMap.put("returnMessage","购买个数为空!");
         }else{
             String yearStrategyId = orderJsonObject.get("yearStrategyId").toString();
             int count = Integer.parseInt(orderJsonObject.get("count").toString());//订单下面的字单个数
