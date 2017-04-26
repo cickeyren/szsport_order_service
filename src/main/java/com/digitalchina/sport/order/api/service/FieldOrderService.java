@@ -502,6 +502,7 @@ public class FieldOrderService {
                         if (DateUtil.compareTimeTo(startTime, endTime, dqtime)) {//公用的时间对比方法
                             retMap.put("returnKey", "true");
                             retMap.put("returnMessage", "验票通过，该时段可用!");
+                            break;
                         } else {
                             retMap.put("returnKey", "false");
                             retMap.put("returnMessage", "该时段不可用,请稍候尝试!");
