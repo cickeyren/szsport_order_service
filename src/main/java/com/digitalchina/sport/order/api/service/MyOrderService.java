@@ -691,6 +691,9 @@ public class MyOrderService {
                         String[] limitDays = limitTypes[1].split(",");
                         if(limitDays.length>0){
                             int todayWeek = DateUtil.getWeekByDate(DateUtil.parseDate(dqdate));//获取当前日期的周数
+                            if(todayWeek==0){
+                                todayWeek=7;
+                            }
                             //比较周数是否在可用时间的周数内
                             if (StringUtil.isContainSpcifyStr(todayWeek + "", limitDays)) {
                                 //验证可用日期通过==============>>下一步
