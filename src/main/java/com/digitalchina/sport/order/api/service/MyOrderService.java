@@ -200,6 +200,12 @@ public class MyOrderService {
             }
             orderContentDetail.put("orderCode",orderCode);
             orderContentDetail.put("status","0");//起始为待支付
+            if (StringUtil.isEmpty(orderContentDetail.get("startTime"))){
+                orderContentDetail.remove("startTime");
+            }
+            if (StringUtil.isEmpty(orderContentDetail.get("endTime"))){
+                orderContentDetail.remove("endTime");
+            }
             myOrderDao.inserOrderContentDetail(orderContentDetail);
         }
     }
