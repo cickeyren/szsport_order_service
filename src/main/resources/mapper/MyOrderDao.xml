@@ -237,6 +237,8 @@
 			oc.cost_price,
 			oc.approach_time,
 			oc.departure_time,
+			oc.time_interval_id,
+			oc.field_id,
 			f.field_name
 		FROM
 			order_content_detail oc

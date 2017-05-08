@@ -393,6 +393,32 @@ public class FieldOrderService {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 释放子单中场地的锁定状态
+     * @param orderCode
+     * @param status
+     */
+    public void releaseLockField(String orderCode,String status){
+        try {
+            Map<String,Object> orderContentList = myOrderDao.getOrderDetailByOrderCode(orderCode);
+            String fieldId = (String) orderContentList.get("field_id");
+            if (!StringUtil.isEmpty(orderContentList.get("time_interval_id"))){
+                String timeIntervalId[] = orderContentList.get("time_interval_id").toString().split(",");
+                for (int i=0;i<timeIntervalId.length;i++){
+                    Map<String,Object> param = new HashMap<String, Object>();
+                    param.put("fieldId",fieldId);
+                    param.put("timeIntervalId",timeIntervalId[i]);
+                    param.put("orderDate",orderContentList.get("date_limit"));
+                    param.put("status",status);//0可预订
+                    myOrderDao.updateLockField(param);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 验票
      * 验证是否付款，是否失效等

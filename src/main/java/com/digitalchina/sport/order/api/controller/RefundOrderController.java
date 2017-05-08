@@ -295,7 +295,7 @@ public class RefundOrderController {
                                 refundOrderService.updateBaseOrder(map);
 
                                 //退款成功，釋放場地
-                                fieldOrderService.updateLockField(orderContent.get("order_number").toString(),"0");
+                                fieldOrderService.releaseLockField(orderContent.get("order_code").toString(),"0");
                                 return RtnData.ok("支付宝退款成功");
 
                             } else {
