@@ -208,7 +208,7 @@
         <profile>
             <id>local</id>
             <properties>
-                <profiles.active>product</profiles.active>
+                <profiles.active>dev85</profiles.active>
                 <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false</jdbc.url>
                 <jdbc.username>szsport_order</jdbc.username>
                 <jdbc.password>12345678</jdbc.password>
