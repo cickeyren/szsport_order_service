@@ -33,7 +33,7 @@
     </update>
     <!--通过查询信息查询子订单信息-->
     <select id="getorderContent" resultType="java.util.Map" parameterType="HashMap">
-        SELECT  obi.id,obi.order_number,obi.stadium_name,obi.order_channel,obi.user_id,obi.user_name,obi.user_tel,obi.pay_type,obi.pay_acount,obi.pay_time,
+        SELECT obi.id,obi.order_number,obi.stadium_name,obi.order_channel,obi.user_id,obi.user_name,obi.user_tel,obi.pay_type,obi.pay_acount,obi.pay_time,
         obi.merchant_id,obi.ticket_type,
         ocd.id AS order_detailid,
         ocd.order_code,ocd.start_time,ocd.end_time,ocd.can_retreat,ocd.remain_number,ocd.total_number,ocd.everyday_number,ocd.everyday_remain_number,

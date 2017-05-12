@@ -126,20 +126,20 @@ public class RefundOrderService {
 
             Map<String, Object> param = new HashMap<>();
             if ("10000".equals(response.getCode())) {
-                JSONObject refundDate = JSONObject.fromObject(response.getBody());
+                JSONObject refundDate = JSONObject.fromObject(response.getBody()).getJSONObject("alipay_trade_refund_response");
 
                 //准备参数  不管成功与否，都将数据存到退款记录表中
                 param.put("id", UUID.randomUUID().toString());
                 param.put("code", refundDate.get("code"));
                 param.put("msg", refundDate.get("msg"));
                 param.put("buyer_logon_id", refundDate.get("buyer_logon_id"));
-                param.put("buyer_user_id", "");
+                param.put("buyer_user_id", refundDate.get("buyer_user_id"));
                 param.put("fund_change", refundDate.get("fund_change"));
                 param.put("gmt_refund_pay", refundDate.get("gmt_refund_pay"));
                 param.put("open_id", refundDate.get("open_id"));
                 param.put("out_trade_no", refundDate.get("out_trade_no"));
                 param.put("trade_no", refundDate.get("trade_no"));
-                param.put("trade_no", refundDate.get("refund_fee"));
+                param.put("refund_fee", refundDate.get("refund_fee"));
                 param.put("refund_monery", refund_amount);
                 param.put("refund_method", "1");
                 param.put("userId", params.get("userId"));
