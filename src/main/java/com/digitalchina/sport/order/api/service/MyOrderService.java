@@ -1047,7 +1047,7 @@ public class MyOrderService {
                             if(yCount>0){
                                 Map<String, Object> params = new HashMap<String, Object>();
                                 params.put("status", "2");//状态改为已使用
-                                params.put("remarks", "订单已过期");
+                                params.put("remarks", "子单已过期，存在已使用订单");
                                 params.put("orderId", orderBaseId);
                                 myOrderDao.cancelOrderBase(params);
                             }
