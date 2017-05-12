@@ -291,8 +291,13 @@ public class FieldOrderService {
                 param.put("fieldId",fieldId);
                 param.put("timeIntervalId",timeIntervalId[j]);
                 param.put("orderDate",date);
-                param.put("status","1");
-                myOrderDao.insertLockField(param);
+                param.put("startDate",date+" 00:00:00");
+                param.put("endDate",date+" 23:59:59");
+                param.put("status","1");//
+                List<Map<String,Object>> list = myOrderDao.getStatusListByParams(param);
+                if (list.size()>0){
+                    myOrderDao.updateLockField(param);
+                }else myOrderDao.insertLockField(param);
             }
         }
     }

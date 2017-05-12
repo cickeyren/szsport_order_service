@@ -224,6 +224,14 @@
                 <jdbc.password>12345678</jdbc.password>
             </properties>
         </profile>
+        <profile>
+            <id>dev85</id>
+            <properties>
+                <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false</jdbc.url>
+                <jdbc.username>szsport_order</jdbc.username>
+                <jdbc.password>12345678</jdbc.password>
+            </properties>
+        </profile>
     </profiles>
 
     <build>

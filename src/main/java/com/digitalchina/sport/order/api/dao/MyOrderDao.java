@@ -229,5 +229,5 @@ public interface MyOrderDao {
 	int getSiteTimeIntervalStatusCount(Map<String,Object> params) throws Exception;
 
 	List<Map<String,Object>> getSiteTimeIntervalStatus(Map<String,Object> params) throws Exception;
-
+	List<Map<String,Object>> getStatusListByParams(Map<String,Object> params) throws Exception;
 }
