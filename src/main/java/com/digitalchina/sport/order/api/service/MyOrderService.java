@@ -1034,6 +1034,24 @@ public class MyOrderService {
                         params.put("remarks", "订单已过期");
                         params.put("orderId", orderBaseId);
                         myOrderDao.cancelOrderBase(params);
+                    }else{
+                        Map<String, Object> paramsd = new HashMap<String, Object>();
+                        paramsd.put("orderBaseId", orderBaseId);
+                        paramsd.put("status", "1");
+                        int dCount = myOrderDao.getOrderCountByMap(paramsd);//主单中的待使用订单为0的时候
+                        if (dCount == 0){
+                            Map<String, Object> paramsy = new HashMap<String, Object>();
+                            paramsy.put("orderBaseId", orderBaseId);
+                            paramsy.put("status", "2");
+                            int yCount = myOrderDao.getOrderCountByMap(paramsy);//主单中的有存在已使用的订单
+                            if(yCount>0){
+                                Map<String, Object> params = new HashMap<String, Object>();
+                                params.put("status", "2");//状态改为已使用
+                                params.put("remarks", "订单已过期");
+                                params.put("orderId", orderBaseId);
+                                myOrderDao.cancelOrderBase(params);
+                            }
+                        }
                     }
                 }
             }
