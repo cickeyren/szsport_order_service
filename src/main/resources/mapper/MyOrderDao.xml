@@ -549,7 +549,19 @@
 		WHERE
 			s.field_id = #{fieldId} AND s.order_date=#{orderDate} AND s.time_interval_id=#{timeIntervalId}
 	</update>
-
+	<select id="getStatusListByParams" parameterType="java.util.Map" resultType="java.util.Map">
+		<![CDATA[ SELECT
+        id,
+        `status` AS `status`
+        FROM
+        site_time_interval_status s
+        WHERE
+        s.field_id = #{fieldId}
+        AND s.order_date > #{startDate}
+        AND s.order_date < #{endDate}
+        AND s.time_interval_id = #{timeIntervalId}
+        ]]>
+	</select>
 	<!-- 一个订单下的所有子订单详情 -->
 	<select id="getOrderContentListByOrderId" parameterType="java.util.Map" resultType="java.util.HashMap">
 		SELECT
