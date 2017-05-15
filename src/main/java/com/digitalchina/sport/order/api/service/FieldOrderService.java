@@ -363,6 +363,8 @@ public class FieldOrderService {
         param.put("fieldId",fieldId);
         param.put("timeIntervalId",timeIntervalId);
         param.put("orderDate",date);
+        param.put("startDate",date+" 00:00:00");
+        param.put("endDate",date+" 23:59:59");
         int count = myOrderDao.getSiteTimeIntervalStatusCount(param);
         if (count>0){
             List<Map<String,Object>> list =  myOrderDao.getSiteTimeIntervalStatus(param);
@@ -388,6 +390,8 @@ public class FieldOrderService {
                         Map<String,Object> param = new HashMap<String, Object>();
                         param.put("fieldId",fieldId);
                         param.put("timeIntervalId",timeIntervalId[j]);
+                        param.put("startDate",orderContentList.get(i).get("dateLimit")+" 00:00:00");
+                        param.put("endDate",orderContentList.get(i).get("dateLimit")+" 23:59:59");
                         param.put("orderDate",orderContentList.get(i).get("dateLimit"));
                         param.put("status",status);//2已订购
                         myOrderDao.updateLockField(param);
@@ -414,6 +418,8 @@ public class FieldOrderService {
                     Map<String,Object> param = new HashMap<String, Object>();
                     param.put("fieldId",fieldId);
                     param.put("timeIntervalId",timeIntervalId[i]);
+                    param.put("startDate",orderContentList.get("date_limit")+" 00:00:00");
+                    param.put("endDate",orderContentList.get("date_limit")+" 23:59:59");
                     param.put("orderDate",orderContentList.get("date_limit"));
                     param.put("status",status);//0可预订
                     myOrderDao.updateLockField(param);

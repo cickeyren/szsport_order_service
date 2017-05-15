@@ -517,7 +517,7 @@
 			site_time_interval_status s
 		WHERE
 			s.field_id = #{fieldId}
-		AND s.order_date = #{orderDate}
+		<![CDATA[AND s.order_date >= #{startDate} AND s.order_date <= #{endDate}]]>
 		AND s.time_interval_id = #{timeIntervalId}
 	</select>
 
@@ -528,7 +528,7 @@
 			site_time_interval_status s
 		WHERE
 			s.field_id = #{fieldId}
-		AND s.order_date = #{orderDate}
+		<![CDATA[AND s.order_date >= #{startDate} AND s.order_date <= #{endDate}]]>
 		AND s.time_interval_id = #{timeIntervalId}
 	</select>
 	<!-- 验过票的未使用订单修改状态 -->
@@ -547,7 +547,9 @@
 			s.status=#{status},
 			s.update_time=NOW()
 		WHERE
-			s.field_id = #{fieldId} AND s.order_date=#{orderDate} AND s.time_interval_id=#{timeIntervalId}
+			s.field_id = #{fieldId}
+			<![CDATA[AND s.order_date >= #{startDate} AND s.order_date <= #{endDate}]]>
+			AND s.time_interval_id=#{timeIntervalId}
 	</update>
 	<select id="getStatusListByParams" parameterType="java.util.Map" resultType="java.util.Map">
 		<![CDATA[ SELECT
@@ -557,8 +559,8 @@
         site_time_interval_status s
         WHERE
         s.field_id = #{fieldId}
-        AND s.order_date > #{startDate}
-        AND s.order_date < #{endDate}
+        AND s.order_date >= #{startDate}
+        AND s.order_date <= #{endDate}
         AND s.time_interval_id = #{timeIntervalId}
         ]]>
 	</select>
