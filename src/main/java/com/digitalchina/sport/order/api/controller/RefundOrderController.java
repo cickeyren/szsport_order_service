@@ -281,6 +281,7 @@ public class RefundOrderController {
                                             flag = true;
                                         }else {
                                             flag = false;
+                                            break;
                                         }
                                     }
                                     if (flag==true){
