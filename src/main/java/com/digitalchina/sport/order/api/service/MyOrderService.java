@@ -368,7 +368,7 @@ public class MyOrderService {
                     int fixDay = Integer.parseInt(orderFixDay);
                     if(fixDay > 0){
                         startDate = DateUtil.formatDate(new Date());
-                        endDate = DateUtil.formatDate(DateUtil.offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7));//当前日期+fixDay=endDate
+                        endDate = DateUtil.formatDate(DateUtil.offsiteDate(new Date(), Calendar.DAY_OF_YEAR, fixDay));//当前日期+fixDay=endDate
                     }
                 }
             }
