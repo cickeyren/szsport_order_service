@@ -520,7 +520,17 @@
 		<![CDATA[AND s.order_date >= #{startDate} AND s.order_date <= #{endDate}]]>
 		AND s.time_interval_id = #{timeIntervalId}
 	</select>
-
+	<select id="getSpecialStatusCount" parameterType="String" resultType="int">
+		SELECT
+		COUNT(0)
+		FROM
+		site_time_interval_status s
+		WHERE
+		s.field_id = #{fieldId}
+		<![CDATA[AND s.order_date >= #{startDate} AND s.order_date <= #{endDate}]]>
+		AND s.time_interval_id = #{timeIntervalId}
+		AND (s.`status` ='2' OR s.`status` ='3')
+	</select>
 	<select id="getSiteTimeIntervalStatus" parameterType="String" resultType="java.util.Map">
 		SELECT
 			s.`status` AS  status

@@ -394,7 +394,12 @@ public class FieldOrderService {
                         param.put("endDate",orderContentList.get(i).get("dateLimit")+" 23:59:59");
                         param.put("orderDate",orderContentList.get(i).get("dateLimit"));
                         param.put("status",status);//2已订购
-                        myOrderDao.updateLockField(param);
+                        int count = myOrderDao.getSpecialStatusCount(param);//2已订购,已订购，已屏蔽的失效订单不释放状态
+                        if (count>0){
+                            //2已订购,已订购，已屏蔽的失效订单不释放状态
+                        }else {
+                            myOrderDao.updateLockField(param);
+                        }
                     }
                 }
             }
