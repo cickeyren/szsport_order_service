@@ -651,4 +651,23 @@
 		WHERE
 			oc.id=#{id}
 	</select>
+	<!--定时任务中使用，更新订单状态，时间超过10分钟状态变为失效订单 -->
+	<select id="getSxOrderNotChange" resultType="java.util.HashMap">
+		SELECT
+			ob.order_number AS orderNumber
+		FROM
+			order_base_info ob
+		WHERE
+		<![CDATA[
+			ob.order_time < DATE_SUB(NOW(),INTERVAL 10 MINUTE) AND ob.status='0'
+  		]]>
+	</select>
+	<select id="getOrderNumberByOrderId" parameterType="String" resultType="java.util.HashMap">
+		SELECT
+		ob.order_number AS orderNumber
+		FROM
+		order_base_info ob
+		WHERE
+		ob.id=#{id}
+	</select>
 </mapper>

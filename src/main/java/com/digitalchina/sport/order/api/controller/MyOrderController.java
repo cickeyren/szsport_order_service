@@ -376,8 +376,11 @@ public class MyOrderController {
         Map<String,Object> retMap = new HashMap<String, Object>();
         try {
             retMap = myOrderService.cancelOrderByOrderId(orderId);
-            //主动取消的订单，释放场地状态
-            fieldOrderService.updateSxLockField();
+            if ("true".equals(retMap.get("returnKey"))){
+                String orderNumber = myOrderService.getOrderNumberByOrderId(orderId).get("orderNumber").toString();
+                //主动取消的订单，释放场地状态
+                fieldOrderService.updateLockField(orderNumber,"0");
+            }
             return RtnData.ok(retMap);
         } catch (Exception e) {
             e.printStackTrace();

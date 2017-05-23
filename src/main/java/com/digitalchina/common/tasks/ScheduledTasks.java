@@ -34,10 +34,10 @@ public class ScheduledTasks {
         //log.info("########## The task executed at {}", new SimpleDateFormat("HH:mm:ss").format(new Date()));
 
         try {
-            myOrderService.updateAllOrderStatus("超过十分钟的失效订单");
             //20170320 update by rensq
             //失效订单，释放场地状态。
-            fieldOrderService.updateSxLockField();
+            myOrderService.updateAllOrderStatus("超过十分钟的失效订单");
+
             log.info(DateUtil.now()+"########## 更新失效订单成功！########## ", DateUtil.now());
         } catch (Exception e) {
             e.printStackTrace();

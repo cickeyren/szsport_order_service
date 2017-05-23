@@ -20,6 +20,8 @@ public class MyOrderService {
     private MyOrderDao myOrderDao;
     @Autowired
     private PropertyConfig proConfig;
+    @Autowired
+    private FieldOrderService fieldOrderService;
     /**
      * 根据用户id，按照状态查询所有订单
      * @param params
@@ -941,6 +943,12 @@ public class MyOrderService {
      * @throws Exception
      */
     public void updateAllOrderStatus(String remarks) throws Exception{
+        //获取所有失效订单但是还没有改变状态的list
+        //List<Map<String,Object>> list = myOrderDao.getOrderNumberByStatus("5");
+        List<Map<String,Object>> list = myOrderDao.getSxOrderNotChange();
+        if (list.size()>0){
+            fieldOrderService.updateSxLockField(list);
+        }
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("remarks",remarks);
         myOrderDao.updateAllOrder(params);
@@ -1059,4 +1067,7 @@ public class MyOrderService {
             e.printStackTrace();
         }
     }
+    public Map<String,Object> getOrderNumberByOrderId(String id) throws Exception{
+        return myOrderDao.getOrderNumberByOrderId(id);
+    };
 }

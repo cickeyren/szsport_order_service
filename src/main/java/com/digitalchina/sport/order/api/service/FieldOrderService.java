@@ -611,11 +611,10 @@ public class FieldOrderService {
      * 失效订单，释放场地状态。0：可预订
      * @param
      */
-    @Transactional
-    public void updateSxLockField() throws Exception{
+    public void updateSxLockField(List<Map<String,Object>> list) throws Exception{////获取所有失效订单但是还没有改变状态的list
         try {
-            //获取所有失效订单
-            List<Map<String,Object>> list = myOrderDao.getOrderNumberByStatus("5");
+            //List<Map<String,Object>> list = myOrderDao.getOrderNumberByStatus("5");
+            //List<Map<String,Object>> list = myOrderDao.getSxOrderNotChange();
             if (list.size()>0) {
                 for (int i=0;i<list.size();i++){
                     if (!StringUtil.isEmpty(list.get(i).get("orderNumber"))){
