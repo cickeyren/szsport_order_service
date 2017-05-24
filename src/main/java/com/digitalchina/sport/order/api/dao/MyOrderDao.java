@@ -233,4 +233,5 @@ public interface MyOrderDao {
 	List<Map<String,Object>> getStatusListByParams(Map<String,Object> params) throws Exception;
 	List<Map<String,Object>> getSxOrderNotChange() throws Exception;
 	Map<String,Object> getOrderNumberByOrderId(String id) throws Exception;
+	int deleteLockField(Map<String,Object> params)throws Exception;
 }

@@ -426,8 +426,10 @@ public class FieldOrderService {
                     param.put("startDate",orderContentList.get("date_limit")+" 00:00:00");
                     param.put("endDate",orderContentList.get("date_limit")+" 23:59:59");
                     param.put("orderDate",orderContentList.get("date_limit"));
-                    param.put("status",status);//0可预订
-                    myOrderDao.updateLockField(param);
+                    //update by rensq
+                    //超时失效订单，释放场地状态，改为将该场地状态删除
+                    param.put("status","1");//1已锁定
+                    myOrderDao.deleteLockField(param);
                 }
             }
         } catch (Exception e) {
@@ -619,9 +621,69 @@ public class FieldOrderService {
                 for (int i=0;i<list.size();i++){
                     if (!StringUtil.isEmpty(list.get(i).get("orderNumber"))){
                         String orderNumber = (String) list.get(i).get("orderNumber");
-                        this.updateLockField(orderNumber,"0");//失效订单。0：可预订
+                        //update by rensq
+                        //超时失效订单，释放场地状态，改为将该场地状态删除
+                        this.deleteLockField(orderNumber);//失效订单。
                         //System.out.print("释放失效订单场地状态！！！！！！！！");
                     }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * update by rensq
+     *
+     * 手动失效订单和超时失效订单，释放场地状态，改为将该场地状态删除
+     * @param
+     */
+    public void deleteLockField(String orderNumber){
+        try {
+            OrderBaseInfo ob = myOrderDao.getOrderByOrderNumer(orderNumber);
+            String orderBaseId = ob.getId();
+            List<Map<String,Object>> orderContentList = myOrderDao.getOrderContentListByOrderId(orderBaseId);
+            for (int i=0;i<orderContentList.size();i++){
+                String fieldId = (String) orderContentList.get(i).get("fieldId");
+                if (!StringUtil.isEmpty(orderContentList.get(i).get("timeIntervalId"))){
+                    String timeIntervalId[] = orderContentList.get(i).get("timeIntervalId").toString().split(",");
+                    for (int j=0;j<timeIntervalId.length;j++){
+                        Map<String,Object> param = new HashMap<String, Object>();
+                        param.put("fieldId",fieldId);
+                        param.put("timeIntervalId",timeIntervalId[j]);
+                        param.put("startDate",orderContentList.get(i).get("dateLimit")+" 00:00:00");
+                        param.put("endDate",orderContentList.get(i).get("dateLimit")+" 23:59:59");
+                        param.put("orderDate",orderContentList.get(i).get("dateLimit"));
+                        param.put("status","1");//1已锁定
+                        myOrderDao.deleteLockField(param);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * update by rensq
+     * 验票，场地状态变为已使用
+     * @param orderCode
+     * @param status
+     */
+    public void useField(String orderCode,String status){
+        try {
+            Map<String,Object> orderContentList = myOrderDao.getOrderDetailByOrderCode(orderCode);
+            String fieldId = (String) orderContentList.get("field_id");
+            if (!StringUtil.isEmpty(orderContentList.get("time_interval_id"))){
+                String timeIntervalId[] = orderContentList.get("time_interval_id").toString().split(",");
+                for (int i=0;i<timeIntervalId.length;i++){
+                    Map<String,Object> param = new HashMap<String, Object>();
+                    param.put("fieldId",fieldId);
+                    param.put("timeIntervalId",timeIntervalId[i]);
+                    param.put("startDate",orderContentList.get("date_limit")+" 00:00:00");
+                    param.put("endDate",orderContentList.get("date_limit")+" 23:59:59");
+                    param.put("orderDate",orderContentList.get("date_limit"));
+                    param.put("status",status);//4已使用
+                    myOrderDao.updateLockField(param);
                 }
             }
         } catch (Exception e) {
