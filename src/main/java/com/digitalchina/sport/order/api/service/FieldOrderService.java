@@ -427,8 +427,8 @@ public class FieldOrderService {
                     param.put("endDate",orderContentList.get("date_limit")+" 23:59:59");
                     param.put("orderDate",orderContentList.get("date_limit"));
                     //update by rensq
-                    //超时失效订单，释放场地状态，改为将该场地状态删除
-                    param.put("status","1");//1已锁定
+                    //退款的订单，释放场地状态，直接删除场地状态
+                    param.put("status","2");//2已订购
                     myOrderDao.deleteLockField(param);
                 }
             }
