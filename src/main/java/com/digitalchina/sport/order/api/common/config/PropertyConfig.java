@@ -17,6 +17,10 @@ public class PropertyConfig {
     public  String SPORT_RESOURCEMGR_URL;
     @Value("${alipaynotifyurl.url}")
     public  String ALIPAY_NOTIFY_URL;
+    @Value("${alipaynotifyurl.curriculum.url}")
+    public  String ALIPAY_NOTIFY_CURRICULUM_URL;
     @Value("${park.url}")
     public  String PARK_URL;
+    @Value("${invalid_time}")
+    public  Integer  INVALID_TIME;
 }
