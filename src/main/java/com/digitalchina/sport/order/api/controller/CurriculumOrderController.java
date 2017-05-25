@@ -26,7 +26,7 @@ public class CurriculumOrderController {
     @Autowired
     private CurriculumService curriculumService;
     /**
-     *
+     *报名 生成订单
      * @param curriculumClassId 班次id
      * @param classTimeId 班次时间段id
      * @param curriculumId 课程id
@@ -87,6 +87,15 @@ public class CurriculumOrderController {
             return RtnData.fail("未知异常");
         }
     }
+
+    /**
+     * 根据用信息获取订单
+     * @param userId
+     * @param status
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @RequestMapping(value = "getCurriculumOrder.json", method = RequestMethod.POST)
     @ResponseBody
     public RtnData getCurriculumOrder(String userId,String status,Integer pageNum,Integer pageSize) {
