@@ -670,4 +670,16 @@
 		WHERE
 		ob.id=#{id}
 	</select>
+	<!-- 场地票=====>>删除场地锁定状态 -->
+	<delete id="deleteLockField" parameterType="java.util.Map" >
+		DELETE
+		FROM
+		site_time_interval_status
+		WHERE
+		field_id = #{fieldId}
+		<![CDATA[AND order_date >= #{startDate}
+		AND order_date <= #{endDate}]]>
+		AND time_interval_id = #{timeIntervalId}
+		AND `status` = #{status}
+	</delete>
 </mapper>

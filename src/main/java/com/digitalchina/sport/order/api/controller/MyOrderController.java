@@ -329,6 +329,9 @@ public class MyOrderController {
                                 checkParam.put("status","2");//使用状态改为2，已使用
                                 checkParam.put("checkType",checkType);
                                 if(fieldOrderService.updateCheckByMap(checkParam) >0){
+                                    // update by rensq
+                                    // 场地票 验票，场地状态变为已使用
+                                    fieldOrderService.useField(orderCode,"4");
                                     //验票成功返回门票信息
                                     retMap.put("orderDetailsMap",myOrderService.getOrderDetailByOrderCode(orderCode));
                                     return RtnData.ok(retMap);
@@ -379,7 +382,10 @@ public class MyOrderController {
             if ("true".equals(retMap.get("returnKey"))){
                 String orderNumber = myOrderService.getOrderNumberByOrderId(orderId).get("orderNumber").toString();
                 //主动取消的订单，释放场地状态
-                fieldOrderService.updateLockField(orderNumber,"0");
+                //fieldOrderService.updateLockField(orderNumber,"0");
+                //update by rensq
+                //超时失效订单，释放场地状态，改为将该场地状态删除
+                fieldOrderService.deleteLockField(orderNumber);
             }
             return RtnData.ok(retMap);
         } catch (Exception e) {
