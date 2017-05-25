@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.digitalchina.sport.order.api.dao.CurriculumMapper">
+    <resultMap id="CurriculumClass" type="com.digitalchina.sport.order.api.model.CurriculumClass">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="curriculum_id" property="curriculum_id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="class_long" property="class_long" jdbcType="VARCHAR"/>
+        <result column="class_times" property="class_times" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="student_num" property="student_num" jdbcType="INTEGER"/>
+        <result column="lean_time" property="lean_time" jdbcType="VARCHAR"/>
+        <result column="bm_time" property="bm_time" jdbcType="VARCHAR"/>
+        <result column="bm_end" property="bm_end" jdbcType="VARCHAR"/>
+        <result column="target" property="target" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="fee_code" property="fee_code" jdbcType="VARCHAR"/>
+        <result column="fee" property="fee" jdbcType="DECIMAL"/>
+        <result column="discount_fee" property="discount_fee" jdbcType="DECIMAL"/>
+        <result column="fee_mark" property="fee_mark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        id, training_institutions_id, cooperative_merchant_id, img_url, name, teachers, train_type,
+        content, address, enrollment_required, phone, enrollment_read, create_date, recommend_time,
+        recommend_level
+    </sql>
+    <select id="getCurriculumClassByCurriculumId" resultMap="CurriculumClass" parameterType="java.util.Map">
+        SELECT
+        cc.*,
+        sum(cct.max_people-cct.reserve_people) as max_people,
+        sum(cct.sign_up) as sign_up
+        FROM
+        curriculum_class cc,curriculum_class_times cct
+        WHERE cct.class_id = cc.id
+        <if test="curriculumClassId != null and curriculumClassId != ''">
+            AND cct.class_id = #{curriculumClassId}
+        </if>
+        GROUP BY cc.id
+    </select>
+    <select id="checkXuban" resultType="int" parameterType="java.util.Map">
+        SELECT COUNT(1) FROM curriculum_order co WHERE co.id_card=#{idCard}
+        <if test="xuban_curriculums!= null">
+            AND co.curriculum_id NOT IN
+            <foreach collection="xuban_curriculums" item="item"
+                     index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <insert id="insertOrder" parameterType="java.util.Map">
+        INSERT INTO curriculum_order(id,order_number,come,user_id,student_name,phone,gender,birthday,id_card,other_student_msg,school,curriculum_id,curriculum_class_id,curriculum_class_time_id,fee,fee_msg,invalid_time)
+        VALUES (#{id},#{order_number},#{come},#{userId},#{studentName},#{phone},#{gender},#{birthday},#{idCard},#{otherStudentMsg},#{school},#{curriculumId},#{curriculumClassId},#{classTimeId},#{fee},#{feeMsg},date_add(SYSDATE(), interval #{invalid_time} minute))
+    </insert>
+    <select id="getCurriculumOrder" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+        co.*, c.`name`,
+        cc.`name` as class_name,
+        cct.time,
+        cc.content,
+        cc.student_num,
+        cc.class_times,
+        cc.class_long,
+        cc.target,
+        cc.fee_mark
+        FROM
+        curriculum_order co,
+        curriculum c,
+        curriculum_class cc,
+        curriculum_class_times cct
+        WHERE
+        co.curriculum_id = c.id
+        AND co.curriculum_class_id = cc.id
+        AND co.curriculum_class_time_id = cct.id
+        AND co.user_id=#{userId}
+        <if test="status != null and status != ''">
+            co.status=#{status}
+        </if>
+    </select>
+    <select id="getCurriculumOrderbyOrderNumber" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+        co.id,
+        co.order_number,
+        co.user_id AS userId,
+        IF (
+        co.Invalid_time &lt; SYSDATE()
+        AND co.`status` = 0,
+        4,
+        co.`status`
+        ) AS `status`,
+        co.fee,
+        c.`name`,
+        mp.pay_key AS payKey,
+        mp.partner_id AS partnerId,
+        mp.seller_id AS sellerId,
+        mp.sign_type AS signType,
+        cc.`name` AS className
+        FROM
+        curriculum_order co,
+        curriculum c,
+        curriculum_class cc,
+        curriculum_class_times cct,
+        merchant_pay_account mp
+        WHERE
+        co.curriculum_id = c.id
+        AND co.curriculum_class_id = cc.id
+        AND mp.merchant_id = c.training_institutions_id
+        AND co.curriculum_class_time_id = cct.id
+        <if test="payWay != null and payWay != ''">
+            AND mp.pay_way = #{payWay}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND co.order_number = #{orderNumber}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND co.user_id = #{userId}
+        </if>
+    </select>
+</mapper>
