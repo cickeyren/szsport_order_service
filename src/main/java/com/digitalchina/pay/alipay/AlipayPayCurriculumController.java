@@ -63,10 +63,10 @@ public class AlipayPayCurriculumController {
         if (StringUtils.isEmpty(order)) {
             return RtnData.fail(orderNumber + "订单不存在!");
         }
-        if ("1".equals(order.get("status"))) {
+        if ("1".equals(order.get("status").toString())) {
             return RtnData.fail(orderNumber + "该订单已经支付无法再次支付!");
         }
-        if ("4".equals(order.get("status"))) {
+        if ("4".equals(order.get("status").toString())) {
             return RtnData.fail(orderNumber + "该订单已经失效!");
         }
         String privateKey = (String) order.get("payKey");
@@ -240,18 +240,18 @@ public class AlipayPayCurriculumController {
                             //更新用户状态
                             Map<String, Object> orderUpdateMap = new HashMap<String, Object>();
                             String orderNumber = tradeVo.getOrderNumber();
-                            orderUpdateMap.put("orderNumber", tradeVo.getOrderNumber());
-                            orderUpdateMap.put("remarks", "支付更新订单状态status=1");
+                            System.out.println(orderNumber);
+                            orderUpdateMap.put("order_number", orderNumber);
                             orderUpdateMap.put("status", "1");
-                            orderUpdateMap.put("payType", "1");
-                            orderUpdateMap.put("payAcount", buyer_email);//置为押金已付款
-                            orderUpdateMap.put("payPrice", total_fee);
-                            orderUpdateMap.put("payTime", gmt_create);
-//                                if(orderService.updateOrder(orderUpdateMap) == 0) {
-//                                    logger.error("========================更新订单【"+orderNumber+"】状态发生错误=================");
-//                                } else {
-//                                    logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
-//                                }
+                            orderUpdateMap.put("pay_type", "1");
+                            orderUpdateMap.put("pay_acount", buyer_email);//置为押金已付款
+                            orderUpdateMap.put("pay_fee", total_fee);
+                            orderUpdateMap.put("pay_time", gmt_create);
+                                if(curriculumService.updataCurriculumOrder(orderUpdateMap)== 0) {
+                                    logger.error("========================更新订单【"+orderNumber+"】状态发生错误=================");
+                                } else {
+                                    logger.error("========================更新订单【"+orderNumber+"】状态成功=================");
+                                }
 
                             logger.error("退出支付----------=================");
                         } catch (Exception e) {

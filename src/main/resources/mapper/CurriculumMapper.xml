@@ -54,29 +54,69 @@
         INSERT INTO curriculum_order(id,order_number,come,user_id,student_name,phone,gender,birthday,id_card,other_student_msg,school,curriculum_id,curriculum_class_id,curriculum_class_time_id,fee,fee_msg,invalid_time)
         VALUES (#{id},#{order_number},#{come},#{userId},#{studentName},#{phone},#{gender},#{birthday},#{idCard},#{otherStudentMsg},#{school},#{curriculumId},#{curriculumClassId},#{classTimeId},#{fee},#{feeMsg},date_add(SYSDATE(), interval #{invalid_time} minute))
     </insert>
+    <update id="updataCurriculumOrder" parameterType="java.util.Map">
+        UPDATE curriculum_order co
+        SET
+        co.status=#{status},
+        co.pay_type=#{pay_type},
+        co.pay_acount=#{pay_acount},
+        co.pay_fee=#{pay_fee},
+        co.pay_time=#{pay_time}
+        WHERE co.order_number=#{order_number}
+    </update>
     <select id="getCurriculumOrder" resultType="java.util.Map" parameterType="java.util.Map">
-        SELECT
-        co.*, c.`name`,
-        cc.`name` as class_name,
-        cct.time,
-        cc.content,
-        cc.student_num,
-        cc.class_times,
-        cc.class_long,
-        cc.target,
-        cc.fee_mark
-        FROM
-        curriculum_order co,
-        curriculum c,
-        curriculum_class cc,
-        curriculum_class_times cct
-        WHERE
-        co.curriculum_id = c.id
-        AND co.curriculum_class_id = cc.id
-        AND co.curriculum_class_time_id = cct.id
-        AND co.user_id=#{userId}
+        SELECT * FROM
+        (
+            SELECT
+            co.id,
+            co.order_number,
+            co.come,
+            co.user_id,
+            co.student_name,
+            co.phone,
+            co.gender,
+            co.birthday,
+            co.id_card,
+            co.other_student_msg,
+            co.school,
+            co.curriculum_id,
+            co.curriculum_class_id,
+            co.curriculum_class_time_id,
+            co.create_time,
+            co.fee,
+            co.fee_msg,
+            co.pay_fee,
+            co.pay_type,
+            co.pay_time,
+            IF (
+            co.Invalid_time &lt; SYSDATE()
+            AND co.`status` = 0,
+            4,
+            co.`status`
+            ) AS `status`,
+            co.re_status,
+            c.`name`,
+            cc.`name` as class_name,
+            cct.time,
+            cc.content,
+            cc.student_num,
+            cc.class_times,
+            cc.class_long,
+            cc.target,
+            cc.fee_mark
+            FROM
+            curriculum_order co,
+            curriculum c,
+            curriculum_class cc,
+            curriculum_class_times cct
+            WHERE
+            co.curriculum_id = c.id
+            AND co.curriculum_class_id = cc.id
+            AND co.curriculum_class_time_id = cct.id
+            AND co.user_id=#{userId}
+        ) t WHERE 1=1
         <if test="status != null and status != ''">
-            co.status=#{status}
+           AND t.status=#{status}
         </if>
     </select>
     <select id="getCurriculumOrderbyOrderNumber" resultType="java.util.Map" parameterType="java.util.Map">
@@ -118,4 +158,10 @@
             AND co.user_id = #{userId}
         </if>
     </select>
+    <update id="updataClassTime" parameterType="java.util.Map">
+         UPDATE curriculum_class_times cct
+                SET
+                cct.sign_up=cct.sign_up+1
+        WHERE cct.id=#{classTimeId}
+    </update>
 </mapper>

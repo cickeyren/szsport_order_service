@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class CurriculumService {
     @Autowired
     private CurriculumMapper curriculumMapper;
+    @Transactional
     public Map<String, Object> signUp(Map<String, Object> args) throws Exception {
         Map<String, Object> res = Maps.newHashMap();
         List<CurriculumClass> curriculumClasss = curriculumMapper.getCurriculumClassByCurriculumId(args);
@@ -37,14 +39,18 @@ public class CurriculumService {
                 args.put("fee", curriculumClass.getFee());
             }
             args.put("fee_msg", curriculumClass.getFee_mark());
-            String id = OrderHelp.getUUID();
-            args.put("id", id);
-            args.put("order_number", OrderHelp.getOrderNum());
+            String order_number = OrderHelp.getOrderNum();
+            args.put("id", OrderHelp.getUUID());
+            args.put("order_number", order_number);
             curriculumMapper.insertOrder(args);
+            curriculumMapper.updataClassTime(args);//更新班次报名人数
             res.put("code", "000");
-            res.put("id", id);
+            res.put("order_number", order_number);
         }
         return res;
+    }
+    public int updataCurriculumOrder(Map<String, Object> args){
+        return curriculumMapper.updataCurriculumOrder(args);
     }
 
     public List<Map<String, Object>> getCurriculumOrder(Map<String, Object> args) {

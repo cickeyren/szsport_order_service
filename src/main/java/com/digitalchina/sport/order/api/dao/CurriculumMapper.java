@@ -13,4 +13,6 @@ public interface CurriculumMapper {
     Map<String, Object> getCurriculumOrderbyOrderNumber(Map<String, Object> args);
     int checkXuban(Map<String, Object> args);
     int insertOrder(Map<String, Object> args);
+    int updataCurriculumOrder(Map<String, Object> args);
+    int updataClassTime(Map<String, Object> args);
 }
