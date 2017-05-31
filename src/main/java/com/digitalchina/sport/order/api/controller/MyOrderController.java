@@ -6,6 +6,7 @@ import com.digitalchina.common.RtnData;
 import com.digitalchina.common.utils.BarcodeUtil;
 import com.digitalchina.common.utils.MyOrcode;
 import com.digitalchina.common.utils.StringUtil;
+import com.digitalchina.common.utils.ZxingTest;
 import com.digitalchina.sport.order.api.service.EquipmentService;
 import com.digitalchina.sport.order.api.service.FieldOrderService;
 import com.digitalchina.sport.order.api.service.MyOrderService;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -402,21 +404,22 @@ public class MyOrderController {
     @RequestMapping(value="printQrCode.img",method = RequestMethod.GET)
     @ResponseBody
     public void printQrCode(@RequestParam(value = "orderCode", required = true) String orderCode, HttpServletResponse response) throws Exception {
-        String qrCode = "";
-        if(myOrderService.isHaveByOrderCode(orderCode) >0){
-            qrCode = orderCode;
-        }else{
-            qrCode = "";
-        }
         try {
-            //5、图形写给浏览器
-            response.setContentType("image/jpeg");
-            //发头控制浏览器不要缓存
-            response.setDateHeader("expries", -1);
-            response.setHeader("Cache-Control", "no-cache");
-            response.setHeader("Pragma", "no-cache");
-            MyOrcode handler = new MyOrcode();
-            handler.encoderQRCode(qrCode,response.getOutputStream());
+            String qrCode = "";
+            if(myOrderService.isHaveByOrderCode(orderCode) >0){
+                qrCode = orderCode;
+                //5、图形写给浏览器
+                response.setContentType("image/jpeg");
+                //发头控制浏览器不要缓存
+                response.setDateHeader("expries", -1);
+                response.setHeader("Cache-Control", "no-cache");
+                response.setHeader("Pragma", "no-cache");
+                /*MyOrcode handler = new MyOrcode();
+                handler.encoderQRCode(qrCode,response.getOutputStream());*/
+                ZxingTest.encode(qrCode, response.getOutputStream());
+            }else{
+                logger.error("生成二维码失败!");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("生成二维码失败!",e);
