@@ -23,6 +23,8 @@
         <setting name="logPrefix" value="dao."/>
 
         <setting name="callSettersOnNulls" value="true"/>
+        <!--当字段的值为null的时候，返回结果集中显示该字段名称-->
+        <setting name="callSettersOnNulls" value="true" />
     </settings>
 
     <typeAliases>
