@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,5 +59,29 @@ public class CurriculumService {
     }
     public Map<String, Object> getCurriculumOrderbyOrderNumber(Map<String, Object> args) {
         return curriculumMapper.getCurriculumOrderbyOrderNumber(args);
+    }
+    public int isHaveByParams(Map<String, Object> args){
+        return curriculumMapper.isHaveByParams(args);
+    }
+    public Map<String, Object> getCurriculumOrderDetailByOrderId(String orderId,String userId) throws Exception{
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("orderId",orderId);
+        params.put("userId",userId);
+        return curriculumMapper.getCurriculumOrderDetailByOrderId(params);
+    }
+    public int cancelOrderByOrderId(String orderId,String userId) throws Exception{
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("orderId",orderId);
+        params.put("userId",userId);
+        params.put("status","4");
+        params.put("remarks","用户取消订单");
+        return curriculumMapper.cancelOrderByOrderId(params);
+    }
+    //（未支付超时订单根据失效时间逻辑判断）
+    public int updateOrderByOrderTime() throws Exception{
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("status","4");
+        params.put("remarks","未支付超时订单");
+        return curriculumMapper.updateOrderByOrderTime(params);
     }
 }

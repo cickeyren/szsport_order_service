@@ -5,13 +5,13 @@ import com.digitalchina.common.utils.OrderHelp;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.service.CurriculumService;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +21,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/order/api/curriculumOrder/")
 public class CurriculumOrderController {
+
+    public static final Logger logger = LoggerFactory.getLogger(CurriculumOrderController.class);
     @Autowired
     private PropertyConfig config;
     @Autowired
@@ -99,12 +101,92 @@ public class CurriculumOrderController {
     @RequestMapping(value = "getCurriculumOrder.json", method = RequestMethod.POST)
     @ResponseBody
     public RtnData getCurriculumOrder(String userId,String status,Integer pageNum,Integer pageSize) {
-        Map<String,Object> args = Maps.newHashMap();
-        args.put("userId",userId);
-        args.put("status",status);
-        args.put("pageNum",(pageNum-1)*pageSize);
-        args.put("pageSize",pageSize);
-        List<Map<String,Object>> orders = curriculumService.getCurriculumOrder(args);
-        return RtnData.ok(orders);
+        try {
+            Map<String,Object> args = Maps.newHashMap();
+            args.put("userId",userId);
+            args.put("status",status);
+            args.put("pageNum",(pageNum-1)*pageSize);
+            args.put("pageSize",pageSize);
+            List<Map<String,Object>> orders = curriculumService.getCurriculumOrder(args);
+            curriculumService.updateOrderByOrderTime();
+            return RtnData.ok(orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取培训订单失败");
+            return RtnData.fail("获取培训订单失败");
+        }
+    }
+
+    /**
+     * 订单详情
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = "curriculumOrderDetail.json", method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData curriculumOrderDetail(@RequestParam(required = true) String orderId,
+                                         @RequestParam(required = true) String userId){
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("orderId", orderId);
+        Map<String,Object> reqMap=new HashMap<String, Object>();
+        try {
+            if (curriculumService.isHaveByParams(params)>0){
+                //订单详情
+                reqMap.put("orderDetails", curriculumService.getCurriculumOrderDetailByOrderId(orderId,userId));
+
+                return RtnData.ok(reqMap);
+            }else {
+                return RtnData.fail("没有查到该培训订单!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取培训订单详情失败");
+            return RtnData.fail("获取培训订单详情失败");
+        }
+    }
+    /**
+     * 取消订单
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value="cancelOrderByOrderId.json")
+    @ResponseBody
+    public RtnData<Object> cancelOrderByOrderId(@RequestParam(value = "orderId", required = true) String orderId,
+                                                @RequestParam(required = true) String userId){
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("orderId", orderId);
+        Map<String, Object> retMap = new HashMap<String, Object>();
+        try {
+            if (curriculumService.isHaveByParams(params)>0){
+                Map<String, Object> orderDetail = curriculumService.getCurriculumOrderDetailByOrderId(orderId,userId);
+                String status = orderDetail.get("status").toString();
+                //订单状态 0未支付，1支付成功，2支付失败，3已退款，4失效订单（取消订单或（未支付超时订单根据失效时间逻辑判断）），5异常订单',
+                if(status.equals("0")){
+                    if (curriculumService.cancelOrderByOrderId(orderId,userId)>0){
+                        return RtnData.ok("取消培训订单成功");
+                    }else {
+                        return RtnData.fail("取消培训订单失败");
+                    }
+                }else if(status.equals("1")){
+                    return RtnData.fail("该培训订单已支付");
+                }else if(status.equals("2")){
+                    return RtnData.fail("该培训订单支付失败");
+                }else if(status.equals("3")){
+                    return RtnData.fail("该培训订单已退款");
+                }else if(status.equals("4")){
+                    return RtnData.fail("该培训订单已失效");
+                }else if(status.equals("5")){
+                    return RtnData.fail("该培训订单异常");
+                }else {
+                    return RtnData.fail("取消培训订单失败!");
+                }
+            }else {
+                return RtnData.fail("没有查到该培训订单!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("取消培训订单失败",e);
+            return RtnData.fail("取消培训订单失败!");
+        }
     }
 }

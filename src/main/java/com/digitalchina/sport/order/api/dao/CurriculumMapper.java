@@ -15,4 +15,9 @@ public interface CurriculumMapper {
     int insertOrder(Map<String, Object> args);
     int updataCurriculumOrder(Map<String, Object> args);
     int updataClassTime(Map<String, Object> args);
+    int isHaveByParams(Map<String, Object> args);
+    Map<String, Object> getCurriculumOrderDetailByOrderId(Map<String, Object> args);
+    int cancelOrderByOrderId(Map<String, Object> args);
+    int updateOrderByOrderTime(Map<String, Object> args);
+
 }

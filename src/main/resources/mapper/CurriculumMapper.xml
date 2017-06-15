@@ -164,4 +164,64 @@
                 cct.sign_up=cct.sign_up+1
         WHERE cct.id=#{classTimeId}
     </update>
+    <!-- 是否存在 -->
+    <select id="isHaveByParams" parameterType="java.util.Map" resultType="int">
+        SELECT
+        COUNT(0)
+        FROM
+        curriculum_order co
+        WHERE 1=1
+        <if test="orderId != null and orderId != ''">
+            AND co.id = #{orderId}
+        </if>
+        <if test="orderNumber != null and orderNumber != ''">
+            AND co.order_number=#{orderNumber}
+        </if>
+    </select>
+    <select id="getCurriculumOrderDetailByOrderId" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+            co.student_name AS studentName,
+            co.phone AS phone,
+            co.id_card AS idCard,
+            co.curriculum_id AS curriculumId,
+            co.other_student_msg AS otherStudentMsg,
+            co.`status` AS `status`,
+            co.invalid_time AS invalidTime,
+            c.`name` AS curriculumName,
+            cc.`name` AS className,
+            cc.lean_time AS leanTime,
+            cct.time AS time,
+            cc.content AS classContent,
+            cc.student_num AS studentNum,
+            cc.class_long AS classLong,
+            cc.class_times AS classTimes,
+            cc.target AS target,
+            co.fee AS fee,
+            cc.fee_mark AS feeMark
+        FROM
+            curriculum_order co
+        LEFT JOIN curriculum c ON c.id = co.curriculum_id
+        LEFT JOIN curriculum_class cc ON cc.id = co.curriculum_class_id
+        LEFT JOIN curriculum_class_times cct ON cct.id = co.curriculum_class_time_id
+        WHERE co.user_id = #{userId}
+        AND co.id = #{orderId}
+    </select>
+    <!-- 取消订单 -->
+    <update id="cancelOrderByOrderId" parameterType="java.util.Map" >
+        UPDATE curriculum_order
+        SET  `status` = #{status},
+              remarks=#{remarks},
+              update_time=NOW()
+        WHERE id = #{orderId}
+        AND user_id = #{userId}
+    </update>
+    <!--更新订单状态，时间超过10分钟状态变为失效订单 -->
+    <update id="updateOrderByOrderTime" parameterType="java.util.Map" >
+        UPDATE curriculum_order
+        SET `status`=#{status},remarks=#{remarks},update_time=NOW()
+        WHERE
+        <![CDATA[
+			invalid_time < NOW() AND `status`='0'
+  		]]>
+    </update>
 </mapper>
