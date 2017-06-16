@@ -118,6 +118,9 @@
         <if test="status != null and status != ''">
            AND t.status=#{status}
         </if>
+        ORDER BY
+        t.create_time DESC
+        LIMIT #{startIndex},#{pageSize}
     </select>
     <select id="getCurriculumOrderbyOrderNumber" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT

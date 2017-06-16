@@ -100,12 +100,20 @@ public class CurriculumOrderController {
      */
     @RequestMapping(value = "getCurriculumOrder.json", method = RequestMethod.POST)
     @ResponseBody
-    public RtnData getCurriculumOrder(String userId,String status,Integer pageNum,Integer pageSize) {
+    public RtnData getCurriculumOrder(String userId,String status,
+                                      @RequestParam(value = "pageNum",defaultValue = "0" , required = false) int pageNum,
+                                      @RequestParam(value = "pageSize",defaultValue = "10", required = false) int pageSize) {
         try {
             Map<String,Object> args = Maps.newHashMap();
             args.put("userId",userId);
             args.put("status",status);
-            args.put("pageNum",(pageNum-1)*pageSize);
+/*            args.put("pageNum",(pageNum-1)*pageSize);
+            args.put("pageSize",pageSize);*/
+            if(pageNum == 0){
+                args.put("startIndex",pageNum);
+            }else {
+                args.put("startIndex", (pageNum - 1) * pageSize);
+            }
             args.put("pageSize",pageSize);
             List<Map<String,Object>> orders = curriculumService.getCurriculumOrder(args);
             curriculumService.updateOrderByOrderTime();
