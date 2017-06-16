@@ -187,6 +187,7 @@
             co.other_student_msg AS otherStudentMsg,
             co.`status` AS `status`,
             co.invalid_time AS invalidTime,
+            co.create_time AS createTime,
             c.`name` AS curriculumName,
             cc.`name` AS className,
             cc.lean_time AS leanTime,
