@@ -47,6 +47,7 @@ public class CurriculumService {
             curriculumMapper.updataClassTime(args);//更新班次报名人数
             res.put("code", "000");
             res.put("order_number", order_number);
+            res.put("id", args.get("id"));
         }
         return res;
     }
