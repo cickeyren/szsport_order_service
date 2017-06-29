@@ -1,10 +1,18 @@
 package com.digitalchina.sport.order.api.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.digitalchina.common.utils.OrderHelp;
+import com.digitalchina.sport.order.api.common.Constants;
+import com.digitalchina.sport.order.api.dao.CurriculumClassNewMapper;
 import com.digitalchina.sport.order.api.dao.CurriculumMapper;
+import com.digitalchina.sport.order.api.dao.CurriculumNewMapper;
+import com.digitalchina.sport.order.api.dao.CurriculumOrderMapper;
 import com.digitalchina.sport.order.api.model.CurriculumClass;
+import com.digitalchina.sport.order.api.model.CurriculumClassNew;
+import com.digitalchina.sport.order.api.model.CurriculumNew;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +28,12 @@ import java.util.Map;
 public class CurriculumService {
     @Autowired
     private CurriculumMapper curriculumMapper;
+    @Autowired
+    private CurriculumNewMapper curriculumNewMapper;
+    @Autowired
+    private CurriculumClassNewMapper curriculumClassNewMapper;
+    @Autowired
+    private CurriculumOrderMapper curriculumOrderMapper;
     @Transactional
     public Map<String, Object> signUp(Map<String, Object> args) throws Exception {
         Map<String, Object> res = Maps.newHashMap();
@@ -32,15 +46,19 @@ public class CurriculumService {
             Map<String, Object> checkargs = Maps.newHashMap();
             String xuban_curriculum = curriculumClass.getXuban_curriculum();//获取可享受该班级续报优惠的课程id
             List<Integer> xuban_curriculums = new Gson().fromJson(xuban_curriculum, List.class);
-            checkargs.put("idCard", args.get("idCard"));
+//            checkargs.put("idCard", args.get("idCard"));
+            checkargs.put("phone", args.get("phone"));
+            checkargs.put("student_name", args.get("studentName"));
             checkargs.put("xuban_curriculums", xuban_curriculums);
             if (curriculumMapper.checkXuban(checkargs) > 0) {//查看是否享受续班优惠
-                args.put("fee", curriculumClass.getDiscount_fee());
+                args.put("xuban_flag", "1");
+                args.put("xuban_fee", curriculumClass.getDiscount_fee());
             } else {
-                args.put("fee", curriculumClass.getFee());
+                args.put("xuban_flag", "0");
             }
+            args.put("fee", curriculumClass.getFee());
             args.put("fee_msg", curriculumClass.getFee_mark());
-            String order_number = OrderHelp.getOrderNum();
+            String order_number = OrderHelp.getCurriculumOrderNum();
             args.put("id", OrderHelp.getUUID());
             args.put("order_number", order_number);
             curriculumMapper.insertOrder(args);
@@ -84,5 +102,64 @@ public class CurriculumService {
         params.put("status","4");
         params.put("remarks","未支付超时订单");
         return curriculumMapper.updateOrderByOrderTime(params);
+    }
+
+
+    public Map<String,Object> getCurriculumDiscount(Map<String, Object> params) {
+        Map<String,Object> rtnMap = new HashMap<String,Object>();
+        rtnMap.put(Constants.RTN_CODE, Constants.RTN_CODE_FAIL);
+
+        Integer id = (Integer) params.get("id");
+        String class_id = (String) params.get("class_id");
+        String student_name = (String) params.get("student_name");
+        String phone = (String) params.get("phone");
+        if(id==null){
+            rtnMap.put(Constants.RTN_MSG, "课程id为空！");
+            return rtnMap;
+        }
+        if(StringUtils.isBlank(class_id)){
+            rtnMap.put(Constants.RTN_MSG, "课程班次id为空！");
+            return rtnMap;
+        }
+        if(StringUtils.isBlank(student_name)){
+            rtnMap.put(Constants.RTN_MSG, "学员姓名为空！");
+            return rtnMap;
+        }
+        if(StringUtils.isBlank(phone)){
+            rtnMap.put(Constants.RTN_MSG, "联系手机为空！");
+            return rtnMap;
+        }
+
+        CurriculumNew curriculum = curriculumNewMapper.selectByPrimaryKey(id);
+        if(curriculum==null){
+            rtnMap.put(Constants.RTN_MSG, "课程信息不存在！");
+            return rtnMap;
+        }
+        CurriculumClassNew curriculumClass = curriculumClassNewMapper.selectByPrimaryKey(class_id);
+        if(curriculumClass==null){
+            rtnMap.put(Constants.RTN_MSG, "课程班次信息不存在！");
+            return rtnMap;
+        }
+
+        String status = this.getCurriculumDiscountStatus(id, class_id, student_name, phone, curriculumClass.getXuban_curriculum());
+
+        rtnMap.put("status", status);
+        rtnMap.put(Constants.RTN_CODE, Constants.RTN_CODE_SUCCESS);
+        rtnMap.put(Constants.RTN_MSG, "");
+        return rtnMap;
+    }
+
+    private String getCurriculumDiscountStatus(Integer id, String class_id, String student_name, String phone, String xubanCurriculum) {
+        String status = "0";
+        if(!StringUtils.isBlank(xubanCurriculum)){
+            List<Integer> xubanCurriculumIdList = JSONArray.parseArray(xubanCurriculum, Integer.class);
+            if(xubanCurriculumIdList!=null && xubanCurriculumIdList.size()>0){
+                int joinCurriculumCount = curriculumOrderMapper.selectJoinCurriculumCount(student_name, phone, xubanCurriculumIdList);
+                if(joinCurriculumCount>0){
+                    status = "1";
+                }
+            }
+        }
+        return status;
     }
 }

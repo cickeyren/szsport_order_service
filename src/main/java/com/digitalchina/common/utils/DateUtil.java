@@ -343,6 +343,15 @@ public class DateUtil {
         }else return false;
     }
 
+    public static boolean isDateStr(String str, String format){
+        try{
+            Date date = new SimpleDateFormat(format).parse(str);
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
         System.out.println("now() = [" + now() + "]");
         System.out.println("today() = [" + today() + "]");

@@ -1,7 +1,9 @@
 package com.digitalchina.sport.order.api.controller;
 
 import com.digitalchina.common.RtnData;
+import com.digitalchina.common.utils.DateUtil;
 import com.digitalchina.common.utils.OrderHelp;
+import com.digitalchina.sport.order.api.common.Constants;
 import com.digitalchina.sport.order.api.common.config.PropertyConfig;
 import com.digitalchina.sport.order.api.service.CurriculumService;
 import com.google.common.collect.Maps;
@@ -61,9 +63,18 @@ public class CurriculumOrderController {
         }
         if(StringUtils.isEmpty(phone)){
             return RtnData.fail("联系方式为空");
-        }if(StringUtils.isEmpty(idCard)){
-            return RtnData.fail("身份证为空");
         }
+//        if(StringUtils.isEmpty(idCard)){
+//            return RtnData.fail("身份证为空");
+//        }
+
+        if(!org.apache.commons.lang.StringUtils.isBlank(birthday) && !DateUtil.isDateStr(birthday, "yyyy-MM-dd")){
+            return RtnData.fail("出生日期格式错误");
+        }
+        if(gender!=null && gender != 0 && gender != 1){
+            return RtnData.fail("性别代码错误");
+        }
+
         args.put("curriculumClassId",curriculumClassId);
         args.put("classTimeId",classTimeId);
         args.put("curriculumId",curriculumId);
@@ -195,6 +206,37 @@ public class CurriculumOrderController {
             e.printStackTrace();
             logger.error("取消培训订单失败",e);
             return RtnData.fail("取消培训订单失败!");
+        }
+    }
+
+
+    /**
+     * 根据手机号和姓名获取是否存在续班优惠
+     * @return
+     */
+    @RequestMapping(value = "/getCurriculumDiscount.json", method = RequestMethod.GET)
+    @ResponseBody
+    public RtnData getCurriculumDiscount(@RequestParam Integer id, @RequestParam String class_id, @RequestParam String student_name, @RequestParam String phone){
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+        params.put("class_id", class_id);
+        params.put("student_name", student_name);
+        params.put("phone", phone);
+
+        try {
+            Map<String, Object> curriculumDiscount = curriculumService.getCurriculumDiscount(params);
+
+            if (!Constants.RTN_CODE_SUCCESS.equals(curriculumDiscount.get(Constants.RTN_CODE))) {
+                return RtnData.fail("999999", (String) curriculumDiscount.get(Constants.RTN_MSG));
+            }else{
+                curriculumDiscount.remove(Constants.RTN_CODE);
+                curriculumDiscount.remove(Constants.RTN_MSG);
+                return RtnData.ok(curriculumDiscount);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("根据手机号和姓名获取是否存在续班优惠失败",e);
+            return RtnData.fail("根据手机号和姓名获取是否存在续班优惠失败");
         }
     }
 }

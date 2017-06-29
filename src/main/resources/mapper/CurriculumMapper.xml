@@ -41,18 +41,27 @@
         GROUP BY cc.id
     </select>
     <select id="checkXuban" resultType="int" parameterType="java.util.Map">
-        SELECT COUNT(1) FROM curriculum_order co WHERE co.id_card=#{idCard}
+        SELECT COUNT(1) FROM curriculum_order co
+        WHERE 1=1
         <if test="xuban_curriculums!= null">
-            AND co.curriculum_id NOT IN
-            <foreach collection="xuban_curriculums" item="item"
-                     index="index" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
-        </if>
+        AND co.curriculum_id IN
+        <foreach collection="xuban_curriculums" item="item"
+                 index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        and co.student_name = #{student_name}
+        and co.phone = #{phone}
+    </if>
     </select>
     <insert id="insertOrder" parameterType="java.util.Map">
-        INSERT INTO curriculum_order(id,order_number,come,user_id,student_name,phone,gender,birthday,id_card,other_student_msg,school,curriculum_id,curriculum_class_id,curriculum_class_time_id,fee,fee_msg,invalid_time)
-        VALUES (#{id},#{order_number},#{come},#{userId},#{studentName},#{phone},#{gender},#{birthday},#{idCard},#{otherStudentMsg},#{school},#{curriculumId},#{curriculumClassId},#{classTimeId},#{fee},#{feeMsg},date_add(SYSDATE(), interval #{invalid_time} minute))
+        INSERT INTO curriculum_order(id,order_number,come,user_id,
+        student_name,phone,gender,birthday,id_card,other_student_msg,school,
+        curriculum_id,curriculum_class_id,curriculum_class_time_id,fee,fee_msg,invalid_time,
+        xuban_flag,xuban_fee)
+        VALUES (#{id},#{order_number},#{come},#{userId},
+        #{studentName},#{phone},#{gender},#{birthday},#{idCard},#{otherStudentMsg},#{school},
+        #{curriculumId},#{curriculumClassId},#{classTimeId},#{fee},#{feeMsg},date_add(SYSDATE(), interval #{invalid_time} minute),
+        #{xuban_flag},#{xuban_fee})
     </insert>
     <update id="updataCurriculumOrder" parameterType="java.util.Map">
         UPDATE curriculum_order co
@@ -64,6 +73,7 @@
         co.pay_time=#{pay_time}
         WHERE co.order_number=#{order_number}
     </update>
+
     <select id="getCurriculumOrder" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT * FROM
         (
@@ -88,12 +98,7 @@
             co.pay_fee,
             co.pay_type,
             co.pay_time,
-            IF (
-            co.Invalid_time &lt; SYSDATE()
-            AND co.`status` = 0,
-            4,
-            co.`status`
-            ) AS `status`,
+            IF(co.Invalid_time &lt; SYSDATE() AND co.`status` = 0, 4, co.`status` ) AS `status`,
             co.re_status,
             c.`name`,
             cc.`name` as class_name,
@@ -103,7 +108,10 @@
             cc.class_times,
             cc.class_long,
             cc.target,
-            cc.fee_mark
+            cc.fee_mark,
+            co.xuban_flag,
+            co.xuban_fee,
+            cc.discount_fee
             FROM
             curriculum_order co,
             curriculum c,
@@ -127,13 +135,8 @@
         co.id,
         co.order_number,
         co.user_id AS userId,
-        IF (
-        co.Invalid_time &lt; SYSDATE()
-        AND co.`status` = 0,
-        4,
-        co.`status`
-        ) AS `status`,
-        co.fee,
+        IF (co.Invalid_time &lt; SYSDATE() AND co.`status` = 0, 4, co.`status` ) AS `status`,
+        IF (co.xuban_flag == '1', co.fee, co.xuban_fee) fee,
         c.`name`,
         mp.pay_key AS payKey,
         mp.partner_id AS partnerId,
@@ -201,7 +204,10 @@
             cc.class_times AS classTimes,
             cc.target AS target,
             co.fee AS fee,
-            cc.fee_mark AS feeMark
+            cc.fee_mark AS feeMark,
+            co.xuban_flag,
+            co.xuban_fee,
+            cc.discount_fee
         FROM
             curriculum_order co
         LEFT JOIN curriculum c ON c.id = co.curriculum_id

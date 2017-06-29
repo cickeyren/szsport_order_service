@@ -5,13 +5,15 @@ public class Constants {
     /**
      * 通用成功代码
      */
-    public final static String RTN_CODE_SUCCESS = "000000";
+    public final static String RTN_CODE_SUCCESS = "000000"; //通用成功代码
+    public final static String RTN_CODE_FAIL = "999999"; //通用错误代码
+    public final static String RTN_CODE = "RTN_CODE"; //通用返回码名称
+    public final static String RTN_MSG = "RTN_MSG"; //通用返回信息名称
 
     public final static String RTN_SIGN_SUCCESS = "200";
     /**
      * 通用错误代码
      */
-    public final static String RTN_CODE_FAIL = "999999";
     public final static String RTN_SIGN_FAIL = "100";
     public final static String RTN_SIGN_NULL = "101";
     public final static String RTN_SIGN_NOCAR = "201";//车辆未入场

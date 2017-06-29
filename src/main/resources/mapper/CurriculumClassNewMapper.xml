@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.digitalchina.sport.order.api.dao.CurriculumClassNewMapper">
+  <resultMap id="BaseResultMap" type="com.digitalchina.sport.order.api.model.CurriculumClassNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="curriculum_id" jdbcType="INTEGER" property="curriculum_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="class_long" jdbcType="VARCHAR" property="class_long" />
+    <result column="class_times" jdbcType="INTEGER" property="class_times" />
+    <result column="student_num" jdbcType="INTEGER" property="student_num" />
+    <result column="max_num" jdbcType="INTEGER" property="max_num" />
+    <result column="lean_time" jdbcType="VARCHAR" property="lean_time" />
+    <result column="bm_time" jdbcType="VARCHAR" property="bm_time" />
+    <result column="bm_end" jdbcType="VARCHAR" property="bm_end" />
+    <result column="target" jdbcType="VARCHAR" property="target" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="fee_code" jdbcType="VARCHAR" property="fee_code" />
+    <result column="discount_fee" jdbcType="DECIMAL" property="discount_fee" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="fee_mark" jdbcType="VARCHAR" property="fee_mark" />
+    <result column="leantime_type" jdbcType="VARCHAR" property="leantime_type" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="continue_curriculum_id" jdbcType="VARCHAR" property="continue_curriculum_id" />
+    <result column="xubanfee" jdbcType="DECIMAL" property="xubanfee" />
+    <result column="xuban_curriculum" jdbcType="VARCHAR" property="xuban_curriculum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    id, curriculum_id, name, class_long, class_times, student_num, max_num, lean_time, 
+    bm_time, bm_end, target, content, fee_code, discount_fee, fee, fee_mark, leantime_type, 
+    status, continue_curriculum_id, xubanfee, xuban_curriculum
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from curriculum_class
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    delete from curriculum_class
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.digitalchina.sport.order.api.model.CurriculumClassNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    insert into curriculum_class (id, curriculum_id, name, 
+      class_long, class_times, student_num, 
+      max_num, lean_time, bm_time, 
+      bm_end, target, content, 
+      fee_code, discount_fee, fee, 
+      fee_mark, leantime_type, status, 
+      continue_curriculum_id, xubanfee, xuban_curriculum
+      )
+    values (#{id,jdbcType=VARCHAR}, #{curriculum_id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{class_long,jdbcType=VARCHAR}, #{class_times,jdbcType=INTEGER}, #{student_num,jdbcType=INTEGER}, 
+      #{max_num,jdbcType=INTEGER}, #{lean_time,jdbcType=VARCHAR}, #{bm_time,jdbcType=VARCHAR}, 
+      #{bm_end,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{fee_code,jdbcType=VARCHAR}, #{discount_fee,jdbcType=DECIMAL}, #{fee,jdbcType=DECIMAL}, 
+      #{fee_mark,jdbcType=VARCHAR}, #{leantime_type,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{continue_curriculum_id,jdbcType=VARCHAR}, #{xubanfee,jdbcType=DECIMAL}, #{xuban_curriculum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumClassNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    insert into curriculum_class
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="curriculum_id != null">
+        curriculum_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="class_long != null">
+        class_long,
+      </if>
+      <if test="class_times != null">
+        class_times,
+      </if>
+      <if test="student_num != null">
+        student_num,
+      </if>
+      <if test="max_num != null">
+        max_num,
+      </if>
+      <if test="lean_time != null">
+        lean_time,
+      </if>
+      <if test="bm_time != null">
+        bm_time,
+      </if>
+      <if test="bm_end != null">
+        bm_end,
+      </if>
+      <if test="target != null">
+        target,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="fee_code != null">
+        fee_code,
+      </if>
+      <if test="discount_fee != null">
+        discount_fee,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="fee_mark != null">
+        fee_mark,
+      </if>
+      <if test="leantime_type != null">
+        leantime_type,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="continue_curriculum_id != null">
+        continue_curriculum_id,
+      </if>
+      <if test="xubanfee != null">
+        xubanfee,
+      </if>
+      <if test="xuban_curriculum != null">
+        xuban_curriculum,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_id != null">
+        #{curriculum_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="class_long != null">
+        #{class_long,jdbcType=VARCHAR},
+      </if>
+      <if test="class_times != null">
+        #{class_times,jdbcType=INTEGER},
+      </if>
+      <if test="student_num != null">
+        #{student_num,jdbcType=INTEGER},
+      </if>
+      <if test="max_num != null">
+        #{max_num,jdbcType=INTEGER},
+      </if>
+      <if test="lean_time != null">
+        #{lean_time,jdbcType=VARCHAR},
+      </if>
+      <if test="bm_time != null">
+        #{bm_time,jdbcType=VARCHAR},
+      </if>
+      <if test="bm_end != null">
+        #{bm_end,jdbcType=VARCHAR},
+      </if>
+      <if test="target != null">
+        #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_code != null">
+        #{fee_code,jdbcType=VARCHAR},
+      </if>
+      <if test="discount_fee != null">
+        #{discount_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee_mark != null">
+        #{fee_mark,jdbcType=VARCHAR},
+      </if>
+      <if test="leantime_type != null">
+        #{leantime_type,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="continue_curriculum_id != null">
+        #{continue_curriculum_id,jdbcType=VARCHAR},
+      </if>
+      <if test="xubanfee != null">
+        #{xubanfee,jdbcType=DECIMAL},
+      </if>
+      <if test="xuban_curriculum != null">
+        #{xuban_curriculum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumClassNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    update curriculum_class
+    <set>
+      <if test="curriculum_id != null">
+        curriculum_id = #{curriculum_id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="class_long != null">
+        class_long = #{class_long,jdbcType=VARCHAR},
+      </if>
+      <if test="class_times != null">
+        class_times = #{class_times,jdbcType=INTEGER},
+      </if>
+      <if test="student_num != null">
+        student_num = #{student_num,jdbcType=INTEGER},
+      </if>
+      <if test="max_num != null">
+        max_num = #{max_num,jdbcType=INTEGER},
+      </if>
+      <if test="lean_time != null">
+        lean_time = #{lean_time,jdbcType=VARCHAR},
+      </if>
+      <if test="bm_time != null">
+        bm_time = #{bm_time,jdbcType=VARCHAR},
+      </if>
+      <if test="bm_end != null">
+        bm_end = #{bm_end,jdbcType=VARCHAR},
+      </if>
+      <if test="target != null">
+        target = #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="fee_code != null">
+        fee_code = #{fee_code,jdbcType=VARCHAR},
+      </if>
+      <if test="discount_fee != null">
+        discount_fee = #{discount_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee_mark != null">
+        fee_mark = #{fee_mark,jdbcType=VARCHAR},
+      </if>
+      <if test="leantime_type != null">
+        leantime_type = #{leantime_type,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="continue_curriculum_id != null">
+        continue_curriculum_id = #{continue_curriculum_id,jdbcType=VARCHAR},
+      </if>
+      <if test="xubanfee != null">
+        xubanfee = #{xubanfee,jdbcType=DECIMAL},
+      </if>
+      <if test="xuban_curriculum != null">
+        xuban_curriculum = #{xuban_curriculum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.digitalchina.sport.order.api.model.CurriculumClassNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:13.
+    -->
+    update curriculum_class
+    set curriculum_id = #{curriculum_id,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      class_long = #{class_long,jdbcType=VARCHAR},
+      class_times = #{class_times,jdbcType=INTEGER},
+      student_num = #{student_num,jdbcType=INTEGER},
+      max_num = #{max_num,jdbcType=INTEGER},
+      lean_time = #{lean_time,jdbcType=VARCHAR},
+      bm_time = #{bm_time,jdbcType=VARCHAR},
+      bm_end = #{bm_end,jdbcType=VARCHAR},
+      target = #{target,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      fee_code = #{fee_code,jdbcType=VARCHAR},
+      discount_fee = #{discount_fee,jdbcType=DECIMAL},
+      fee = #{fee,jdbcType=DECIMAL},
+      fee_mark = #{fee_mark,jdbcType=VARCHAR},
+      leantime_type = #{leantime_type,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      continue_curriculum_id = #{continue_curriculum_id,jdbcType=VARCHAR},
+      xubanfee = #{xubanfee,jdbcType=DECIMAL},
+      xuban_curriculum = #{xuban_curriculum,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.digitalchina.sport.order.api.dao.CurriculumOrderMapper">
+  <resultMap id="BaseResultMap" type="com.digitalchina.sport.order.api.model.CurriculumOrder">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="order_number" jdbcType="VARCHAR" property="order_number" />
+    <result column="come" jdbcType="VARCHAR" property="come" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="student_name" jdbcType="VARCHAR" property="student_name" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="id_card" jdbcType="VARCHAR" property="id_card" />
+    <result column="other_student_msg" jdbcType="VARCHAR" property="other_student_msg" />
+    <result column="school" jdbcType="VARCHAR" property="school" />
+    <result column="curriculum_id" jdbcType="VARCHAR" property="curriculum_id" />
+    <result column="curriculum_class_id" jdbcType="VARCHAR" property="curriculum_class_id" />
+    <result column="curriculum_class_time_id" jdbcType="VARCHAR" property="curriculum_class_time_id" />
+    <result column="invalid_time" jdbcType="TIMESTAMP" property="invalid_time" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="fee_msg" jdbcType="VARCHAR" property="fee_msg" />
+    <result column="pay_fee" jdbcType="DECIMAL" property="pay_fee" />
+    <result column="pay_type" jdbcType="VARCHAR" property="pay_type" />
+    <result column="pay_acount" jdbcType="VARCHAR" property="pay_acount" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="pay_time" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="re_status" jdbcType="INTEGER" property="re_status" />
+    <result column="refund_status" jdbcType="INTEGER" property="refund_status" />
+    <result column="discount_configure_id" jdbcType="VARCHAR" property="discount_configure_id" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="xuban_flag" jdbcType="VARCHAR" property="xuban_flag" />
+    <result column="xuban_fee" jdbcType="DECIMAL" property="xuban_fee" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    id, order_number, come, user_id, student_name, phone, gender, birthday, id_card, 
+    other_student_msg, school, curriculum_id, curriculum_class_id, curriculum_class_time_id, 
+    invalid_time, create_time, update_time, fee, fee_msg, pay_fee, pay_type, pay_acount, 
+    pay_time, status, re_status, refund_status, discount_configure_id, remarks, xuban_flag, 
+    xuban_fee
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from curriculum_order
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    delete from curriculum_order
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.digitalchina.sport.order.api.model.CurriculumOrder">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    insert into curriculum_order (id, order_number, come, 
+      user_id, student_name, phone, 
+      gender, birthday, id_card, 
+      other_student_msg, school, curriculum_id, 
+      curriculum_class_id, curriculum_class_time_id, 
+      invalid_time, create_time, update_time, 
+      fee, fee_msg, pay_fee, 
+      pay_type, pay_acount, pay_time, 
+      status, re_status, refund_status, 
+      discount_configure_id, remarks, xuban_flag, 
+      xuban_fee)
+    values (#{id,jdbcType=VARCHAR}, #{order_number,jdbcType=VARCHAR}, #{come,jdbcType=VARCHAR}, 
+      #{user_id,jdbcType=VARCHAR}, #{student_name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=INTEGER}, #{birthday,jdbcType=TIMESTAMP}, #{id_card,jdbcType=VARCHAR}, 
+      #{other_student_msg,jdbcType=VARCHAR}, #{school,jdbcType=VARCHAR}, #{curriculum_id,jdbcType=VARCHAR}, 
+      #{curriculum_class_id,jdbcType=VARCHAR}, #{curriculum_class_time_id,jdbcType=VARCHAR}, 
+      #{invalid_time,jdbcType=TIMESTAMP}, #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP}, 
+      #{fee,jdbcType=DECIMAL}, #{fee_msg,jdbcType=VARCHAR}, #{pay_fee,jdbcType=DECIMAL}, 
+      #{pay_type,jdbcType=VARCHAR}, #{pay_acount,jdbcType=VARCHAR}, #{pay_time,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=INTEGER}, #{re_status,jdbcType=INTEGER}, #{refund_status,jdbcType=INTEGER}, 
+      #{discount_configure_id,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{xuban_flag,jdbcType=VARCHAR}, 
+      #{xuban_fee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumOrder">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    insert into curriculum_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="order_number != null">
+        order_number,
+      </if>
+      <if test="come != null">
+        come,
+      </if>
+      <if test="user_id != null">
+        user_id,
+      </if>
+      <if test="student_name != null">
+        student_name,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="id_card != null">
+        id_card,
+      </if>
+      <if test="other_student_msg != null">
+        other_student_msg,
+      </if>
+      <if test="school != null">
+        school,
+      </if>
+      <if test="curriculum_id != null">
+        curriculum_id,
+      </if>
+      <if test="curriculum_class_id != null">
+        curriculum_class_id,
+      </if>
+      <if test="curriculum_class_time_id != null">
+        curriculum_class_time_id,
+      </if>
+      <if test="invalid_time != null">
+        invalid_time,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="update_time != null">
+        update_time,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="fee_msg != null">
+        fee_msg,
+      </if>
+      <if test="pay_fee != null">
+        pay_fee,
+      </if>
+      <if test="pay_type != null">
+        pay_type,
+      </if>
+      <if test="pay_acount != null">
+        pay_acount,
+      </if>
+      <if test="pay_time != null">
+        pay_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="re_status != null">
+        re_status,
+      </if>
+      <if test="refund_status != null">
+        refund_status,
+      </if>
+      <if test="discount_configure_id != null">
+        discount_configure_id,
+      </if>
+      <if test="remarks != null">
+        remarks,
+      </if>
+      <if test="xuban_flag != null">
+        xuban_flag,
+      </if>
+      <if test="xuban_fee != null">
+        xuban_fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="order_number != null">
+        #{order_number,jdbcType=VARCHAR},
+      </if>
+      <if test="come != null">
+        #{come,jdbcType=VARCHAR},
+      </if>
+      <if test="user_id != null">
+        #{user_id,jdbcType=VARCHAR},
+      </if>
+      <if test="student_name != null">
+        #{student_name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="id_card != null">
+        #{id_card,jdbcType=VARCHAR},
+      </if>
+      <if test="other_student_msg != null">
+        #{other_student_msg,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_id != null">
+        #{curriculum_id,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_class_id != null">
+        #{curriculum_class_id,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_class_time_id != null">
+        #{curriculum_class_time_id,jdbcType=VARCHAR},
+      </if>
+      <if test="invalid_time != null">
+        #{invalid_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_time != null">
+        #{update_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee_msg != null">
+        #{fee_msg,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_fee != null">
+        #{pay_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="pay_type != null">
+        #{pay_type,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_acount != null">
+        #{pay_acount,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_time != null">
+        #{pay_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="re_status != null">
+        #{re_status,jdbcType=INTEGER},
+      </if>
+      <if test="refund_status != null">
+        #{refund_status,jdbcType=INTEGER},
+      </if>
+      <if test="discount_configure_id != null">
+        #{discount_configure_id,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="xuban_flag != null">
+        #{xuban_flag,jdbcType=VARCHAR},
+      </if>
+      <if test="xuban_fee != null">
+        #{xuban_fee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumOrder">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    update curriculum_order
+    <set>
+      <if test="order_number != null">
+        order_number = #{order_number,jdbcType=VARCHAR},
+      </if>
+      <if test="come != null">
+        come = #{come,jdbcType=VARCHAR},
+      </if>
+      <if test="user_id != null">
+        user_id = #{user_id,jdbcType=VARCHAR},
+      </if>
+      <if test="student_name != null">
+        student_name = #{student_name,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="id_card != null">
+        id_card = #{id_card,jdbcType=VARCHAR},
+      </if>
+      <if test="other_student_msg != null">
+        other_student_msg = #{other_student_msg,jdbcType=VARCHAR},
+      </if>
+      <if test="school != null">
+        school = #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_id != null">
+        curriculum_id = #{curriculum_id,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_class_id != null">
+        curriculum_class_id = #{curriculum_class_id,jdbcType=VARCHAR},
+      </if>
+      <if test="curriculum_class_time_id != null">
+        curriculum_class_time_id = #{curriculum_class_time_id,jdbcType=VARCHAR},
+      </if>
+      <if test="invalid_time != null">
+        invalid_time = #{invalid_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_time != null">
+        update_time = #{update_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="fee_msg != null">
+        fee_msg = #{fee_msg,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_fee != null">
+        pay_fee = #{pay_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="pay_type != null">
+        pay_type = #{pay_type,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_acount != null">
+        pay_acount = #{pay_acount,jdbcType=VARCHAR},
+      </if>
+      <if test="pay_time != null">
+        pay_time = #{pay_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="re_status != null">
+        re_status = #{re_status,jdbcType=INTEGER},
+      </if>
+      <if test="refund_status != null">
+        refund_status = #{refund_status,jdbcType=INTEGER},
+      </if>
+      <if test="discount_configure_id != null">
+        discount_configure_id = #{discount_configure_id,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null">
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="xuban_flag != null">
+        xuban_flag = #{xuban_flag,jdbcType=VARCHAR},
+      </if>
+      <if test="xuban_fee != null">
+        xuban_fee = #{xuban_fee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.digitalchina.sport.order.api.model.CurriculumOrder">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:45:39.
+    -->
+    update curriculum_order
+    set order_number = #{order_number,jdbcType=VARCHAR},
+      come = #{come,jdbcType=VARCHAR},
+      user_id = #{user_id,jdbcType=VARCHAR},
+      student_name = #{student_name,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      birthday = #{birthday,jdbcType=TIMESTAMP},
+      id_card = #{id_card,jdbcType=VARCHAR},
+      other_student_msg = #{other_student_msg,jdbcType=VARCHAR},
+      school = #{school,jdbcType=VARCHAR},
+      curriculum_id = #{curriculum_id,jdbcType=VARCHAR},
+      curriculum_class_id = #{curriculum_class_id,jdbcType=VARCHAR},
+      curriculum_class_time_id = #{curriculum_class_time_id,jdbcType=VARCHAR},
+      invalid_time = #{invalid_time,jdbcType=TIMESTAMP},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP},
+      fee = #{fee,jdbcType=DECIMAL},
+      fee_msg = #{fee_msg,jdbcType=VARCHAR},
+      pay_fee = #{pay_fee,jdbcType=DECIMAL},
+      pay_type = #{pay_type,jdbcType=VARCHAR},
+      pay_acount = #{pay_acount,jdbcType=VARCHAR},
+      pay_time = #{pay_time,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      re_status = #{re_status,jdbcType=INTEGER},
+      refund_status = #{refund_status,jdbcType=INTEGER},
+      discount_configure_id = #{discount_configure_id,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      xuban_flag = #{xuban_flag,jdbcType=VARCHAR},
+      xuban_fee = #{xuban_fee,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectJoinCurriculumCount" resultType="java.lang.Integer" >
+    select
+    count(1)
+    FROM
+    curriculum_order t
+    where 1=1
+    and t.curriculum_id in
+    <foreach collection="xubanCurriculumIdList" index="index" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    and t.student_name = #{student_name}
+    and t.phone = #{phone}
+  </select>
+</mapper>

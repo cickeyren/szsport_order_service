@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.digitalchina.sport.order.api.dao.CurriculumNewMapper">
+  <resultMap id="BaseResultMap" type="com.digitalchina.sport.order.api.model.CurriculumNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="training_institutions_id" jdbcType="VARCHAR" property="training_institutions_id" />
+    <result column="cooperative_merchant_id" jdbcType="VARCHAR" property="cooperative_merchant_id" />
+    <result column="img_url" jdbcType="VARCHAR" property="img_url" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="teachers" jdbcType="VARCHAR" property="teachers" />
+    <result column="train_type" jdbcType="VARCHAR" property="train_type" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="enrollment_required" jdbcType="VARCHAR" property="enrollment_required" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="enrollment_read" jdbcType="VARCHAR" property="enrollment_read" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
+    <result column="recommend_time" jdbcType="TIMESTAMP" property="recommend_time" />
+    <result column="recommend" jdbcType="INTEGER" property="recommend" />
+    <result column="recommend_level" jdbcType="INTEGER" property="recommend_level" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="discount_status" jdbcType="VARCHAR" property="discount_status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    id, training_institutions_id, cooperative_merchant_id, img_url, name, teachers, train_type, 
+    content, address, enrollment_required, phone, enrollment_read, create_date, recommend_time, 
+    recommend, recommend_level, status, discount_status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from curriculum
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    delete from curriculum
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.digitalchina.sport.order.api.model.CurriculumNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    insert into curriculum (id, training_institutions_id, cooperative_merchant_id, 
+      img_url, name, teachers, 
+      train_type, content, address, 
+      enrollment_required, phone, enrollment_read, 
+      create_date, recommend_time, recommend, 
+      recommend_level, status, discount_status
+      )
+    values (#{id,jdbcType=INTEGER}, #{training_institutions_id,jdbcType=VARCHAR}, #{cooperative_merchant_id,jdbcType=VARCHAR}, 
+      #{img_url,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{teachers,jdbcType=VARCHAR}, 
+      #{train_type,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{enrollment_required,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{enrollment_read,jdbcType=VARCHAR}, 
+      #{create_date,jdbcType=TIMESTAMP}, #{recommend_time,jdbcType=TIMESTAMP}, #{recommend,jdbcType=INTEGER}, 
+      #{recommend_level,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{discount_status,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    insert into curriculum
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="training_institutions_id != null">
+        training_institutions_id,
+      </if>
+      <if test="cooperative_merchant_id != null">
+        cooperative_merchant_id,
+      </if>
+      <if test="img_url != null">
+        img_url,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="teachers != null">
+        teachers,
+      </if>
+      <if test="train_type != null">
+        train_type,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="enrollment_required != null">
+        enrollment_required,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="enrollment_read != null">
+        enrollment_read,
+      </if>
+      <if test="create_date != null">
+        create_date,
+      </if>
+      <if test="recommend_time != null">
+        recommend_time,
+      </if>
+      <if test="recommend != null">
+        recommend,
+      </if>
+      <if test="recommend_level != null">
+        recommend_level,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="discount_status != null">
+        discount_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="training_institutions_id != null">
+        #{training_institutions_id,jdbcType=VARCHAR},
+      </if>
+      <if test="cooperative_merchant_id != null">
+        #{cooperative_merchant_id,jdbcType=VARCHAR},
+      </if>
+      <if test="img_url != null">
+        #{img_url,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="teachers != null">
+        #{teachers,jdbcType=VARCHAR},
+      </if>
+      <if test="train_type != null">
+        #{train_type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollment_required != null">
+        #{enrollment_required,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollment_read != null">
+        #{enrollment_read,jdbcType=VARCHAR},
+      </if>
+      <if test="create_date != null">
+        #{create_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommend_time != null">
+        #{recommend_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommend != null">
+        #{recommend,jdbcType=INTEGER},
+      </if>
+      <if test="recommend_level != null">
+        #{recommend_level,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="discount_status != null">
+        #{discount_status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.digitalchina.sport.order.api.model.CurriculumNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    update curriculum
+    <set>
+      <if test="training_institutions_id != null">
+        training_institutions_id = #{training_institutions_id,jdbcType=VARCHAR},
+      </if>
+      <if test="cooperative_merchant_id != null">
+        cooperative_merchant_id = #{cooperative_merchant_id,jdbcType=VARCHAR},
+      </if>
+      <if test="img_url != null">
+        img_url = #{img_url,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="teachers != null">
+        teachers = #{teachers,jdbcType=VARCHAR},
+      </if>
+      <if test="train_type != null">
+        train_type = #{train_type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollment_required != null">
+        enrollment_required = #{enrollment_required,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="enrollment_read != null">
+        enrollment_read = #{enrollment_read,jdbcType=VARCHAR},
+      </if>
+      <if test="create_date != null">
+        create_date = #{create_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommend_time != null">
+        recommend_time = #{recommend_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="recommend != null">
+        recommend = #{recommend,jdbcType=INTEGER},
+      </if>
+      <if test="recommend_level != null">
+        recommend_level = #{recommend_level,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="discount_status != null">
+        discount_status = #{discount_status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.digitalchina.sport.order.api.model.CurriculumNew">
+    <!--
+      WARNING - @mbggenerated
+      Generated on 2017-06-29 11:33:12.
+    -->
+    update curriculum
+    set training_institutions_id = #{training_institutions_id,jdbcType=VARCHAR},
+      cooperative_merchant_id = #{cooperative_merchant_id,jdbcType=VARCHAR},
+      img_url = #{img_url,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      teachers = #{teachers,jdbcType=VARCHAR},
+      train_type = #{train_type,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      enrollment_required = #{enrollment_required,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      enrollment_read = #{enrollment_read,jdbcType=VARCHAR},
+      create_date = #{create_date,jdbcType=TIMESTAMP},
+      recommend_time = #{recommend_time,jdbcType=TIMESTAMP},
+      recommend = #{recommend,jdbcType=INTEGER},
+      recommend_level = #{recommend_level,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      discount_status = #{discount_status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
