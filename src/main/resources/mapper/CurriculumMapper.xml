@@ -136,7 +136,7 @@
         co.order_number,
         co.user_id AS userId,
         IF (co.Invalid_time &lt; SYSDATE() AND co.`status` = 0, 4, co.`status` ) AS `status`,
-        IF (co.xuban_flag == '1', co.fee, co.xuban_fee) fee,
+        IF (co.xuban_flag = '1', co.fee, co.xuban_fee) fee,
         c.`name`,
         mp.pay_key AS payKey,
         mp.partner_id AS partnerId,
