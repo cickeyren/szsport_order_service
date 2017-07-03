@@ -152,7 +152,7 @@
         WHERE
         co.curriculum_id = c.id
         AND co.curriculum_class_id = cc.id
-        AND mp.merchant_id = c.training_institutions_id
+        AND mp.merchant_id = c.cooperative_merchant_id
         AND co.curriculum_class_time_id = cct.id
         <if test="payWay != null and payWay != ''">
             AND mp.pay_way = #{payWay}
