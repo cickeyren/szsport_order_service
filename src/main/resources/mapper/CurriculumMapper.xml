@@ -43,15 +43,18 @@
     <select id="checkXuban" resultType="int" parameterType="java.util.Map">
         SELECT COUNT(1) FROM curriculum_order co
         WHERE 1=1
-        <if test="xuban_curriculums!= null">
-        AND co.curriculum_id IN
-        <foreach collection="xuban_curriculums" item="item"
-                 index="index" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <if test="xuban_curriculums == null or xuban_curriculums.size &lt;= 0">
+            AND 1&lt;&gt;1
+        </if>
+        <if test="xuban_curriculums!= null and xuban_curriculums.size>0">
+            AND co.curriculum_id IN
+            <foreach collection="xuban_curriculums" item="item"
+                     index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         and co.student_name = #{student_name}
         and co.phone = #{phone}
-    </if>
     </select>
     <insert id="insertOrder" parameterType="java.util.Map">
         INSERT INTO curriculum_order(id,order_number,come,user_id,

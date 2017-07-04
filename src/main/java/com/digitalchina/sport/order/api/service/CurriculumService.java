@@ -46,14 +46,18 @@ public class CurriculumService {
             Map<String, Object> checkargs = Maps.newHashMap();
             String xuban_curriculum = curriculumClass.getXuban_curriculum();//获取可享受该班级续报优惠的课程id
             List<Integer> xuban_curriculums = new Gson().fromJson(xuban_curriculum, List.class);
+            if(xuban_curriculums.size()>0){
 //            checkargs.put("idCard", args.get("idCard"));
-            checkargs.put("phone", args.get("phone"));
-            checkargs.put("student_name", args.get("studentName"));
-            checkargs.put("xuban_curriculums", xuban_curriculums);
-            if (curriculumMapper.checkXuban(checkargs) > 0) {//查看是否享受续班优惠
-                args.put("xuban_flag", "1");
-                args.put("xuban_fee", curriculumClass.getDiscount_fee());
-            } else {
+                checkargs.put("phone", args.get("phone"));
+                checkargs.put("student_name", args.get("studentName"));
+                checkargs.put("xuban_curriculums", xuban_curriculums);
+                if (curriculumMapper.checkXuban(checkargs) > 0) {//查看是否享受续班优惠
+                    args.put("xuban_flag", "1");
+                    args.put("xuban_fee", curriculumClass.getDiscount_fee());
+                } else {
+                    args.put("xuban_flag", "0");
+                }
+            }else{
                 args.put("xuban_flag", "0");
             }
             args.put("fee", curriculumClass.getFee());
