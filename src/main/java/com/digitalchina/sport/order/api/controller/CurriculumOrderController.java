@@ -90,8 +90,15 @@ public class CurriculumOrderController {
         args.put("invalid_time", config.INVALID_TIME);
         try {
             Map<String,Object> res = curriculumService.signUp(args);
-            if (res.get("code").toString().equals("001")){
+            String code = (String) res.get("code");
+            if ("001".equals(code)){
                 return RtnData.fail("没有名额");
+            }else if("002".equals(code)){
+                return RtnData.fail("课程班次报名时间未开始");
+            }else if("003".equals(code)){
+                return RtnData.fail("课程班次报名时间已结束");
+            }else if("004".equals(code)){
+                return RtnData.fail("课程班次不存在");
             }else {
                 return RtnData.ok(res);
             }

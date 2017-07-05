@@ -1,6 +1,7 @@
 package com.digitalchina.sport.order.api.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.digitalchina.common.utils.DateUtil;
 import com.digitalchina.common.utils.OrderHelp;
 import com.digitalchina.sport.order.api.common.Constants;
 import com.digitalchina.sport.order.api.dao.CurriculumClassNewMapper;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,41 +39,80 @@ public class CurriculumService {
     private CurriculumOrderMapper curriculumOrderMapper;
     @Transactional
     public Map<String, Object> signUp(Map<String, Object> args) throws Exception {
+
+        Date oprDate = new Date();
+
         Map<String, Object> res = Maps.newHashMap();
         List<CurriculumClass> curriculumClasss = curriculumMapper.getCurriculumClassByCurriculumId(args);
-        if (curriculumClasss.size() == 1) {
-            CurriculumClass curriculumClass = curriculumClasss.get(0);
-            if (curriculumClass.getSign_up() >= curriculumClass.getMax_people()) {//判断是否有名额
-                res.put("code", "001");//没有名额了
-            }
-            Map<String, Object> checkargs = Maps.newHashMap();
-            String xuban_curriculum = curriculumClass.getXuban_curriculum();//获取可享受该班级续报优惠的课程id
-            List<Integer> xuban_curriculums = new Gson().fromJson(xuban_curriculum, List.class);
-            if(xuban_curriculums.size()>0){
+        if (curriculumClasss == null || curriculumClasss.size() <= 0) {
+            res.put("code", "004");
+            return res;
+        }
+
+        CurriculumClass curriculumClass = curriculumClasss.get(0);
+
+        String bm_begin = curriculumClass.getBm_time();
+        String bm_end = curriculumClass.getBm_end();
+        bm_begin = bm_begin == null ? "" : bm_begin;
+        bm_end = bm_end == null ? "" : bm_end;
+        if(!DateUtil.isDateStr(bm_begin, "yyyy-MM-dd")){
+            bm_begin = "";
+        }
+        if(!DateUtil.isDateStr(bm_end, "yyyy-MM-dd")){
+            bm_end = "";
+        }
+        if(StringUtils.isBlank(bm_begin) || StringUtils.isBlank(bm_end)){
+            res.put("code", "002");
+            return res;
+        }
+        bm_begin = bm_begin.replace("-", "");
+        bm_end = bm_end.replace("-", "");
+        BigDecimal bm_begin_bd = new BigDecimal(bm_begin);
+        BigDecimal bm_end_bd = new BigDecimal(bm_end);
+        String curDateStr = DateUtil.format(oprDate, "yyyyMMdd");
+        BigDecimal curDate_bd = new BigDecimal(curDateStr);
+        if(curDate_bd.compareTo(bm_begin_bd)<0){
+            res.put("code", "002");
+            return res;
+        }
+        if(curDate_bd.compareTo(bm_end_bd)>0){
+            res.put("code", "003");
+            return res;
+        }
+        //判断是否有名额
+        if (curriculumClass.getSign_up() >= curriculumClass.getMax_people()) {
+            res.put("code", "001");
+            return res;
+        }
+
+        Map<String, Object> checkargs = Maps.newHashMap();
+        String xuban_curriculum = curriculumClass.getXuban_curriculum();//获取可享受该班级续报优惠的课程id
+        xuban_curriculum = xuban_curriculum == null ? "[]" : xuban_curriculum;
+        List<Integer> xuban_curriculums = new Gson().fromJson(xuban_curriculum, List.class);
+        if(xuban_curriculums==null || xuban_curriculums.size()>0){
 //            checkargs.put("idCard", args.get("idCard"));
-                checkargs.put("phone", args.get("phone"));
-                checkargs.put("student_name", args.get("studentName"));
-                checkargs.put("xuban_curriculums", xuban_curriculums);
-                if (curriculumMapper.checkXuban(checkargs) > 0) {//查看是否享受续班优惠
-                    args.put("xuban_flag", "1");
-                    args.put("xuban_fee", curriculumClass.getDiscount_fee());
-                } else {
-                    args.put("xuban_flag", "0");
-                }
-            }else{
+            checkargs.put("phone", args.get("phone"));
+            checkargs.put("student_name", args.get("studentName"));
+            checkargs.put("xuban_curriculums", xuban_curriculums);
+            if (curriculumMapper.checkXuban(checkargs) > 0) {//查看是否享受续班优惠
+                args.put("xuban_flag", "1");
+                args.put("xuban_fee", curriculumClass.getDiscount_fee());
+            } else {
                 args.put("xuban_flag", "0");
             }
-            args.put("fee", curriculumClass.getFee());
-            args.put("fee_msg", curriculumClass.getFee_mark());
-            String order_number = OrderHelp.getCurriculumOrderNum();
-            args.put("id", OrderHelp.getUUID());
-            args.put("order_number", order_number);
-            curriculumMapper.insertOrder(args);
-            curriculumMapper.updataClassTime(args);//更新班次报名人数
-            res.put("code", "000");
-            res.put("order_number", order_number);
-            res.put("id", args.get("id"));
+        }else{
+            args.put("xuban_flag", "0");
         }
+        args.put("fee", curriculumClass.getFee());
+        args.put("fee_msg", curriculumClass.getFee_mark());
+        String order_number = OrderHelp.getCurriculumOrderNum();
+        args.put("id", OrderHelp.getUUID());
+        args.put("order_number", order_number);
+        curriculumMapper.insertOrder(args);
+        curriculumMapper.updataClassTime(args);//更新班次报名人数
+        res.put("code", "000");
+        res.put("order_number", order_number);
+        res.put("id", args.get("id"));
         return res;
     }
     public int updataCurriculumOrder(Map<String, Object> args){
