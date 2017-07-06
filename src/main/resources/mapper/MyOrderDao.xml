@@ -698,7 +698,7 @@
 
 	<update id="updateClassTimeSignUp" parameterType="List">
 		<foreach collection="list" item="item" separator=";">
-			update curriculum_class_times t set t.sign_up = t.sign_up + 1
+			update curriculum_class_times t set t.sign_up = t.sign_up - 1
 			where 1=1
 			and t.id = #{item.curriculum_class_time_id}
 		</foreach>
