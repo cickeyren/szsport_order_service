@@ -1070,4 +1070,15 @@ public class MyOrderService {
     public Map<String,Object> getOrderNumberByOrderId(String id) throws Exception{
         return myOrderDao.getOrderNumberByOrderId(id);
     };
+
+    @Transactional
+    public void updateAllCurriculumOrderStatus(String remark) throws Exception{
+        List<Map<String,Object>> list = myOrderDao.getOverdueCurriculumOrderList();
+        if (list.size()>0){
+            //释放报名人数，上课时段+1
+            myOrderDao.updateClassTimeSignUp(list);
+            //更改订单状态为 4-过期
+            myOrderDao.updateCurriculumOrderStatus(list);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.digitalchina.sport.order.api.dao;
 import com.digitalchina.sport.order.api.model.OrderBaseInfo;
 import com.digitalchina.sport.order.api.model.OrderContentDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -234,4 +235,10 @@ public interface MyOrderDao {
 	List<Map<String,Object>> getSxOrderNotChange() throws Exception;
 	Map<String,Object> getOrderNumberByOrderId(String id) throws Exception;
 	int deleteLockField(Map<String,Object> params)throws Exception;
+
+	List<Map<String,Object>> getOverdueCurriculumOrderList() throws Exception;
+
+	void updateClassTimeSignUp(@Param("list") List<Map<String, Object>> list);
+
+	void updateCurriculumOrderStatus(@Param("list") List<Map<String, Object>> list);
 }

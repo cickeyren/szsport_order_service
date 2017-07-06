@@ -134,7 +134,9 @@ public class CurriculumOrderController {
             }
             args.put("pageSize",pageSize);
             List<Map<String,Object>> orders = curriculumService.getCurriculumOrder(args);
-            curriculumService.updateOrderByOrderTime();
+
+            //未支付订单超时，改为定时任务来修改订单状态，以及释放报名数，在szsport_order_service工程 modify by xujin at 2017-07-06
+//            curriculumService.updateOrderByOrderTime();
             return RtnData.ok(orders);
         } catch (Exception e) {
             e.printStackTrace();

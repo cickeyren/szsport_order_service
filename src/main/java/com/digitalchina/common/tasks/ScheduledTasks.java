@@ -89,4 +89,20 @@ public class ScheduledTasks {
             log.error(DateUtil.now()+"########## 更新过期票状态失败！########## ", DateUtil.now());
         }
     }
+
+
+    //定时任务5,5分钟更新培训订单状态
+    @Scheduled(fixedRate = 1000 * 300)
+    public void curriculumOverdueHandle() {
+
+        try {
+
+            myOrderService.updateAllCurriculumOrderStatus("未支付超时培训订单");
+
+            log.error(DateUtil.now()+"########## 更新失效培训订单成功！########## ", DateUtil.now());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(DateUtil.now()+"########## 更新失效培训订单失败！########## ",DateUtil.now());
+        }
+    }
 }

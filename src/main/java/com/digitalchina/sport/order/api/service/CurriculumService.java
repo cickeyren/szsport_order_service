@@ -61,23 +61,37 @@ public class CurriculumService {
         if(!DateUtil.isDateStr(bm_end, "yyyy-MM-dd")){
             bm_end = "";
         }
-        if(StringUtils.isBlank(bm_begin) || StringUtils.isBlank(bm_end)){
-            res.put("code", "002");
-            return res;
-        }
-        bm_begin = bm_begin.replace("-", "");
-        bm_end = bm_end.replace("-", "");
-        BigDecimal bm_begin_bd = new BigDecimal(bm_begin);
-        BigDecimal bm_end_bd = new BigDecimal(bm_end);
         String curDateStr = DateUtil.format(oprDate, "yyyyMMdd");
         BigDecimal curDate_bd = new BigDecimal(curDateStr);
-        if(curDate_bd.compareTo(bm_begin_bd)<0){
-            res.put("code", "002");
-            return res;
+        if(!StringUtils.isBlank(bm_begin) && StringUtils.isBlank(bm_end)){
+            bm_begin = bm_begin.replace("-", "");
+            BigDecimal bm_begin_bd = new BigDecimal(bm_begin);
+            if(curDate_bd.compareTo(bm_begin_bd)<0){
+                res.put("code", "002");
+                return res;
+            }
         }
-        if(curDate_bd.compareTo(bm_end_bd)>0){
-            res.put("code", "003");
-            return res;
+        if(StringUtils.isBlank(bm_begin) && !StringUtils.isBlank(bm_end)){
+            bm_end = bm_end.replace("-", "");
+            BigDecimal bm_end_bd = new BigDecimal(bm_end);
+            if(curDate_bd.compareTo(bm_end_bd)>0){
+                res.put("code", "003");
+                return res;
+            }
+        }
+        if(!StringUtils.isBlank(bm_begin) && !StringUtils.isBlank(bm_end)){
+            bm_begin = bm_begin.replace("-", "");
+            bm_end = bm_end.replace("-", "");
+            BigDecimal bm_begin_bd = new BigDecimal(bm_begin);
+            BigDecimal bm_end_bd = new BigDecimal(bm_end);
+            if(curDate_bd.compareTo(bm_begin_bd)<0){
+                res.put("code", "002");
+                return res;
+            }
+            if(curDate_bd.compareTo(bm_end_bd)>0){
+                res.put("code", "003");
+                return res;
+            }
         }
         //判断是否有名额
         if (curriculumClass.getSign_up() >= curriculumClass.getMax_people()) {

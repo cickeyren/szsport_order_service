@@ -682,4 +682,33 @@
 		AND time_interval_id = #{timeIntervalId}
 		AND `status` = #{status}
 	</delete>
+
+
+	<select id="getOverdueCurriculumOrderList" resultType="java.util.HashMap">
+		SELECT
+		distinct t.id, t.curriculum_class_time_id
+		FROM
+		curriculum_order t
+		WHERE
+		<![CDATA[
+			t.create_time < DATE_SUB(NOW(),INTERVAL 10 MINUTE) AND t.status='0'
+  		]]>
+	</select>
+
+
+	<update id="updateClassTimeSignUp" parameterType="List">
+		<foreach collection="list" item="item" separator=";">
+			update curriculum_class_times t set t.sign_up = t.sign_up + 1
+			where 1=1
+			and t.id = #{item.curriculum_class_time_id}
+		</foreach>
+	</update>
+
+	<update id="updateCurriculumOrderStatus" parameterType="List">
+		<foreach collection="list" item="item" separator=";">
+			update curriculum_order t set t.status = 4, t.remarks = '未支付超时培训订单', t.update_time = now()
+			where 1=1
+			and t.id = #{item.id}
+		</foreach>
+	</update>
 </mapper>

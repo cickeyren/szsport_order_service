@@ -209,7 +209,7 @@
             <id>local</id>
             <properties>
                 <profiles.active>dev85</profiles.active>
-                <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false</jdbc.url>
+                <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false&amp;allowMultiQueries=true</jdbc.url>
                 <jdbc.username>szsport_order</jdbc.username>
                 <jdbc.password>12345678</jdbc.password>
             </properties>
@@ -221,7 +221,7 @@
             <id>dev85</id>
             <properties>
                 <profiles.active>dev85</profiles.active>
-                <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false</jdbc.url>
+                <jdbc.url>jdbc:mysql://221.178.232.93:3307/szsport_order_mgr?useSSL=false&amp;allowMultiQueries=true</jdbc.url>
                 <jdbc.username>szsport_order</jdbc.username>
                 <jdbc.password>12345678</jdbc.password>
             </properties>
@@ -230,7 +230,7 @@
             <id>product</id>
             <properties>
                 <profiles.active>product</profiles.active>
-                <jdbc.url>jdbc:mysql://10.1.101.82:3306/szsport_order_mgr?useSSL=false</jdbc.url>
+                <jdbc.url>jdbc:mysql://10.1.101.82:3306/szsport_order_mgr?useSSL=false&amp;allowMultiQueries=true</jdbc.url>
                 <jdbc.username>root</jdbc.username>
                 <jdbc.password>1q2w3e4r</jdbc.password>
             </properties>
