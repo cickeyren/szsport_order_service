@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.digitalchina.common.utils.DateUtil;
 import com.digitalchina.common.utils.OrderHelp;
 import com.digitalchina.sport.order.api.common.Constants;
-import com.digitalchina.sport.order.api.dao.CurriculumClassNewMapper;
-import com.digitalchina.sport.order.api.dao.CurriculumMapper;
-import com.digitalchina.sport.order.api.dao.CurriculumNewMapper;
-import com.digitalchina.sport.order.api.dao.CurriculumOrderMapper;
+import com.digitalchina.sport.order.api.dao.*;
 import com.digitalchina.sport.order.api.model.CurriculumClass;
 import com.digitalchina.sport.order.api.model.CurriculumClassNew;
 import com.digitalchina.sport.order.api.model.CurriculumNew;
@@ -37,6 +34,9 @@ public class CurriculumService {
     private CurriculumClassNewMapper curriculumClassNewMapper;
     @Autowired
     private CurriculumOrderMapper curriculumOrderMapper;
+    @Autowired
+    private MyOrderDao myOrderDao;
+
     @Transactional
     public Map<String, Object> signUp(Map<String, Object> args) throws Exception {
 
@@ -147,6 +147,14 @@ public class CurriculumService {
         params.put("orderId",orderId);
         params.put("userId",userId);
         return curriculumMapper.getCurriculumOrderDetailByOrderId(params);
+    }
+    @Transactional
+    public int cancelOrderByOrderId(String orderId,String userId,String class_time_id) throws Exception{
+        String remarks = "用户取消订单";
+        myOrderDao.updateClassTimeSignUp(class_time_id);
+        int count = myOrderDao.updateCurriculumOrderStatus(userId,orderId,remarks);
+
+        return count;
     }
     public int cancelOrderByOrderId(String orderId,String userId) throws Exception{
         Map<String, Object> params = new HashMap<String, Object>();

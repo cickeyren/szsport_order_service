@@ -190,7 +190,8 @@ public class CurriculumOrderController {
                 String status = orderDetail.get("status").toString();
                 //订单状态 0未支付，1支付成功，2支付失败，3已退款，4失效订单（取消订单或（未支付超时订单根据失效时间逻辑判断）），5异常订单',
                 if(status.equals("0")){
-                    if (curriculumService.cancelOrderByOrderId(orderId,userId)>0){
+                    String class_time_id = (String) orderDetail.get("curriculum_class_time_id");
+                    if (curriculumService.cancelOrderByOrderId(orderId,userId,class_time_id)>0){
                         return RtnData.ok("取消培训订单成功");
                     }else {
                         return RtnData.fail("取消培训订单失败");

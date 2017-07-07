@@ -193,6 +193,7 @@
             co.phone AS phone,
             co.id_card AS idCard,
             co.curriculum_id AS curriculumId,
+            co.curriculum_class_time_id,
             co.other_student_msg AS otherStudentMsg,
             co.`status` AS `status`,
             co.invalid_time AS invalidTime,

@@ -238,7 +238,11 @@ public interface MyOrderDao {
 
 	List<Map<String,Object>> getOverdueCurriculumOrderList() throws Exception;
 
-	void updateClassTimeSignUp(@Param("list") List<Map<String, Object>> list);
+	void batchUpdateClassTimeSignUp(@Param("list") List<Map<String, Object>> list);
 
-	void updateCurriculumOrderStatus(@Param("list") List<Map<String, Object>> list);
+	void batchUpdateCurriculumOrderStatus(@Param("list") List<Map<String, Object>> list);
+
+	void updateClassTimeSignUp(@Param("curriculum_class_time_id") String curriculum_class_time_id);
+
+	int updateCurriculumOrderStatus(@Param("user_id") String user_id, @Param("order_id") String order_id, @Param("remarks") String remarks);
 }

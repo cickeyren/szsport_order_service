@@ -1076,9 +1076,9 @@ public class MyOrderService {
         List<Map<String,Object>> list = myOrderDao.getOverdueCurriculumOrderList();
         if (list.size()>0){
             //释放报名人数，上课时段+1
-            myOrderDao.updateClassTimeSignUp(list);
+            myOrderDao.batchUpdateClassTimeSignUp(list);
             //更改订单状态为 4-过期
-            myOrderDao.updateCurriculumOrderStatus(list);
+            myOrderDao.batchUpdateCurriculumOrderStatus(list);
         }
     }
 }
