@@ -432,5 +432,6 @@
     </foreach>
     and t.student_name = #{student_name}
     and t.phone = #{phone}
+    and t.status = 1
   </select>
 </mapper>
