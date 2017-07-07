@@ -55,6 +55,7 @@
         </if>
         and co.student_name = #{student_name}
         and co.phone = #{phone}
+        and co.status = 1
     </select>
     <insert id="insertOrder" parameterType="java.util.Map">
         INSERT INTO curriculum_order(id,order_number,come,user_id,
