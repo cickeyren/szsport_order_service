@@ -342,18 +342,25 @@ public class DateUtil {
             }else return false;
         }else return false;
     }
-
-    public static boolean isDateStr(String str, String format){
-        try{
-            Date date = new SimpleDateFormat(format).parse(str);
-        }catch(Exception e){
-            return false;
-        }
-        return true;
+    /**
+     * 判断时间是否在一个时间段内
+     * @param startDate
+     * @param endDate
+     * @param compareDate
+     * @return
+     */
+    public static boolean compareDateTimeTo(String startDate,String endDate,String compareDate) {
+        Date start =  parseDateTime(startDate);
+        Date end = parseDateTime(endDate);
+        Date compare = parseDateTime(compareDate);
+        if(compare.compareTo(start) >= 0){//当 >= 0 , 表示 compare 大于或等于 start 继续和 end 比较 , 当 compare 小于 start 时，为 -1
+            if(compare.compareTo(end) <= 0){//当 <= 0 ,表示 compare 小于或等于 end 返回true , 当 compare 大于 end 时，为 1
+                return true;
+            }else return false;
+        }else return false;
     }
-
     public static void main(String[] args) {
-        System.out.println("now() = [" + now() + "]");
+/*        System.out.println("now() = [" + now() + "]");
         System.out.println("today() = [" + today() + "]");
         System.out.println("format(Date,String) = [" + format(new Date(),NORM_DATE_PATTERN) + "]");
         System.out.println("formatDateTime(Date) = [" + formatDateTime(new Date()) + "]");
@@ -368,15 +375,15 @@ public class DateUtil {
         System.out.println("lastWeek() = [" + lastWeek() + "]");
         System.out.println("lastMonth() = [" + lastMonth() + "]");
         System.out.println("getWeekByDate() = [" + getWeekByDate(new Date()) + "]");
-        System.out.println("nowtime() = [" + nowtime() + "]");
-        System.out.println("compareDateTo() = [" + compareDateTo("2016-11-30","2017-11-30","2016-11-30") + "]");
+        System.out.println("nowtime() = [" + nowtime() + "]");*/
+        System.out.println("compareDateTimeTo() = [" + compareDateTimeTo("2017-07-09 00:00:00","2017-07-10 00:00:00","2017-07-10 12:00:00") + "]");
         System.out.println("compareTimeTo() = [" + compareTimeTo("12:00:00","18:00:00","12:00:00") + "]");
-        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");
+/*        System.out.println("offsiteDate() = [" + formatDateTime(offsiteDate(new Date(), Calendar.DAY_OF_YEAR, 7)) + "]");
         String date = "2017-03-16";
         String time = "10:35:00";
         System.out.println("parse() = [" + DateUtil.parse(date + " "+ time) + "]");
         int approachTime=10;
-        System.out.println("offsiteDateTime() = [" + offsiteDateTime(date + " "+ time,Calendar.MINUTE, -approachTime) + "]");
+        System.out.println("offsiteDateTime() = [" + offsiteDateTime(date + " "+ time,Calendar.MINUTE, -approachTime) + "]");*/
 
 
 

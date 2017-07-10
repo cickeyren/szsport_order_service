@@ -622,7 +622,9 @@ public class MyOrderService {
             startDate = orderDetailMap.get("start_time").toString();
             endDate = orderDetailMap.get("end_time").toString();
             if(!StringUtil.isEmpty(startDate)&&!StringUtil.isEmpty(endDate)){
-                if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+                //if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+                if(DateUtil.compareDateTimeTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+
                     //验证有效期结束=========>>进入下一步验证
                     retMap = CheckForbidden(dqtime,dqdate,orderDetailMap);
                 }else {
@@ -853,7 +855,9 @@ public class MyOrderService {
                     if (dateToDate.length>0){
                         String startDate = dateToDate[0];
                         String endDate = dateToDate[1];
-                        if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+                        //if(DateUtil.compareDateTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+                        if(DateUtil.compareDateTimeTo(startDate,endDate,dqdate)) {//公用的日期对比方法
+
                             compareResult = true;
                             break;
                         }
